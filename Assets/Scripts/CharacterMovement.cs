@@ -5,10 +5,10 @@ using UnityEngine.InputSystem;
 
 public class CharacterMovement : MonoBehaviour
 {
+    private Animator anim;
+
     private const float lookThreshold = 0.01f;
 
-    [SerializeField] private float moveSpeed = 5f;
-    [SerializeField] private float jumpForce = 2f;
     [SerializeField] private float gravity = -9.81f;
 
     [SerializeField] private Transform cameraTarget;
@@ -26,12 +26,13 @@ public class CharacterMovement : MonoBehaviour
     private float pitch;
 
     private float verticalVelocity;
-
+    private Vector3 currentVelocity;
 
     private void Awake()
     {
         characterController = GetComponent<CharacterController>();
         inputActions = new InputSystem_Actions();
+        anim = GetComponent<Animator>();
 
         yaw = transform.eulerAngles.y;
         pitch = 20f;
@@ -67,6 +68,7 @@ public class CharacterMovement : MonoBehaviour
     {
         MovePlayer();
         ApplyGravity();
+        UpdateAnimator();
     }
 
     private void LateUpdate()
@@ -83,7 +85,7 @@ public class CharacterMovement : MonoBehaviour
     {
         if (characterController.isGrounded)
         {
-            verticalVelocity = Mathf.Sqrt(jumpForce * -2f * gravity);
+            verticalVelocity = Mathf.Sqrt(PlayerState.Instance.currentJumpForce * -2f * gravity);
         }
     }
 
@@ -100,7 +102,9 @@ public class CharacterMovement : MonoBehaviour
 
         Vector3 move = right * moveInput.x + forward * moveInput.y;
 
-        characterController.Move(move * moveSpeed * Time.deltaTime);
+        currentVelocity = move * PlayerState.Instance.currentSpeed;
+
+        characterController.Move(move * PlayerState.Instance.currentSpeed * Time.deltaTime);
 
         if (move.sqrMagnitude > 0.01f)
         {
@@ -161,4 +165,22 @@ public class CharacterMovement : MonoBehaviour
         return Mathf.Clamp(lfAngle, lfMin, lfMax);
     }
 
+    private void UpdateAnimator()
+    {
+        Vector3 horizontalVelocity = currentVelocity;
+        horizontalVelocity.y = 0;
+
+        float speed = horizontalVelocity.magnitude;
+
+        anim.SetFloat("Speed", speed);
+
+        if (!characterController.isGrounded)
+        {
+            anim.SetFloat("Speed", 0);
+        }
+
+        anim.SetBool("Grounded", characterController.isGrounded);
+
+        anim.SetFloat("VerticalVelocity", verticalVelocity);
+    }
 }

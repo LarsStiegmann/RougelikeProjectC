@@ -284,13 +284,32 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aa294bf1ba4f0ca44b00f6c3c5f29554, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CharacterMovement
-  moveSpeed: 5
-  jumpForce: 2
   gravity: -9.81
   cameraTarget: {fileID: 555431693}
   topClamp: 70
   bottomClamp: -30
   lookSpeed: 50
+--- !u!114 &137171604
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 137171595}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d02653c8b2084fc4ab926b2cdf5ae1c4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerState
+  baseMaxHealth: 100
+  baseDamage: 10
+  baseAttackSpeed: 1
+  baseHealthRegeneration: 0
+  baseSpeed: 5
+  baseJumpForce: 2
+  baseShield: 0
+  baseArmor: 0
+  baseLifeSteal: 0
 --- !u!1 &330585543
 GameObject:
   m_ObjectHideFlags: 0
@@ -1486,6 +1505,9 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 555431693}
     m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1782702501690864755, guid: 60770bdb4dc667c45bea53db0339dc05, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 137171604}
     - targetCorrespondingSourceObject: {fileID: 1782702501690864755, guid: 60770bdb4dc667c45bea53db0339dc05, type: 3}
       insertIndex: -1
       addedObject: {fileID: 137171603}
