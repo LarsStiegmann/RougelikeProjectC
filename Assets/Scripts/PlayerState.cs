@@ -25,6 +25,18 @@ public class PlayerState : MonoBehaviour
     public float currentLifeSteal { get; private set; }
 
     private float currentHealth;
+    public float CurrentHealth => currentHealth;
+
+    // XP and Level System
+    public int currentLevel { get; private set; } = 1;
+    public float currentXP { get; private set; } = 0f;
+    public float currentMaxXP { get; private set; } = 100f;
+
+    // Events for UI updating
+    public event System.Action OnHealthChanged;
+    public event System.Action OnXPChanged;
+    public event System.Action OnLevelUp;
+
     private float bonusAttackSpeedPercentage = 0;
     public float currentAttackSpeed => baseAttackSpeed * (1f + bonusAttackSpeedPercentage / 100f);
 
@@ -57,6 +69,7 @@ public class PlayerState : MonoBehaviour
     {
         currentHealth -= CalculateDamage(damage);
         currentHealth = Mathf.Max(currentHealth, 0);
+        OnHealthChanged?.Invoke();
     }
 
     private float CalculateDamage(float incomingDamage)
@@ -68,6 +81,25 @@ public class PlayerState : MonoBehaviour
     {
         currentHealth += amount;
         currentHealth = Mathf.Min(currentHealth, currentMaxHealth);
+        OnHealthChanged?.Invoke();
+    }
+
+    public void AddXP(float amount)
+    {
+        currentXP += amount;
+        while (currentXP >= currentMaxXP)
+        {
+            currentXP -= currentMaxXP;
+            currentLevel++;
+            currentMaxXP = Mathf.Round(currentMaxXP * 1.5f); // Scale level cost
+            
+            // Reward: increase max health and fully heal
+            RaiseMaxHealth(10f);
+            Heal(currentMaxHealth);
+            
+            OnLevelUp?.Invoke();
+        }
+        OnXPChanged?.Invoke();
     }
 
     private void RegenerateHealth()
