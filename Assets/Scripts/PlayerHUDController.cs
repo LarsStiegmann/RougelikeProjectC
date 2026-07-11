@@ -60,7 +60,7 @@ public class PlayerHUDController : MonoBehaviour
     {
         if (PlayerState.Instance == null) return;
 
-        float currentHP = PlayerState.Instance.CurrentHealth;
+        float currentHP = PlayerState.Instance.currentHealth;
         float maxHP = PlayerState.Instance.currentMaxHealth;
 
         if (healthSlider != null)

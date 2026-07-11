@@ -14,6 +14,10 @@ public class PlayerState : MonoBehaviour
     [SerializeField] private float baseShield = 0f;
     [SerializeField] private float baseArmor = 0f;
     [SerializeField] private float baseLifeSteal = 0f;
+    [SerializeField] private float baseAttackRange = 2f;
+    [SerializeField] private float baseMaxXP = 100f;
+    [SerializeField] private float baseXP = 0f;
+    [SerializeField] private int baseLevel = 1;
 
     public float currentMaxHealth { get; private set; }
     public float currentDamage { get; private set; }
@@ -23,14 +27,13 @@ public class PlayerState : MonoBehaviour
     public float currentShield { get; private set; }
     public float currentArmor { get; private set; }
     public float currentLifeSteal { get; private set; }
-
-    private float currentHealth;
-    public float CurrentHealth => currentHealth;
+    public float currentAttackRange { get; private set; }
+    public float currentHealth { get; private set; }
 
     // XP and Level System
-    public int currentLevel { get; private set; } = 1;
-    public float currentXP { get; private set; } = 0f;
-    public float currentMaxXP { get; private set; } = 100f;
+    public int currentLevel { get; private set; }
+    public float currentXP { get; private set; }
+    public float currentMaxXP { get; private set; }
 
     // Events for UI updating
     public event System.Action OnHealthChanged;
@@ -58,6 +61,10 @@ public class PlayerState : MonoBehaviour
         currentShield = baseShield;
         currentArmor = baseArmor;
         currentLifeSteal = baseLifeSteal;
+        currentAttackRange = baseAttackRange;
+        currentMaxXP = baseMaxXP;
+        currentXP = baseXP;
+        currentLevel = baseLevel;
     }
 
     private void Update()
@@ -87,15 +94,15 @@ public class PlayerState : MonoBehaviour
     public void AddXP(float amount)
     {
         currentXP += amount;
-        while (currentXP >= currentMaxXP)
+        if (currentXP >= currentMaxXP)
         {
             currentXP -= currentMaxXP;
             currentLevel++;
             currentMaxXP = Mathf.Round(currentMaxXP * 1.5f); // Scale level cost
             
-            // Reward: increase max health and fully heal
-            RaiseMaxHealth(10f);
-            Heal(currentMaxHealth);
+            // Reward: increase max health (and fully heal)
+            RaiseMaxHealth(1f);
+            //Heal(currentMaxHealth);
             
             OnLevelUp?.Invoke();
         }
@@ -106,6 +113,11 @@ public class PlayerState : MonoBehaviour
     {
         Heal(currentHealthRegeneration * Time.deltaTime);
     } 
+
+    private void RaiseMaxXP()
+    {
+        currentMaxXP = currentMaxXP + (currentMaxXP / 10);
+    }
 
     public void RaiseMaxHealth(float amount)
     {
@@ -149,5 +161,27 @@ public class PlayerState : MonoBehaviour
     public void RaiseLifeSteal(float amount)
     {
         currentLifeSteal += amount;
+    }
+
+    public void RaiseAttackRange(float amount)
+    {
+        currentAttackRange += amount;
+    }
+
+    public void ResetStats()
+    {
+        currentMaxHealth = baseMaxHealth;
+        currentHealth = baseMaxHealth;
+        currentDamage = baseDamage;
+        currentHealthRegeneration = baseHealthRegeneration;
+        currentSpeed = baseSpeed;
+        currentJumpForce = baseJumpForce;
+        currentShield = baseShield;
+        currentArmor = baseArmor;
+        currentLifeSteal = baseLifeSteal;
+        currentAttackRange = baseAttackRange;
+        currentMaxXP = baseMaxXP;
+        currentXP = baseXP;
+        currentLevel = baseLevel;
     }
 }
