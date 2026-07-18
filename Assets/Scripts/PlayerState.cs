@@ -102,6 +102,7 @@ public class PlayerState : MonoBehaviour
             
             // Reward: increase max health (and fully heal)
             RaiseMaxHealth(1f);
+            RaiseMaxXP();
             //Heal(currentMaxHealth);
             
             OnLevelUp?.Invoke();
