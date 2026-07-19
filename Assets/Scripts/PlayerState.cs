@@ -169,6 +169,16 @@ public class PlayerState : MonoBehaviour
         currentAttackRange += amount;
     }
 
+    private void Die()
+    {
+        if (currentHealth <= 0)
+        {
+            //Fortschritt checken
+            //Belohnungen
+            //Deathscreen
+        }
+    }
+
     public void ResetStats()
     {
         currentMaxHealth = baseMaxHealth;

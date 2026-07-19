@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class PlayerDealDamage : MonoBehaviour
 {
-    private float baseAttackInterval = 2f;
+    private float baseAttackInterval = 1f;
     private float timer;
 
     [SerializeField] private Transform attackPoint;

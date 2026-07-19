@@ -25,7 +25,7 @@ public class MainMenuController : MonoBehaviour
     public void StartGame()
     {
         Debug.Log("Starting game");
-        //SceneManager.LoadScene("Level1");
+        SceneManager.LoadScene("Level1");
     }
 
     public void OpenSettings()
