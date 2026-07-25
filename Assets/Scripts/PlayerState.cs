@@ -77,6 +77,11 @@ public class PlayerState : MonoBehaviour
         currentHealth -= CalculateDamage(damage);
         currentHealth = Mathf.Max(currentHealth, 0);
         OnHealthChanged?.Invoke();
+
+        if (currentHealth == 0)
+        {
+            Die();
+        }
     }
 
     private float CalculateDamage(float incomingDamage)

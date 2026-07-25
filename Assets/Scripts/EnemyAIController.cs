@@ -10,6 +10,9 @@ public class EnemyAIController : MonoBehaviour
     [SerializeField] private float attackRange = 2f;
     [SerializeField] private float damage = 10f;
     [SerializeField] private float attackCooldown = 1.5f;
+    [SerializeField] private float maxHealth = 20f;
+
+    private float currentHealth;
 
     private NavMeshAgent agent;
     private Animator animator;
@@ -27,6 +30,7 @@ public class EnemyAIController : MonoBehaviour
         {
             animator = GetComponentInChildren<Animator>();
         }
+        currentHealth = maxHealth;
     }
 
     private void OnEnable()
@@ -171,6 +175,36 @@ public class EnemyAIController : MonoBehaviour
             }
         }
     }
+
+    public void EnemyTakeDamage(float incomingDamage)
+    {
+        currentHealth -= incomingDamage;
+        currentHealth = Mathf.Max(currentHealth, 0);
+        Debug.Log(currentHealth.ToString());
+        if (currentHealth == 0)
+        {
+            EnemyDie();
+        }
+    }
+
+    private void EnemyDie()
+    {
+        //StartCoroutine(EnemyDieAfterDelay());
+        Destroy(gameObject);
+        //count kill
+    }
+
+    //private IEnumerator EnemyDieAfterDelay()
+    //{
+        //if (animator != null)
+        //{
+        //    animator.SetTrigger("Die");
+        //}
+
+        //yield return new WaitForSeconds(1f);
+
+        //Destroy(gameObject);
+    //}
 
     private void OnDrawGizmosSelected()
     {

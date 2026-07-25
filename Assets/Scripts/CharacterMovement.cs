@@ -17,7 +17,7 @@ public class CharacterMovement : MonoBehaviour
     [SerializeField] private float lookSpeed = 50f;
     
     private CharacterController characterController;
-    private InputSystem_Actions inputActions;
+    //private InputSystem_Actions inputActions;
 
     private Vector2 look;
     private Vector2 moveInput;
@@ -31,7 +31,7 @@ public class CharacterMovement : MonoBehaviour
     private void Awake()
     {
         characterController = GetComponent<CharacterController>();
-        inputActions = new InputSystem_Actions();
+        //inputActions = new InputSystem_Actions();
         anim = GetComponent<Animator>();
 
         yaw = transform.eulerAngles.y;
@@ -40,28 +40,28 @@ public class CharacterMovement : MonoBehaviour
 
     private void OnEnable()
     {
-        inputActions.Enable();
+        //inputActions.Enable();
 
-        inputActions.Player.Move.performed += OnMove;
-        inputActions.Player.Move.canceled += OnMove;
+        InputController.Instance.Actions.Player.Move.performed += OnMove;
+        InputController.Instance.Actions.Player.Move.canceled += OnMove;
 
-        inputActions.Player.Jump.performed += OnJump;
+        InputController.Instance.Actions.Player.Jump.performed += OnJump;
 
-        inputActions.Player.Look.performed += OnLook;
-        inputActions.Player.Look.canceled += OnLook;
+        InputController.Instance.Actions.Player.Look.performed += OnLook;
+        InputController.Instance.Actions.Player.Look.canceled += OnLook;
     }
 
     private void OnDisable()
     {
-        inputActions.Player.Move.performed -= OnMove;
-        inputActions.Player.Move.canceled -= OnMove;
+        InputController.Instance.Actions.Player.Move.performed -= OnMove;
+        InputController.Instance.Actions.Player.Move.canceled -= OnMove;
 
-        inputActions.Player.Jump.performed -= OnJump;
+        InputController.Instance.Actions.Player.Jump.performed -= OnJump;
 
-        inputActions.Player.Look.performed -= OnLook;
-        inputActions.Player.Look.canceled -= OnLook;
+        InputController.Instance.Actions.Player.Look.performed -= OnLook;
+        InputController.Instance.Actions.Player.Look.canceled -= OnLook;
 
-        inputActions.Disable();
+        //inputActions.Disable();
     }
 
     private void Update()

@@ -13,7 +13,7 @@ public class PlayerDealDamage : MonoBehaviour
 
     [SerializeField] private GameObject shlashVFX;
 
-    [SerializeField] private Vector3 boxSize = new Vector3(1f, 1f, 2f);
+    [SerializeField] private Vector3 boxSize = new Vector3(2f, 1f, 2f);
 
     private void Update()
     {
@@ -39,11 +39,14 @@ public class PlayerDealDamage : MonoBehaviour
         );
 
         Collider[] hits = Physics.OverlapBox(
-            attackPoint.position + transform.forward * 1f,
+            attackPoint.position,
+            //+transform.forward * 1f
             boxSize / 2,
             transform.rotation,
             enemyLayer
         );
+
+        Debug.Log($"Treffer: {hits.Length}");
 
         Destroy(slash, 0.2f);
 
@@ -55,8 +58,25 @@ public class PlayerDealDamage : MonoBehaviour
 
             if (enemy != null && enemiesHit.Add(enemy))
             {
-                //enemy.TakeDamage(PlayerState.Instance.currentDamage);
+                Debug.Log("dealt damage");
+                enemy.EnemyTakeDamage(PlayerState.Instance.currentDamage);
             }
         }
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        if (attackPoint == null)
+            return;
+
+        Gizmos.color = Color.red;
+
+        Gizmos.matrix = Matrix4x4.TRS(
+            attackPoint.position,
+            attackPoint.rotation,
+            Vector3.one
+        );
+
+        Gizmos.DrawWireCube(Vector3.zero, boxSize);
     }
 }
