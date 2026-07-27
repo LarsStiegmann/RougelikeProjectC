@@ -14,7 +14,16 @@ public class CharacterMovement : MonoBehaviour
     [SerializeField] private Transform cameraTarget;
     [SerializeField] private float topClamp = 70f;
     [SerializeField] private float bottomClamp = -30f;
-    [SerializeField] private float lookSpeed = 50f;
+    
+    [Header("Audio")]
+    [SerializeField] private AudioSource audioSource;
+    [SerializeField] private AudioClip[] footstepClips;
+    [SerializeField] private AudioClip jumpClip;
+    [SerializeField] private float stepDistance = 2f;
+    [SerializeField] private float footstepVolume = 0.7f;
+    [SerializeField] private float jumpVolume = 0.8f;
+    [SerializeField] private Vector2 footstepPitchRange = new Vector2(0.95f, 1.05f);
+[SerializeField] private float lookSpeed = 50f;
     
     private CharacterController characterController;
     //private InputSystem_Actions inputActions;
@@ -26,13 +35,20 @@ public class CharacterMovement : MonoBehaviour
     private float pitch;
 
     private float verticalVelocity;
-    private Vector3 currentVelocity;
+    
+    private float distanceSinceLastStep;
+private Vector3 currentVelocity;
 
-    private void Awake()
+private void Awake()
     {
         characterController = GetComponent<CharacterController>();
         //inputActions = new InputSystem_Actions();
         anim = GetComponent<Animator>();
+
+        if (audioSource == null)
+        {
+            audioSource = GetComponent<AudioSource>();
+        }
 
         yaw = transform.eulerAngles.y;
         pitch = 20f;
@@ -64,10 +80,11 @@ public class CharacterMovement : MonoBehaviour
         //inputActions.Disable();
     }
 
-    private void Update()
+private void Update()
     {
         MovePlayer();
         ApplyGravity();
+        UpdateFootsteps();
         UpdateAnimator();
     }
 
@@ -81,11 +98,12 @@ public class CharacterMovement : MonoBehaviour
         moveInput = context.ReadValue<Vector2>();
     }
 
-    private void OnJump(InputAction.CallbackContext context)
+private void OnJump(InputAction.CallbackContext context)
     {
         if (characterController.isGrounded)
         {
             verticalVelocity = Mathf.Sqrt(PlayerState.Instance.currentJumpForce * -2f * gravity);
+            PlayJumpSound();
         }
     }
 
@@ -183,4 +201,53 @@ public class CharacterMovement : MonoBehaviour
 
         anim.SetFloat("VerticalVelocity", verticalVelocity);
     }
+
+private void UpdateFootsteps()
+    {
+        if (!characterController.isGrounded)
+        {
+            distanceSinceLastStep = 0f;
+            return;
+        }
+
+        Vector3 horizontalVelocity = currentVelocity;
+        horizontalVelocity.y = 0f;
+
+        if (horizontalVelocity.magnitude < 0.1f)
+        {
+            return;
+        }
+
+        distanceSinceLastStep += horizontalVelocity.magnitude * Time.deltaTime;
+
+        if (distanceSinceLastStep >= stepDistance)
+        {
+            distanceSinceLastStep = 0f;
+            PlayFootstepSound();
+        }
+    }
+
+    private void PlayFootstepSound()
+    {
+        if (audioSource == null || footstepClips == null || footstepClips.Length == 0)
+        {
+            return;
+        }
+
+        AudioClip clip = footstepClips[Random.Range(0, footstepClips.Length)];
+        audioSource.pitch = Random.Range(footstepPitchRange.x, footstepPitchRange.y);
+        audioSource.PlayOneShot(clip, footstepVolume);
+    }
+
+    private void PlayJumpSound()
+    {
+        if (audioSource == null || jumpClip == null)
+        {
+            return;
+        }
+
+        audioSource.pitch = 1f;
+        audioSource.PlayOneShot(jumpClip, jumpVolume);
+    }
+
 }

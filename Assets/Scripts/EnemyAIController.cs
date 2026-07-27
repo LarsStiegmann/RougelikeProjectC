@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.AI;
 
 [RequireComponent(typeof(NavMeshAgent))]
@@ -9,8 +10,13 @@ public class EnemyAIController : MonoBehaviour
     [SerializeField] private float aggroRange = 10f;
     [SerializeField] private float attackRange = 2f;
     [SerializeField] private float damage = 10f;
-    [SerializeField] private float attackCooldown = 1.5f;
-    [SerializeField] private float maxHealth = 20f;
+        [SerializeField] private float xpReward = 10f;
+[SerializeField] private float attackCooldown = 1.5f;
+    
+    [Header("Health Bar")]
+    [SerializeField] private Vector3 healthBarOffset = new Vector3(0f, 0.3f, 0f);
+    [SerializeField] private Vector2 healthBarWorldSize = new Vector2(1.0f, 0.14f);
+[SerializeField] private float maxHealth = 20f;
 
     private float currentHealth;
 
@@ -18,9 +24,14 @@ public class EnemyAIController : MonoBehaviour
     private Animator animator;
     private GameObject player;
     private float lastAttackTime;
-    private Coroutine aiCoroutine;
+    
+    private Canvas healthBarCanvas;
+    private Image healthBarFillImage;
+        private static Sprite s_whiteFillSprite;
+private Camera mainCam;
+private Coroutine aiCoroutine;
 
-    private void Awake()
+private void Awake()
     {
         agent = GetComponent<NavMeshAgent>();
         
@@ -31,6 +42,9 @@ public class EnemyAIController : MonoBehaviour
             animator = GetComponentInChildren<Animator>();
         }
         currentHealth = maxHealth;
+
+        mainCam = Camera.main;
+        CreateHealthBar();
     }
 
     private void OnEnable()
@@ -145,7 +159,7 @@ public class EnemyAIController : MonoBehaviour
     /// <summary>
     /// Performs damage to the player if they are still within range. Called via Animation Events.
     /// </summary>
-    public void PerformDamage()
+public void PerformDamage()
     {
         if (player == null)
         {
@@ -161,8 +175,14 @@ public class EnemyAIController : MonoBehaviour
                 PlayerState playerState = player.GetComponent<PlayerState>();
                 if (playerState != null)
                 {
-                    playerState.TakeDamage(damage);
-                    Debug.Log($"[EnemyAIController] Dealt {damage} damage to Player. Player remaining health is calculated via PlayerState.");
+                    float scaledDamage = damage;
+                    if (RunTimerController.Instance != null)
+                    {
+                        scaledDamage *= RunTimerController.Instance.EnemyDamageMultiplier;
+                    }
+
+                    playerState.TakeDamage(scaledDamage);
+                    Debug.Log($"[EnemyAIController] Dealt {scaledDamage} damage to Player (base {damage}, multiplier {(RunTimerController.Instance != null ? RunTimerController.Instance.EnemyDamageMultiplier : 1f)}). Player remaining health is calculated via PlayerState.");
                 }
                 else
                 {
@@ -176,20 +196,121 @@ public class EnemyAIController : MonoBehaviour
         }
     }
 
-    public void EnemyTakeDamage(float incomingDamage)
+public void EnemyTakeDamage(float incomingDamage)
     {
         currentHealth -= incomingDamage;
         currentHealth = Mathf.Max(currentHealth, 0);
         Debug.Log(currentHealth.ToString());
+        UpdateHealthBar();
+
         if (currentHealth == 0)
         {
             EnemyDie();
         }
     }
 
-    private void EnemyDie()
+private void LateUpdate()
+    {
+        if (healthBarCanvas == null)
+        {
+            return;
+        }
+
+        if (mainCam == null)
+        {
+            mainCam = Camera.main;
+        }
+
+        if (mainCam != null)
+        {
+            healthBarCanvas.transform.rotation = mainCam.transform.rotation;
+        }
+    }
+
+    private void CreateHealthBar()
+    {
+        float topY = 2f;
+        CapsuleCollider capsule = GetComponent<CapsuleCollider>();
+        if (capsule != null)
+        {
+            topY = capsule.center.y + capsule.height * 0.5f;
+        }
+
+        GameObject canvasGO = new GameObject("HealthBarCanvas");
+        canvasGO.transform.SetParent(transform, false);
+        canvasGO.transform.localPosition = new Vector3(healthBarOffset.x, topY + healthBarOffset.y, healthBarOffset.z);
+        canvasGO.transform.localRotation = Quaternion.identity;
+
+        healthBarCanvas = canvasGO.AddComponent<Canvas>();
+        healthBarCanvas.renderMode = RenderMode.WorldSpace;
+
+        RectTransform canvasRt = canvasGO.GetComponent<RectTransform>();
+        canvasRt.sizeDelta = new Vector2(200f, 28f);
+        canvasGO.transform.localScale = new Vector3(
+            healthBarWorldSize.x / 200f,
+            healthBarWorldSize.y / 28f,
+            1f
+        );
+
+        GameObject bgGO = new GameObject("Background", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+        bgGO.transform.SetParent(canvasGO.transform, false);
+        RectTransform bgRt = bgGO.GetComponent<RectTransform>();
+        bgRt.anchorMin = Vector2.zero;
+        bgRt.anchorMax = Vector2.one;
+        bgRt.sizeDelta = Vector2.zero;
+        bgRt.anchoredPosition = Vector2.zero;
+        Image bgImg = bgGO.GetComponent<Image>();
+        bgImg.color = new Color(0f, 0f, 0f, 0.6f);
+
+        GameObject fillGO = new GameObject("Fill", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+        fillGO.transform.SetParent(canvasGO.transform, false);
+        RectTransform fillRt = fillGO.GetComponent<RectTransform>();
+        fillRt.anchorMin = new Vector2(0.05f, 0.15f);
+        fillRt.anchorMax = new Vector2(0.95f, 0.85f);
+        fillRt.sizeDelta = Vector2.zero;
+        fillRt.anchoredPosition = Vector2.zero;
+
+        healthBarFillImage = fillGO.GetComponent<Image>();
+        healthBarFillImage.sprite = GetWhiteFillSprite();
+        healthBarFillImage.type = Image.Type.Filled;
+        healthBarFillImage.fillMethod = Image.FillMethod.Horizontal;
+        healthBarFillImage.fillOrigin = (int)Image.OriginHorizontal.Left;
+        healthBarFillImage.fillAmount = 1f;
+        healthBarFillImage.color = new Color(0.55f, 0.05f, 0.05f, 1f);
+    }
+
+private static Sprite GetWhiteFillSprite()
+    {
+        if (s_whiteFillSprite == null)
+        {
+            Texture2D tex = Texture2D.whiteTexture;
+            s_whiteFillSprite = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f), 100f);
+        }
+
+        return s_whiteFillSprite;
+    }
+
+
+private void UpdateHealthBar()
+    {
+        if (healthBarFillImage == null)
+        {
+            return;
+        }
+
+        float pct = maxHealth > 0f ? currentHealth / maxHealth : 0f;
+        healthBarFillImage.fillAmount = pct;
+    }
+
+
+private void EnemyDie()
     {
         //StartCoroutine(EnemyDieAfterDelay());
+        if (PlayerState.Instance != null)
+        {
+            PlayerState.Instance.AddXP(xpReward);
+        }
+
         Destroy(gameObject);
         //count kill
     }
