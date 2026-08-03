@@ -23,9 +23,4 @@ public class InputController : MonoBehaviour
             Destroy(gameObject);
         }
     }
-
-    private void OnDestroy()
-    {
-        Actions.Disable();
-    }
 }
