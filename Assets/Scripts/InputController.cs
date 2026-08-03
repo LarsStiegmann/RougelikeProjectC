@@ -44,6 +44,7 @@ private void Awake()
             Destroy(gameObject);
         }
     }
+<<<<<<< HEAD
 
 private void EnsureInitialized()
     {
@@ -96,4 +97,6 @@ private void OnDestroy()
             instance = null;
         }
     }
+=======
+>>>>>>> refs/remotes/origin/main
 }

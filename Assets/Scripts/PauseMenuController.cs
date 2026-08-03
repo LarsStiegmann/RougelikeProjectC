@@ -104,6 +104,10 @@ public void ResumeGame()
     {
         Time.timeScale = 1f;
         pauseMenuPanel.SetActive(false);
+
+        InputController.Instance.Actions.UI.Disable();
+        InputController.Instance.Actions.Player.Enable();
+
         SceneManager.LoadScene("MainMenu");
     }
 }

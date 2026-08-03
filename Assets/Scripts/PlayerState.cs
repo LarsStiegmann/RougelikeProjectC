@@ -5,6 +5,8 @@ public class PlayerState : MonoBehaviour
 {
     public static PlayerState Instance { get; private set; }
 
+    [SerializeField] private LevelUpController levelUpController;
+
     [SerializeField] private float baseMaxHealth = 100f;
     [SerializeField] private float baseDamage = 10f;
     [SerializeField] private float baseAttackSpeed = 1f;
@@ -18,6 +20,8 @@ public class PlayerState : MonoBehaviour
     [SerializeField] private float baseMaxXP = 100f;
     [SerializeField] private float baseXP = 0f;
     [SerializeField] private int baseLevel = 1;
+
+    [SerializeField] private GameObject levelUpPanel;
 
     public float currentMaxHealth { get; private set; }
     public float currentDamage { get; private set; }
@@ -105,14 +109,63 @@ public class PlayerState : MonoBehaviour
             currentLevel++;
             currentMaxXP = Mathf.Round(currentMaxXP * 1.5f); // Scale level cost
             
-            // Reward: increase max health (and fully heal)
             RaiseMaxHealth(1f);
             RaiseMaxXP();
-            //Heal(currentMaxHealth);
-            
+
+            levelUpController.Open();
+
             OnLevelUp?.Invoke();
         }
         OnXPChanged?.Invoke();
+    }
+
+    public void ApplyUpgrade(StatUpgrade upgrade)
+    {
+        switch(upgrade.upgradeType)
+        {
+            case UpgradeType.MaxHealth:
+                RaiseMaxHealth(upgrade.value);
+                Debug.Log(currentMaxHealth);
+                break;
+            case UpgradeType.Damage:
+                RaiseDamage(upgrade.value);
+                Debug.Log(currentDamage);
+                break;
+            case UpgradeType.AttackSpeed:
+                RaiseAttackSpeed(upgrade.value);
+                Debug.Log(upgrade.value);
+                break;
+            case UpgradeType.HealthRegeneration:
+                RaiseHealthRegeneration(upgrade.value);
+                Debug.Log(upgrade.value);
+                break;
+            case UpgradeType.Speed:
+                RaiseSpeed(upgrade.value);
+                Debug.Log(upgrade.value);
+                break;
+            case UpgradeType.JumpForce:
+                RaiseJumpForce(upgrade.value);
+                Debug.Log(upgrade.value);
+                break;
+            case UpgradeType.Shield:
+                RaiseShield(upgrade.value);
+                Debug.Log(upgrade.value);
+                break;
+            case UpgradeType.Armor:
+                RaiseArmor(upgrade.value);
+                Debug.Log(upgrade.value);
+                break;
+            case UpgradeType.LifeSteal:
+                RaiseLifeSteal(upgrade.value);
+                Debug.Log(upgrade.value);
+                break;
+            case UpgradeType.Range:
+                RaiseAttackRange(upgrade.value);
+                Debug.Log(upgrade.value);
+                break;
+        }
+        levelUpPanel.SetActive(false);
+        Time.timeScale = 1;
     }
 
     private void RegenerateHealth()
