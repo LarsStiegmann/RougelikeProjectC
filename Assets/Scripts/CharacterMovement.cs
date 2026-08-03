@@ -9,7 +9,11 @@ public class CharacterMovement : MonoBehaviour
 
     private const float lookThreshold = 0.01f;
 
-    [SerializeField] private float gravity = -9.81f;
+        [Tooltip("How long the character must be airborne before the falling animation kicks in. Filters out brief ungrounded blips from stairs/small bumps.")]
+    [SerializeField] private float fallAnimationBuffer = 0.15f;
+    [Tooltip("Extra distance below the capsule to check for ground, to smooth out stairs and small bumps that would otherwise briefly report as not-grounded.")]
+    [SerializeField] private float groundCheckDistance = 0.3f;
+[SerializeField] private float gravity = -9.81f;
 
     [SerializeField] private Transform cameraTarget;
     [SerializeField] private float topClamp = 70f;
@@ -23,18 +27,26 @@ public class CharacterMovement : MonoBehaviour
     [SerializeField] private float footstepVolume = 0.7f;
     [SerializeField] private float jumpVolume = 0.8f;
     [SerializeField] private Vector2 footstepPitchRange = new Vector2(0.95f, 1.05f);
-[SerializeField] private float lookSpeed = 50f;
+[Tooltip("Gamepad look speed in degrees per second (right stick).")]
+    [SerializeField] private float lookSpeed = 50f;
+    [Tooltip("Mouse look sensitivity. Applied to raw pointer delta, so it is frame-rate independent.")]
+    [SerializeField] private float mouseLookSensitivity = 0.8f;
+    [Tooltip("How quickly the character rotates to face the direction of movement. Higher is snappier.")]
+    [SerializeField] private float turnSpeed = 20f;
     
-    private CharacterController characterController;
+        private int groundLayerMask;
+private CharacterController characterController;
     //private InputSystem_Actions inputActions;
 
-    private Vector2 look;
+        private bool lookFromGamepad;
+private Vector2 look;
     private Vector2 moveInput;
 
     private float yaw;
     private float pitch;
 
-    private float verticalVelocity;
+        private float ungroundedTime;
+private float verticalVelocity;
     
     private float distanceSinceLastStep;
 private Vector3 currentVelocity;
@@ -50,34 +62,88 @@ private void Awake()
             audioSource = GetComponent<AudioSource>();
         }
 
+        groundLayerMask = ~(1 << gameObject.layer);
+
         yaw = transform.eulerAngles.y;
         pitch = 20f;
     }
 
-    private void OnEnable()
+/// <summary>
+    /// More forgiving ground check than the raw CharacterController.isGrounded.
+    /// Falls back to a short downward SphereCast so brief contact loss on stairs,
+    /// small bumps, or after the game is paused/resumed doesn't get misread as
+    /// "airborne".
+    /// </summary>
+    private bool IsGrounded()
     {
-        //inputActions.Enable();
+        if (characterController.isGrounded)
+        {
+            return true;
+        }
 
-        InputController.Instance.Actions.Player.Move.performed += OnMove;
-        InputController.Instance.Actions.Player.Move.canceled += OnMove;
+        Vector3 origin = transform.position + characterController.center;
+        float radius = Mathf.Max(0.01f, characterController.radius - characterController.skinWidth);
 
-        InputController.Instance.Actions.Player.Jump.performed += OnJump;
-
-        InputController.Instance.Actions.Player.Look.performed += OnLook;
-        InputController.Instance.Actions.Player.Look.canceled += OnLook;
+        return Physics.SphereCast(
+            origin,
+            radius,
+            Vector3.down,
+            out _,
+            (characterController.height * 0.5f) + groundCheckDistance,
+            groundLayerMask,
+            QueryTriggerInteraction.Ignore
+        );
     }
 
-    private void OnDisable()
+/// <summary>
+    /// Clears any accumulated "ungrounded" time. Call this after resuming from a
+    /// paused state so a stale ungrounded reading from while the game was frozen
+    /// can't immediately trigger the falling animation.
+    /// </summary>
+    public void ResetGroundedState()
     {
-        InputController.Instance.Actions.Player.Move.performed -= OnMove;
-        InputController.Instance.Actions.Player.Move.canceled -= OnMove;
+        ungroundedTime = 0f;
 
-        InputController.Instance.Actions.Player.Jump.performed -= OnJump;
+        if (characterController != null && characterController.isGrounded && verticalVelocity < 0)
+        {
+            verticalVelocity = -2f;
+        }
+    }
 
-        InputController.Instance.Actions.Player.Look.performed -= OnLook;
-        InputController.Instance.Actions.Player.Look.canceled -= OnLook;
 
-        //inputActions.Disable();
+
+private void OnEnable()
+    {
+        InputController input = InputController.Instance;
+        if (input == null || input.Actions == null)
+        {
+            return;
+        }
+
+        input.Actions.Player.Move.performed += OnMove;
+        input.Actions.Player.Move.canceled += OnMove;
+
+        input.Actions.Player.Jump.performed += OnJump;
+
+        input.Actions.Player.Look.performed += OnLook;
+        input.Actions.Player.Look.canceled += OnLook;
+    }
+
+private void OnDisable()
+    {
+        InputController input = InputController.Instance;
+        if (input == null || input.Actions == null)
+        {
+            return;
+        }
+
+        input.Actions.Player.Move.performed -= OnMove;
+        input.Actions.Player.Move.canceled -= OnMove;
+
+        input.Actions.Player.Jump.performed -= OnJump;
+
+        input.Actions.Player.Look.performed -= OnLook;
+        input.Actions.Player.Look.canceled -= OnLook;
     }
 
 private void Update()
@@ -100,7 +166,7 @@ private void Update()
 
 private void OnJump(InputAction.CallbackContext context)
     {
-        if (characterController.isGrounded)
+        if (IsGrounded())
         {
             verticalVelocity = Mathf.Sqrt(PlayerState.Instance.currentJumpForce * -2f * gravity);
             PlayJumpSound();
@@ -132,15 +198,26 @@ private void OnJump(InputAction.CallbackContext context)
             transform.rotation = Quaternion.Slerp(
                 transform.rotation,
                 targetRotation,
-                10f * Time.deltaTime);
+                turnSpeed * Time.deltaTime);
         }
     }
 
-    private void ApplyGravity()
+private void ApplyGravity()
     {
-        if (characterController.isGrounded && verticalVelocity < 0)
+        bool grounded = IsGrounded();
+
+        if (grounded)
         {
-            verticalVelocity = -2f;
+            ungroundedTime = 0f;
+
+            if (verticalVelocity < 0)
+            {
+                verticalVelocity = -2f;
+            }
+        }
+        else
+        {
+            ungroundedTime += Time.deltaTime;
         }
 
         verticalVelocity += gravity * Time.deltaTime;
@@ -148,18 +225,32 @@ private void OnJump(InputAction.CallbackContext context)
         characterController.Move(Vector3.up * verticalVelocity * Time.deltaTime);
     }
 
-    private void OnLook(InputAction.CallbackContext context)
+private void OnLook(InputAction.CallbackContext context)
     {
         look = context.ReadValue<Vector2>();
+
+        // Remember which kind of device produced this input. Stick input is an
+        // absolute amount that must be scaled by time, whereas pointer input is
+        // already a per-frame delta and must not be.
+        if (context.control != null)
+        {
+            lookFromGamepad = context.control.device is Gamepad || context.control.device is Joystick;
+        }
     }
 
-    private void Look()
+private void Look()
     {
         if(look.sqrMagnitude >= lookThreshold)
         {
-            float deltaTimeMultiplier = Time.deltaTime * lookSpeed;
-            yaw += look.x * deltaTimeMultiplier;
-            pitch -= look.y * deltaTimeMultiplier;
+            // Gamepad sticks report a held amount, so scale by delta time for a
+            // steady degrees-per-second turn rate. Mouse delta is already the
+            // movement since the last frame, so it is used as-is.
+            float multiplier = lookFromGamepad
+                ? Time.deltaTime * lookSpeed
+                : mouseLookSensitivity;
+
+            yaw += look.x * multiplier;
+            pitch -= look.y * multiplier;
         }
 
         yaw = ClampAngle(yaw, float.MinValue, float.MaxValue);
@@ -183,8 +274,13 @@ private void OnJump(InputAction.CallbackContext context)
         return Mathf.Clamp(lfAngle, lfMin, lfMax);
     }
 
-    private void UpdateAnimator()
+private void UpdateAnimator()
     {
+        // Treat brief ungrounded moments (stairs, small bumps, resuming from pause) as
+        // still grounded for animation purposes, so only a genuine fall triggers the
+        // falling animation.
+        bool isAnimGrounded = IsGrounded() || ungroundedTime < fallAnimationBuffer;
+
         Vector3 horizontalVelocity = currentVelocity;
         horizontalVelocity.y = 0;
 
@@ -192,19 +288,19 @@ private void OnJump(InputAction.CallbackContext context)
 
         anim.SetFloat("Speed", speed);
 
-        if (!characterController.isGrounded)
+        if (!isAnimGrounded)
         {
             anim.SetFloat("Speed", 0);
         }
 
-        anim.SetBool("Grounded", characterController.isGrounded);
+        anim.SetBool("Grounded", isAnimGrounded);
 
         anim.SetFloat("VerticalVelocity", verticalVelocity);
     }
 
 private void UpdateFootsteps()
     {
-        if (!characterController.isGrounded)
+        if (!IsGrounded())
         {
             distanceSinceLastStep = 0f;
             return;

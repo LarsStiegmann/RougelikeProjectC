@@ -18,16 +18,28 @@ public class PauseMenuController : MonoBehaviour
         settingsMenuPanel.SetActive(false);
     }
 
-    private void OnEnable()
+private void OnEnable()
     {
-        InputController.Instance.Actions.Player.Pause.performed += OnPause;
-        InputController.Instance.Actions.UI.Cancel.performed += OnResume;
+        InputController input = InputController.Instance;
+        if (input == null || input.Actions == null)
+        {
+            return;
+        }
+
+        input.Actions.Player.Pause.performed += OnPause;
+        input.Actions.UI.Cancel.performed += OnResume;
     }
 
-    private void OnDisable()
+private void OnDisable()
     {
-        InputController.Instance.Actions.Player.Pause.performed -= OnPause;
-        InputController.Instance.Actions.UI.Cancel.performed -= OnResume;
+        InputController input = InputController.Instance;
+        if (input == null || input.Actions == null)
+        {
+            return;
+        }
+
+        input.Actions.Player.Pause.performed -= OnPause;
+        input.Actions.UI.Cancel.performed -= OnResume;
     }
 
     public void OnPause(InputAction.CallbackContext context)
@@ -54,7 +66,7 @@ public class PauseMenuController : MonoBehaviour
         primaryPauseMenuButton.Select();
     }
 
-    public void ResumeGame()
+public void ResumeGame()
     {
         pauseMenuPanel.SetActive(false);
 
@@ -64,6 +76,15 @@ public class PauseMenuController : MonoBehaviour
         InputController.Instance.Actions.Player.Enable();
         Debug.Log("Player");
 
+        GameObject player = GameObject.FindWithTag("Player");
+        if (player != null)
+        {
+            CharacterMovement movement = player.GetComponent<CharacterMovement>();
+            if (movement != null)
+            {
+                movement.ResetGroundedState();
+            }
+        }
     }
 
     public void OpenSettings()

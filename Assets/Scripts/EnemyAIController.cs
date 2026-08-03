@@ -27,7 +27,8 @@ public class EnemyAIController : MonoBehaviour
     
     private Canvas healthBarCanvas;
     private Image healthBarFillImage;
-        private static Sprite s_whiteFillSprite;
+            private float popupAnchorLocalY = 2.3f;
+private static Sprite s_whiteFillSprite;
 private Camera mainCam;
 private Coroutine aiCoroutine;
 
@@ -200,8 +201,12 @@ public void EnemyTakeDamage(float incomingDamage)
     {
         currentHealth -= incomingDamage;
         currentHealth = Mathf.Max(currentHealth, 0);
-        Debug.Log(currentHealth.ToString());
         UpdateHealthBar();
+
+        DamagePopupSpawner.Spawn(
+            transform.position + Vector3.up * popupAnchorLocalY,
+            incomingDamage
+        );
 
         if (currentHealth == 0)
         {
@@ -240,6 +245,8 @@ private void LateUpdate()
         canvasGO.transform.SetParent(transform, false);
         canvasGO.transform.localPosition = new Vector3(healthBarOffset.x, topY + healthBarOffset.y, healthBarOffset.z);
         canvasGO.transform.localRotation = Quaternion.identity;
+
+        popupAnchorLocalY = topY + healthBarOffset.y + 0.45f;
 
         healthBarCanvas = canvasGO.AddComponent<Canvas>();
         healthBarCanvas.renderMode = RenderMode.WorldSpace;
