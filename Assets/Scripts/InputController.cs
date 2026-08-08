@@ -28,10 +28,9 @@ public class InputController : MonoBehaviour
         }
     }
 
-    
-public InputSystem_Actions Actions { get; private set; }
+    public InputSystem_Actions Actions { get; private set; }
 
-private void Awake()
+    private void Awake()
     {
         if (instance == null || instance == this)
         {
@@ -44,9 +43,8 @@ private void Awake()
             Destroy(gameObject);
         }
     }
-<<<<<<< HEAD
 
-private void EnsureInitialized()
+    private void EnsureInitialized()
     {
         // Keyed off Actions itself rather than a bool flag: Unity's domain reload
         // restores plain private fields but cannot restore the Actions object, so a
@@ -64,7 +62,7 @@ private void EnsureInitialized()
         SceneManager.sceneLoaded += OnSceneLoaded;
     }
 
-private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         if (Actions == null)
         {
@@ -87,8 +85,7 @@ private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
         }
     }
 
-
-private void OnDestroy()
+    private void OnDestroy()
     {
         if (instance == this)
         {
@@ -97,6 +94,4 @@ private void OnDestroy()
             instance = null;
         }
     }
-=======
->>>>>>> refs/remotes/origin/main
 }
