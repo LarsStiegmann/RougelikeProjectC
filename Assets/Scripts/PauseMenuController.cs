@@ -87,6 +87,8 @@ public class PauseMenuController : MonoBehaviour
         InputController.Instance.Actions.UI.Disable();
         InputController.Instance.Actions.Player.Enable();
 
+        HighScoreController.Instance.AddScore("Lars", 1);
+
         SceneManager.LoadScene("MainMenu");
     }
 }
