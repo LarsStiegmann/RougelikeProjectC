@@ -13,21 +13,27 @@ public class PlayerDealDamage : MonoBehaviour
 
     [SerializeField] private GameObject shlashVFX;
 
-    [Header("Aiming")]
-    [Tooltip("Radius of the aim check around the crosshair. Larger values are more forgiving to aim with.")]
-    [SerializeField] private float aimAssistRadius = 0.4f;
+    [Header("Attack Arc")]
+    [Tooltip("Total width of the damage arc in front of the character, in degrees.")]
+    [SerializeField] private float attackArcAngle = 120f;
+
+    [Tooltip("Height above the character's feet used as the centre of the hit check.")]
+    [SerializeField] private float attackCheckHeight = 1f;
 
     [Tooltip("Layers that block line of sight to a target, e.g. walls. Leave empty to disable the check.")]
     [SerializeField] private LayerMask obstacleLayer;
 
     [Header("Slash VFX")]
-    [Tooltip("How far along the camera's centre line the slash is placed, measured forward from the player. Larger pushes it further from the character.")]
-    [SerializeField] private float slashForwardOffset = 0.7f;
+    [Tooltip("Extra push forward along the character's facing. The arc already pivots on the character, so 0 keeps it centred on them.")]
+    [SerializeField] private float slashForwardOffset = 0f;
 
-    [Tooltip("Yaw applied to the slash to line the artwork up with the aim direction.")]
+    [Tooltip("Height above the character's feet at which the slash arc sits.")]
+    [SerializeField] private float slashHeight = 1.1f;
+
+    [Tooltip("Yaw applied to the slash to line the artwork up with the facing direction.")]
     [SerializeField] private float slashYawOffset = 50f;
 
-    [Tooltip("Nudge to re-centre the slash artwork on the crosshair, in the slash's own local space. The VFX prefab's sub-effects are not centred on its origin.")]
+    [Tooltip("Positional nudge for the slash artwork, in the slash's own local space.")]
     [SerializeField] private Vector3 slashCenterCorrection = Vector3.zero;
 
     private Camera cam;
@@ -49,15 +55,9 @@ private void PerformAttack()
     {
         SpawnSlash();
 
-        EnemyAIController target = FindTargetUnderCrosshair();
-        if (target == null)
-        {
-            return;
-        }
+        int enemiesHit = DamageEnemiesInArc();
 
-        target.EnemyTakeDamage(PlayerState.Instance.currentDamage);
-
-        if (CrosshairHitMarker.Instance != null)
+        if (enemiesHit > 0 && CrosshairHitMarker.Instance != null)
         {
             CrosshairHitMarker.Instance.Flash();
         }
@@ -70,105 +70,76 @@ private void SpawnSlash()
             return;
         }
 
-        if (cam == null)
-        {
-            cam = Camera.main;
-        }
+        // Parented to the character so the slash travels with them. Without this it
+        // would hang in world space while the player kept falling or running.
+        GameObject slash = Instantiate(shlashVFX, transform);
 
-        Vector3 spawnPosition;
-        Quaternion aimRotation;
+        slash.transform.localPosition = new Vector3(0f, slashHeight, 0f) + Vector3.forward * slashForwardOffset;
+        slash.transform.localRotation = Quaternion.Euler(0f, slashYawOffset, 0f);
+        slash.transform.localPosition += slash.transform.localRotation * slashCenterCorrection;
 
-        if (cam != null)
-        {
-            // Sit the effect directly on the camera's centre line, which is exactly
-            // where the crosshair dot is, so the slash reads as centred on it
-            // regardless of which way the character happens to be facing.
-            Transform camT = cam.transform;
-            float distanceToPlayer = Vector3.Distance(camT.position, transform.position);
-            spawnPosition = camT.position + camT.forward * (distanceToPlayer + slashForwardOffset);
-
-            // Keep the sweep level rather than tipping with camera pitch.
-            Vector3 aimDirection = camT.forward;
-            aimDirection.y = 0f;
-            aimRotation = aimDirection.sqrMagnitude > 0.0001f
-                ? Quaternion.LookRotation(aimDirection.normalized, Vector3.up)
-                : transform.rotation;
-        }
-        else if (attackPoint != null)
-        {
-            spawnPosition = attackPoint.position;
-            aimRotation = attackPoint.rotation;
-        }
-        else
-        {
-            return;
-        }
-
-        Quaternion finalRotation = aimRotation * Quaternion.Euler(0f, slashYawOffset, 0f);
-
-        // Applied in the slash's own space so the correction follows the aim.
-        spawnPosition += finalRotation * slashCenterCorrection;
-
-        GameObject slash = Instantiate(shlashVFX, spawnPosition, finalRotation);
-
-        Destroy(slash, 0.2f);
+        // SlashEffect removes itself when its animation ends; this is only a
+        // safety net in case a VFX prefab without that script is assigned.
+        Destroy(slash, 2f);
     }
 
-    /// <summary>
-    /// Fires a ray from the camera straight through the centre-screen crosshair and
-    /// returns the closest enemy under it that is also within the player's attack
-    /// range and not hidden behind geometry.
+/// <summary>
+    /// Damages every enemy inside the arc the character is facing. Multiple enemies
+    /// can be hit by one swing, matching the feel of survivors-style games.
     /// </summary>
-    private EnemyAIController FindTargetUnderCrosshair()
+    private int DamageEnemiesInArc()
     {
-        if (cam == null)
+        if (PlayerState.Instance == null)
         {
-            cam = Camera.main;
+            return 0;
         }
 
-        if (cam == null || PlayerState.Instance == null)
-        {
-            return null;
-        }
+        float range = PlayerState.Instance.currentAttackRange;
+        Vector3 center = transform.position + Vector3.up * attackCheckHeight;
 
-        // Use the camera's own viewport rather than Screen.*, which is not reliable
-        // in every context and would aim the ray incorrectly.
-        Ray ray = cam.ScreenPointToRay(new Vector3(cam.pixelWidth * 0.5f, cam.pixelHeight * 0.5f, 0f));
-
-        float attackRange = PlayerState.Instance.currentAttackRange;
-
-        // The camera sits behind the player, so the ray has to cover that gap too.
-        float searchDistance = Vector3.Distance(cam.transform.position, transform.position) + attackRange + 1f;
-
-        RaycastHit[] hits = Physics.SphereCastAll(
-            ray,
-            aimAssistRadius,
-            searchDistance,
+        Collider[] candidates = Physics.OverlapSphere(
+            center,
+            range,
             enemyLayer,
-            // Enemy capsules are triggers, so these must be included.
+            // Enemy capsules are triggers, so they must be included.
             QueryTriggerInteraction.Collide
         );
 
-        if (hits.Length == 0)
+        if (candidates.Length == 0)
         {
-            return null;
+            return 0;
         }
 
-        System.Array.Sort(hits, (a, b) => a.distance.CompareTo(b.distance));
+        HashSet<EnemyAIController> alreadyHit = new HashSet<EnemyAIController>();
+        float halfAngle = attackArcAngle * 0.5f;
+        int hitCount = 0;
 
-        for (int i = 0; i < hits.Length; i++)
+        Vector3 facing = transform.forward;
+        facing.y = 0f;
+        if (facing.sqrMagnitude < 0.0001f)
         {
-            EnemyAIController enemy = hits[i].collider.GetComponentInParent<EnemyAIController>();
-            if (enemy == null)
+            return 0;
+        }
+        facing.Normalize();
+
+        for (int i = 0; i < candidates.Length; i++)
+        {
+            EnemyAIController enemy = candidates[i].GetComponentInParent<EnemyAIController>();
+            if (enemy == null || !alreadyHit.Add(enemy))
             {
                 continue;
             }
 
-            // Aiming at something far across the room must not let the player hit it.
-            float distanceToEnemy = Vector3.Distance(transform.position, enemy.transform.position);
-            if (distanceToEnemy > attackRange + aimAssistRadius)
+            Vector3 toEnemy = enemy.transform.position - transform.position;
+            toEnemy.y = 0f;
+
+            // Anything essentially on top of the player always counts as in front.
+            if (toEnemy.sqrMagnitude > 0.0001f)
             {
-                continue;
+                if (Vector3.Angle(facing, toEnemy.normalized) > halfAngle)
+                {
+                    continue;
+                }
             }
 
             if (IsBlocked(enemy))
@@ -176,11 +147,20 @@ private void SpawnSlash()
                 continue;
             }
 
-            return enemy;
+            enemy.EnemyTakeDamage(PlayerState.Instance.currentDamage);
+            hitCount++;
         }
 
-        return null;
+        return hitCount;
     }
+
+
+    /// <summary>
+    /// Fires a ray from the camera straight through the centre-screen crosshair and
+    /// returns the closest enemy under it that is also within the player's attack
+    /// range and not hidden behind geometry.
+    /// </summary>
+
 
     private bool IsBlocked(EnemyAIController enemy)
     {
@@ -209,17 +189,18 @@ private void OnDrawGizmosSelected()
             ? PlayerState.Instance.currentAttackRange
             : 2f;
 
-        // Reach of the attack, regardless of where the crosshair points.
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, range);
+        Vector3 center = transform.position + Vector3.up * attackCheckHeight;
 
-        // Aim ray through the crosshair.
-        Camera c = Camera.main;
-        if (c != null)
-        {
-            Gizmos.color = Color.cyan;
-            Ray ray = c.ScreenPointToRay(new Vector3(c.pixelWidth * 0.5f, c.pixelHeight * 0.5f, 0f));
-            Gizmos.DrawRay(ray.origin, ray.direction * (Vector3.Distance(c.transform.position, transform.position) + range));
-        }
+        Gizmos.color = new Color(1f, 0f, 0f, 0.35f);
+        Gizmos.DrawWireSphere(center, range);
+
+        // Edges of the damage arc.
+        Gizmos.color = Color.red;
+        float half = attackArcAngle * 0.5f;
+        Vector3 left = Quaternion.Euler(0f, -half, 0f) * transform.forward;
+        Vector3 right = Quaternion.Euler(0f, half, 0f) * transform.forward;
+        Gizmos.DrawRay(center, left * range);
+        Gizmos.DrawRay(center, right * range);
+        Gizmos.DrawRay(center, transform.forward * range);
     }
 }

@@ -112,7 +112,13 @@ public class PlayerState : MonoBehaviour
             RaiseMaxHealth(1f);
             RaiseMaxXP();
 
-            levelUpController.Open();
+            // The level-up menu UI is not built in the scene yet, so this reference
+            // can be null. Guarded so a level-up still completes and OnLevelUp still
+            // fires (the HUD level text depends on it) instead of throwing here.
+            if (levelUpController != null)
+            {
+                levelUpController.Open();
+            }
 
             OnLevelUp?.Invoke();
         }

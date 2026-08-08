@@ -13,6 +13,11 @@ public class MainMenuController : MonoBehaviour
     [SerializeField] private GameObject collectionPanel;
     [SerializeField] private GameObject achievementPanel;
 
+    private void Awake()
+    {
+        SaveSystem.Instance.Load();
+    }
+
     private void Start()
     {
         settingsPanel.SetActive(false);
