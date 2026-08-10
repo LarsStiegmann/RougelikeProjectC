@@ -43,6 +43,12 @@ public class PlayerState : MonoBehaviour
     public event System.Action OnHealthChanged;
     public event System.Action OnXPChanged;
     public event System.Action OnLevelUp;
+    public event System.Action OnPlayerDied;
+
+    private bool hasDied;
+
+    /// <summary>True once the player has died. Used by enemies to disengage.</summary>
+    public bool IsDead => hasDied;
 
     private float bonusAttackSpeedPercentage = 0;
     public float currentAttackSpeed => baseAttackSpeed * (1f + bonusAttackSpeedPercentage / 100f);
@@ -233,13 +239,41 @@ public class PlayerState : MonoBehaviour
         currentAttackRange += amount;
     }
 
-    private void Die()
+private void Die()
     {
         if (currentHealth <= 0)
         {
+            if (hasDied)
+            {
+                return;
+            }
+            hasDied = true;
+
             //Fortschritt checken
             //Belohnungen
             //Deathscreen
+
+            PlayerShatterDeath shatter = GetComponent<PlayerShatterDeath>();
+            if (shatter != null)
+            {
+                shatter.Shatter();
+            }
+
+            // Stop the player acting once dead. Left deliberately minimal so the
+            // death screen / highscore flow can be added around this later.
+            CharacterMovement movement = GetComponent<CharacterMovement>();
+            if (movement != null)
+            {
+                movement.enabled = false;
+            }
+
+            PlayerDealDamage attack = GetComponent<PlayerDealDamage>();
+            if (attack != null)
+            {
+                attack.enabled = false;
+            }
+
+            OnPlayerDied?.Invoke();
         }
     }
 

@@ -22,17 +22,21 @@ public class SaveSystem : MonoBehaviour
         }
     }
 
-    public void Save()
+public void Save()
     {
-        SaveData data = new SaveData();
+        if (HighScoreController.Instance == null)
+        {
+            return;
+        }
 
+        SaveData data = new SaveData();
         data.highscores = new List<HighScoreEntry>(HighScoreController.Instance.Highscores);
 
         string json = JsonUtility.ToJson(data, true);
         File.WriteAllText(path, json);
     }
 
-    public void Load()
+public void Load()
     {
         if (!File.Exists(path))
         {
@@ -42,8 +46,14 @@ public class SaveSystem : MonoBehaviour
         string json = File.ReadAllText(path);
         SaveData data = JsonUtility.FromJson<SaveData>(json);
 
-        HighScoreController.Instance.SetHighScores(data.highscores);
+        if (data == null || data.highscores == null)
+        {
+            return;
+        }
 
-        Debug.Log("Loaded");
+        if (HighScoreController.Instance != null)
+        {
+            HighScoreController.Instance.SetHighScores(data.highscores);
+        }
     }
 }

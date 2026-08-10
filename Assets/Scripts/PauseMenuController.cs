@@ -100,15 +100,25 @@ public void ResumeGame()
         primaryPauseMenuButton.Select();
     }
 
-    public void BackToMenu()
+public void BackToMenu()
     {
         Time.timeScale = 1f;
         pauseMenuPanel.SetActive(false);
 
-        InputController.Instance.Actions.UI.Disable();
-        InputController.Instance.Actions.Player.Enable();
+        InputController input = InputController.Instance;
+        if (input != null && input.Actions != null)
+        {
+            input.Actions.UI.Disable();
+            input.Actions.Player.Enable();
+        }
 
-        HighScoreController.Instance.AddScore("Lars", 1);
+        // HighScoreController and SaveSystem are DontDestroyOnLoad singletons that
+        // live in the MainMenu scene. Entering play directly in Level1 skips that
+        // scene, so they do not exist and this would throw.
+        if (HighScoreController.Instance != null && SaveSystem.Instance != null)
+        {
+            HighScoreController.Instance.AddScore("Lars", 1);
+        }
 
         SceneManager.LoadScene("MainMenu");
     }

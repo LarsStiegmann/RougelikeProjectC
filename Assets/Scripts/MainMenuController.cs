@@ -15,7 +15,13 @@ public class MainMenuController : MonoBehaviour
 
     private void Awake()
     {
-        SaveSystem.Instance.Load();
+        // SaveSystem and HighScoreController set their Instance in their own Awake,
+        // and script execution order is undefined, so neither is guaranteed to be
+        // ready here. Guard rather than relying on ordering.
+        if (SaveSystem.Instance != null)
+        {
+            SaveSystem.Instance.Load();
+        }
     }
 
     private void Start()
