@@ -119,6 +119,8 @@ public class GameOverController : MonoBehaviour
         }
     }
 
+    //Highscore Namen eintragen --> möglicherweise statt BackToMenu() und Retry() entfernen
+
     /// <summary>Hooked up to the Game Over button.</summary>
     public void BackToMenu()
     {
@@ -132,4 +134,6 @@ public class GameOverController : MonoBehaviour
         Time.timeScale = 1f;
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
+
+    
 }

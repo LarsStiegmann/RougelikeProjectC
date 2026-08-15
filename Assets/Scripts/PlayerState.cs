@@ -13,10 +13,11 @@ public class PlayerState : MonoBehaviour
     [SerializeField] private float baseHealthRegeneration = 0f;
     [SerializeField] private float baseSpeed = 5f;
     [SerializeField] private float baseJumpForce = 2f;
-    [SerializeField] private float baseShield = 0f;
     [SerializeField] private float baseArmor = 0f;
     [SerializeField] private float baseLifeSteal = 0f;
     [SerializeField] private float baseAttackRange = 2f;
+    [SerializeField] private float baseCritChance = 0f;
+    [SerializeField] private float baseCritMultiplier = 1.5f;
     [SerializeField] private float baseMaxXP = 100f;
     [SerializeField] private float baseXP = 0f;
     [SerializeField] private int baseLevel = 1;
@@ -28,10 +29,11 @@ public class PlayerState : MonoBehaviour
     public float currentHealthRegeneration { get; private set; }
     public float currentSpeed { get; private set; }
     public float currentJumpForce { get; private set; }
-    public float currentShield { get; private set; }
     public float currentArmor { get; private set; }
     public float currentLifeSteal { get; private set; }
     public float currentAttackRange { get; private set; }
+    public float currentCritChance { get; private set; }
+    public float currentCritMultiplier { get; private set; }
     public float currentHealth { get; private set; }
 
     // XP and Level System
@@ -68,10 +70,11 @@ public class PlayerState : MonoBehaviour
         currentHealthRegeneration = baseHealthRegeneration;
         currentSpeed = baseSpeed;
         currentJumpForce = baseJumpForce;
-        currentShield = baseShield;
         currentArmor = baseArmor;
         currentLifeSteal = baseLifeSteal;
         currentAttackRange = baseAttackRange;
+        currentCritChance = baseCritChance;
+        currentCritMultiplier = baseCritMultiplier;
         currentMaxXP = baseMaxXP;
         currentXP = baseXP;
         currentLevel = baseLevel;
@@ -159,10 +162,6 @@ public class PlayerState : MonoBehaviour
                 RaiseJumpForce(upgrade.value);
                 Debug.Log(upgrade.value);
                 break;
-            case UpgradeType.Shield:
-                RaiseShield(upgrade.value);
-                Debug.Log(upgrade.value);
-                break;
             case UpgradeType.Armor:
                 RaiseArmor(upgrade.value);
                 Debug.Log(upgrade.value);
@@ -175,9 +174,17 @@ public class PlayerState : MonoBehaviour
                 RaiseAttackRange(upgrade.value);
                 Debug.Log(upgrade.value);
                 break;
+            case UpgradeType.CritChance:
+                RaiseCritChance(upgrade.value);
+                Debug.Log(upgrade.value);
+                break;
+            case UpgradeType.CritDamage:
+                RaiseCritDamage(upgrade.value);
+                Debug.Log(upgrade.value);
+                break;
         }
-        levelUpPanel.SetActive(false);
-        Time.timeScale = 1;
+        //levelUpPanel.SetActive(false);
+        //Time.timeScale = 1;
     }
 
     private void RegenerateHealth()
@@ -219,11 +226,6 @@ public class PlayerState : MonoBehaviour
         currentJumpForce += amount;
     }
 
-    public void RaiseShield(float amount)
-    {
-        currentShield += amount;
-    }
-
     public void RaiseArmor(float amount)
     {
         currentArmor += amount;
@@ -239,7 +241,17 @@ public class PlayerState : MonoBehaviour
         currentAttackRange += amount;
     }
 
-private void Die()
+    public void RaiseCritChance(float amount)
+    {
+        currentCritChance = Mathf.Clamp(currentCritChance + amount, 0f, 1f);
+    }
+
+    public void RaiseCritDamage(float amount)
+    {
+        currentCritMultiplier += amount;
+    }
+
+    private void Die()
     {
         if (currentHealth <= 0)
         {
@@ -251,7 +263,11 @@ private void Die()
 
             //Fortschritt checken
             //Belohnungen
-            //Deathscreen
+
+            if (HighScoreController.Instance != null && SaveSystem.Instance != null)
+            {
+                HighScoreController.Instance.AddScore("Lars", StatCounter.Instance.kills);
+            }
 
             PlayerShatterDeath shatter = GetComponent<PlayerShatterDeath>();
             if (shatter != null)
@@ -285,10 +301,11 @@ private void Die()
         currentHealthRegeneration = baseHealthRegeneration;
         currentSpeed = baseSpeed;
         currentJumpForce = baseJumpForce;
-        currentShield = baseShield;
         currentArmor = baseArmor;
         currentLifeSteal = baseLifeSteal;
         currentAttackRange = baseAttackRange;
+        currentCritChance = baseCritChance;
+        currentCritMultiplier = baseCritMultiplier;
         currentMaxXP = baseMaxXP;
         currentXP = baseXP;
         currentLevel = baseLevel;

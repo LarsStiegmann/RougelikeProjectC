@@ -112,14 +112,6 @@ public void BackToMenu()
             input.Actions.Player.Enable();
         }
 
-        // HighScoreController and SaveSystem are DontDestroyOnLoad singletons that
-        // live in the MainMenu scene. Entering play directly in Level1 skips that
-        // scene, so they do not exist and this would throw.
-        if (HighScoreController.Instance != null && SaveSystem.Instance != null)
-        {
-            HighScoreController.Instance.AddScore("Lars", 1);
-        }
-
         SceneManager.LoadScene("MainMenu");
     }
 }

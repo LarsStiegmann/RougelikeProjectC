@@ -8,10 +8,11 @@ public enum UpgradeType
     HealthRegeneration,
     Speed,
     JumpForce,
-    Shield,
     Armor,
     LifeSteal,
-    Range
+    Range,
+    CritChance,
+    CritDamage
 }
 
 [CreateAssetMenu(menuName = "Upgrades/Stat Upgrade")]

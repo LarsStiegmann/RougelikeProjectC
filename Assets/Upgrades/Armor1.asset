@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 44047ea776626b545b5b9cfad4b15c35, type: 3}
-  m_Name: Shield
+  m_Name: Armor1
   m_EditorClassIdentifier: Assembly-CSharp::StatUpgrade
-  upgradeName: Shield
+  upgradeName: Armor +2
   description: 
-  upgradeType: 6
-  value: 5
+  upgradeType: 7
+  value: 2

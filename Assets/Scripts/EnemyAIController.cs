@@ -10,13 +10,13 @@ public class EnemyAIController : MonoBehaviour
     [SerializeField] private float aggroRange = 10f;
     [SerializeField] private float attackRange = 2f;
     [SerializeField] private float damage = 10f;
-        [SerializeField] private float xpReward = 10f;
-[SerializeField] private float attackCooldown = 1.5f;
+    [SerializeField] private float xpReward = 10f;
+    [SerializeField] private float attackCooldown = 1.5f;
     
     [Header("Health Bar")]
     [SerializeField] private Vector3 healthBarOffset = new Vector3(0f, 0.3f, 0f);
     [SerializeField] private Vector2 healthBarWorldSize = new Vector2(1.0f, 0.14f);
-[SerializeField] private float maxHealth = 20f;
+    [SerializeField] private float maxHealth = 20f;
 
     private float currentHealth;
 
@@ -27,7 +27,7 @@ public class EnemyAIController : MonoBehaviour
     
     private Canvas healthBarCanvas;
     private Image healthBarFillImage;
-            private float popupAnchorLocalY = 2.3f;
+    private float popupAnchorLocalY = 2.3f;
 
     [Header("Return Home")]
     [Tooltip("How close to its spawn point the enemy must get before it settles.")]
@@ -49,11 +49,11 @@ public class EnemyAIController : MonoBehaviour
     private Vector3 spawnPosition;
     private Quaternion spawnRotation;
     private bool hasSettledHome;
-private static Sprite s_whiteFillSprite;
-private Camera mainCam;
-private Coroutine aiCoroutine;
+    private static Sprite s_whiteFillSprite;
+    private Camera mainCam;
+    private Coroutine aiCoroutine;
 
-private void Awake()
+    private void Awake()
     {
         agent = GetComponent<NavMeshAgent>();
         
@@ -105,7 +105,7 @@ private void Awake()
         }
     }
 
-private void UpdateAIState()
+    private void UpdateAIState()
     {
         // Once the player is dead, stop hunting and head back to where we started.
         if (PlayerState.Instance != null && PlayerState.Instance.IsDead)
@@ -145,7 +145,7 @@ private void UpdateAIState()
     /// Walks back to the spawn point and settles there. Used after the player dies
     /// so enemies do not stand around the corpse mid-swing.
     /// </summary>
-private void ReturnHome()
+    private void ReturnHome()
     {
         if (hasSettledHome || isTurningHome)
         {
@@ -195,7 +195,7 @@ private void ReturnHome()
         isTurningHome = true;
     }
 
-private void Update()
+    private void Update()
     {
         if (!isTurningHome)
         {
@@ -272,7 +272,7 @@ private void Update()
     /// <summary>
     /// Performs damage to the player if they are still within range. Called via Animation Events.
     /// </summary>
-public void PerformDamage()
+    public void PerformDamage()
     {
         // An attack animation already in flight must not land on a dead player.
         if (PlayerState.Instance != null && PlayerState.Instance.IsDead)
@@ -305,15 +305,24 @@ public void PerformDamage()
         }
     }
 
-public void EnemyTakeDamage(float incomingDamage)
+    public void EnemyTakeDamage(float incomingDamage)
     {
-        currentHealth -= incomingDamage;
+        float damageTaken = incomingDamage;
+
+        if (Random.value < PlayerState.Instance.currentCritChance)
+        {
+            damageTaken *= PlayerState.Instance.currentCritMultiplier;
+        }
+
+        currentHealth -= damageTaken;
         currentHealth = Mathf.Max(currentHealth, 0);
         UpdateHealthBar();
 
+        PlayerState.Instance.Heal(incomingDamage * (PlayerState.Instance.currentLifeSteal / 100));
+
         DamagePopupSpawner.Spawn(
             transform.position + Vector3.up * popupAnchorLocalY,
-            incomingDamage
+            damageTaken
         );
 
         if (currentHealth == 0)
@@ -322,7 +331,7 @@ public void EnemyTakeDamage(float incomingDamage)
         }
     }
 
-private void LateUpdate()
+    private void LateUpdate()
     {
         if (healthBarCanvas == null)
         {
@@ -394,7 +403,7 @@ private void LateUpdate()
         healthBarFillImage.color = new Color(0.55f, 0.05f, 0.05f, 1f);
     }
 
-private static Sprite GetWhiteFillSprite()
+    private static Sprite GetWhiteFillSprite()
     {
         if (s_whiteFillSprite == null)
         {
@@ -406,7 +415,7 @@ private static Sprite GetWhiteFillSprite()
     }
 
 
-private void UpdateHealthBar()
+    private void UpdateHealthBar()
     {
         if (healthBarFillImage == null)
         {
@@ -418,7 +427,7 @@ private void UpdateHealthBar()
     }
 
 
-private void EnemyDie()
+    private void EnemyDie()
     {
         //StartCoroutine(EnemyDieAfterDelay());
         if (PlayerState.Instance != null)
@@ -426,8 +435,9 @@ private void EnemyDie()
             PlayerState.Instance.AddXP(xpReward);
         }
 
+        StatCounter.Instance.AddKill();
+
         Destroy(gameObject);
-        //count kill
     }
 
     //private IEnumerator EnemyDieAfterDelay()
