@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7b22b16735927440ab1eb322e47001be, type: 3}
+  m_Name: LongreachPhiltre
+  m_EditorClassIdentifier: Assembly-CSharp::PotionDefinition
+  displayName: Longreach Philtre
+  description: Attack Range +0.5
+  rarity: 1
+  icon: {fileID: 21300000, guid: 80c8b1a0f134743c6b6e4dfe48654055, type: 3}
+  upgrade: {fileID: 11400000, guid: 2992501a192d94eafac043028f6d658a, type: 2}
+  modelPrefab: {fileID: 173800, guid: 646a1e440e08cad47a7f0d73fb699ea7, type: 3}
+  weight: 12
