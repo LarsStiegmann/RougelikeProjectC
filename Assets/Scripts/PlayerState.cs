@@ -264,11 +264,6 @@ public class PlayerState : MonoBehaviour
             //Fortschritt checken
             //Belohnungen
 
-            if (HighScoreController.Instance != null && SaveSystem.Instance != null)
-            {
-                HighScoreController.Instance.AddScore("Lars", StatCounter.Instance.kills);
-            }
-
             PlayerShatterDeath shatter = GetComponent<PlayerShatterDeath>();
             if (shatter != null)
             {

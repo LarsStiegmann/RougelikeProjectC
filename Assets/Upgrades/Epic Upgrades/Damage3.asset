@@ -10,9 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 44047ea776626b545b5b9cfad4b15c35, type: 3}
-  m_Name: HealthRegeneration1
+  m_Name: Damage3
   m_EditorClassIdentifier: Assembly-CSharp::StatUpgrade
-  upgradeName: Health Regeneration +2
+  upgradeName: Damage +10%
   description: 
-  upgradeType: 3
-  value: 2
+  upgradeType: 1
+  rarity: 2
+  value: 10
