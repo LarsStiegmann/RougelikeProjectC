@@ -15,6 +15,13 @@ public enum UpgradeType
     CritDamage
 }
 
+public enum UpgradeRarity
+{
+    Common,
+    Rare,
+    Epic
+}
+
 [CreateAssetMenu(menuName = "Upgrades/Stat Upgrade")]
 public class StatUpgrade : ScriptableObject
 {
@@ -23,5 +30,7 @@ public class StatUpgrade : ScriptableObject
     public string description;
 
     public UpgradeType upgradeType;
+    public UpgradeRarity rarity;
+
     public float value;
 }

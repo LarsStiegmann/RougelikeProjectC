@@ -1,4 +1,5 @@
 using System.Collections;
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
@@ -12,8 +13,11 @@ using UnityEngine.UI;
 public class GameOverController : MonoBehaviour
 {
     [SerializeField] private GameObject gameOverPanel;
+    [SerializeField] private GameObject gameOverButtonsPanel;
     [SerializeField] private CanvasGroup canvasGroup;
-    [SerializeField] private Button primaryButton;
+    [SerializeField] private GameObject enterNamePanel;
+    [SerializeField] private TMP_InputField nameInput;
+    [SerializeField] private Button primaryGameOverButton;
 
     [Tooltip("Delay after death before the panel appears, so the shatter can play.")]
     [SerializeField] private float showDelay = 1.6f;
@@ -31,6 +35,15 @@ public class GameOverController : MonoBehaviour
         if (gameOverPanel != null)
         {
             gameOverPanel.SetActive(false);
+        }
+        if (enterNamePanel != null)
+        {
+            enterNamePanel.SetActive(false);
+        }
+
+        if (gameOverButtonsPanel != null)
+        {
+            gameOverButtonsPanel.SetActive(false);
         }
 
         if (PlayerState.Instance != null)
@@ -92,6 +105,11 @@ public class GameOverController : MonoBehaviour
             gameOverPanel.SetActive(true);
         }
 
+        if (enterNamePanel != null)
+        {
+            enterNamePanel.SetActive(true);
+        }
+
         // Hand control to the UI map so the button can be used with pad or keyboard.
         if (InputController.Instance != null && InputController.Instance.Actions != null)
         {
@@ -99,10 +117,10 @@ public class GameOverController : MonoBehaviour
             InputController.Instance.Actions.UI.Enable();
         }
 
-        if (EventSystem.current != null && primaryButton != null)
+        if (EventSystem.current != null && nameInput != null)
         {
             EventSystem.current.SetSelectedGameObject(null);
-            primaryButton.Select();
+            nameInput.Select();
         }
 
         if (canvasGroup != null)
@@ -119,7 +137,36 @@ public class GameOverController : MonoBehaviour
         }
     }
 
-    //Highscore Namen eintragen --> möglicherweise statt BackToMenu() und Retry() entfernen
+    public void ConfirmName()
+    {
+        Time.timeScale = 1f;
+
+        string playerName = nameInput.text.Trim();
+
+        if (string.IsNullOrEmpty(playerName))
+        {
+            Debug.Log("leerer Name");
+            return;
+        }
+
+        if (HighScoreController.Instance != null && SaveSystem.Instance != null)
+        {
+            HighScoreController.Instance.AddScore(playerName, StatCounter.Instance.kills);
+        }
+
+        if (gameOverButtonsPanel != null)
+        {
+            gameOverButtonsPanel.SetActive(true);
+        }
+
+        enterNamePanel.SetActive(false);
+
+        if (EventSystem.current != null && primaryGameOverButton != null)
+        {
+            EventSystem.current.SetSelectedGameObject(null);
+            primaryGameOverButton.Select();
+        }
+    }
 
     /// <summary>Hooked up to the Game Over button.</summary>
     public void BackToMenu()

@@ -15,7 +15,7 @@ public class PlayerDealDamage : MonoBehaviour
 
     [Header("Attack Arc")]
     [Tooltip("Total width of the damage arc in front of the character, in degrees.")]
-    [SerializeField] private float attackArcAngle = 120f;
+    [SerializeField] private float attackArcAngle = 180f;
 
     [Tooltip("Height above the character's feet used as the centre of the hit check.")]
     [SerializeField] private float attackCheckHeight = 1f;

@@ -6,7 +6,14 @@ using UnityEngine.EventSystems;
 
 public class LevelUpController : MonoBehaviour
 {
-    [SerializeField] private List<StatUpgrade> availableUpgrades;
+    [SerializeField] private List<StatUpgrade> commonUpgrades;
+    [SerializeField] private List<StatUpgrade> rareUpgrades;
+    [SerializeField] private List<StatUpgrade> epicUpgrades;
+
+    [SerializeField] private float commonChance = 70f;
+    [SerializeField] private float rareChance = 25f;
+    //[SerializeField] private float epicChance = 5f;
+
 
     [SerializeField] private GameObject levelUpPanel;
     [SerializeField] private UpgradeButton[] statButtons;
@@ -22,15 +29,55 @@ public class LevelUpController : MonoBehaviour
 
     public List<StatUpgrade> GetRandomUpgrades(int amount)
     {
-        return availableUpgrades
-            .OrderBy(x => Random.value)
-            .Take(amount)
-            .ToList();
+        List<StatUpgrade> result = new List<StatUpgrade>();
+
+        for (int i = 0; i < amount; i++)
+        {
+            StatUpgrade upgrade = GetRandomUpgrade(result);
+
+            if (upgrade != null)
+            {
+                result.Add(upgrade);
+            }
+        }
+
+        return result;
     }
 
-public void Open()
+    private StatUpgrade GetRandomUpgrade(List<StatUpgrade> alreadySelected)
     {
-        if (levelUpPanel == null || availableUpgrades == null || availableUpgrades.Count == 0)
+        float randomValue = Random.Range(0f, 100f);
+
+        List<StatUpgrade> possibleUpgrades;
+
+        if (randomValue < commonChance)
+        {
+            possibleUpgrades = commonUpgrades;
+        }
+        else if (randomValue < commonChance + rareChance)
+        {
+            possibleUpgrades = rareUpgrades;
+        }
+        else
+        {
+            possibleUpgrades = epicUpgrades;
+        }
+
+        List<StatUpgrade> available = possibleUpgrades
+            .Where(upgrade => !alreadySelected
+            .Any(selected => selected.upgradeType == upgrade.upgradeType))
+            .ToList();
+
+        if (available.Count == 0)
+            return null;
+
+        return available[Random.Range(0, available.Count)];
+    }
+
+
+    public void Open()
+    {
+        if (levelUpPanel == null || commonUpgrades == null || commonUpgrades.Count == 0)
         {
             return;
         }
