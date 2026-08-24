@@ -31,7 +31,11 @@ public class DamagePopupSpawner : MonoBehaviour
     [SerializeField] private float verticalSpread = 0.12f;
 
     [Header("Colour")]
-    [SerializeField] private Color normalColor = new Color(1f, 0.95f, 0.4f, 1f);
+    [Tooltip("Colour used for ordinary, non-critical hits.")]
+    [SerializeField] private Color normalColor = Color.white;
+
+    [Tooltip("Colour used for critical hits.")]
+    [SerializeField] private Color critColor = new Color(1f, 0.95f, 0.4f, 1f);
 
     private void Awake()
     {
@@ -52,16 +56,24 @@ public class DamagePopupSpawner : MonoBehaviour
     /// </summary>
     public static void Spawn(Vector3 worldPosition, float amount)
     {
+        Spawn(worldPosition, amount, false);
+    }
+
+    /// <summary>
+    /// Spawns a damage number coloured according to whether the hit was critical.
+    /// </summary>
+    public static void Spawn(Vector3 worldPosition, float amount, bool isCrit)
+    {
         DamagePopupSpawner spawner = Instance;
         if (spawner == null || spawner.popupPrefab == null)
         {
             return;
         }
 
-        spawner.SpawnInternal(worldPosition, amount);
+        spawner.SpawnInternal(worldPosition, amount, isCrit);
     }
 
-    private void SpawnInternal(Vector3 worldPosition, float amount)
+    private void SpawnInternal(Vector3 worldPosition, float amount, bool isCrit)
     {
         Vector3 jitter = new Vector3(
             Random.Range(-horizontalSpread, horizontalSpread),
@@ -70,6 +82,6 @@ public class DamagePopupSpawner : MonoBehaviour
         );
 
         DamagePopup popup = Instantiate(popupPrefab, worldPosition + jitter, Quaternion.identity);
-        popup.Setup(amount, normalColor);
+        popup.Setup(amount, isCrit ? critColor : normalColor);
     }
 }

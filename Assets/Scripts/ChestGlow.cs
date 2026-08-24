@@ -55,21 +55,54 @@ public class ChestGlow : MonoBehaviour
 
     private void Update()
     {
-        if (stopped || chest == null || !chest.IsOpened)
+        if (chest == null)
         {
             return;
         }
 
-        stopped = true;
+        // The sparkles double as the readiness cue: they run only while the chest can
+        // actually be looted right now. A chest that is open, cooling down, or spent for
+        // the run is pulled out of ActiveChests, so that list is the authority. IsOpened
+        // is still checked so a chest with no ChestCooldown behaves sensibly too.
+        bool ready = !chest.IsOpened && TreasureChest.ActiveChests.Contains(chest);
 
-        // Stop emitting but let the sparkles already in the air finish.
+        if (!ready)
+        {
+            if (stopped)
+            {
+                return;
+            }
+
+            stopped = true;
+
+            // Stop emitting but let the sparkles already in the air finish.
+            if (sparkles != null)
+            {
+                sparkles.Stop(true, ParticleSystemStopBehavior.StopEmitting);
+            }
+            if (glowLight != null)
+            {
+                glowLight.enabled = false;
+            }
+
+            return;
+        }
+
+        if (!stopped)
+        {
+            return;
+        }
+
+        // Chest is lootable again, so bring the glow back.
+        stopped = false;
+
         if (sparkles != null)
         {
-            sparkles.Stop(true, ParticleSystemStopBehavior.StopEmitting);
+            sparkles.Play(true);
         }
         if (glowLight != null)
         {
-            glowLight.enabled = false;
+            glowLight.enabled = true;
         }
     }
 

@@ -46,6 +46,15 @@ public class ChestPotionReward : MonoBehaviour
     }
 
     /// <summary>
+    /// Re-arms this chest so the next open grants another potion. Called by
+    /// ChestCooldown once the chest has closed again.
+    /// </summary>
+    public void ResetReward()
+    {
+        rewardGiven = false;
+    }
+
+    /// <summary>
     /// Hook this into TreasureChest.onOpened. Safe to call more than once.
     /// </summary>
     public void GiveReward()

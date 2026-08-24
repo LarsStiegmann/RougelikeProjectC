@@ -305,13 +305,27 @@ public class EnemyAIController : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Sets this enemy's stats before it is activated. RoomSpawner calls this while the
+    /// object is still inactive, so the values are in place by the time Awake copies
+    /// maxHealth into currentHealth.
+    /// </summary>
+    public void Configure(float newMaxHealth, float newDamage, float newXpReward)
+    {
+        maxHealth = Mathf.Max(1f, newMaxHealth);
+        damage = Mathf.Max(0f, newDamage);
+        xpReward = Mathf.Max(0f, newXpReward);
+    }
+
     public void EnemyTakeDamage(float incomingDamage)
     {
         float damageTaken = incomingDamage;
+        bool isCrit = false;
 
         if (Random.value < PlayerState.Instance.currentCritChance)
         {
             damageTaken *= PlayerState.Instance.currentCritMultiplier;
+            isCrit = true;
         }
 
         currentHealth -= damageTaken;
@@ -322,7 +336,8 @@ public class EnemyAIController : MonoBehaviour
 
         DamagePopupSpawner.Spawn(
             transform.position + Vector3.up * popupAnchorLocalY,
-            damageTaken
+            damageTaken,
+            isCrit
         );
 
         if (currentHealth == 0)

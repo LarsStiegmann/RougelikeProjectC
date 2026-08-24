@@ -22,6 +22,9 @@ public class TreasureChest : MonoBehaviour
     [Tooltip("How long the lid takes to swing open, in seconds.")]
     [SerializeField] private float openDuration = 0.6f;
 
+    [Tooltip("How long the lid takes to swing shut again, in seconds.")]
+    [SerializeField] private float closeDuration = 0.45f;
+
     [Header("Interaction")]
     [Tooltip("How close the player must be to open this chest.")]
     [SerializeField] private float interactionRange = 3f;
@@ -129,6 +132,58 @@ public class TreasureChest : MonoBehaviour
         }
 
         lid.localRotation = target;
+        openRoutine = null;
+    }
+
+    /// <summary>
+    /// Closes the chest again so it can be opened another time. Safe to call when
+    /// already closed; only a chest that is currently open does anything.
+    /// </summary>
+    public void Close()
+    {
+        if (!isOpened)
+        {
+            return;
+        }
+
+        isOpened = false;
+
+        if (lid != null)
+        {
+            if (openRoutine != null)
+            {
+                StopCoroutine(openRoutine);
+            }
+
+            openRoutine = StartCoroutine(SwingLidClosed());
+        }
+    }
+
+    private IEnumerator SwingLidClosed()
+    {
+        Quaternion start = lid.localRotation;
+
+        if (closeDuration <= 0f)
+        {
+            lid.localRotation = closedRotation;
+            openRoutine = null;
+            yield break;
+        }
+
+        float elapsed = 0f;
+        while (elapsed < closeDuration)
+        {
+            elapsed += Time.deltaTime;
+            float t = Mathf.Clamp01(elapsed / closeDuration);
+
+            // Ease in so the lid picks up speed and drops shut.
+            t = t * t;
+
+            lid.localRotation = Quaternion.Slerp(start, closedRotation, t);
+            yield return null;
+        }
+
+        lid.localRotation = closedRotation;
         openRoutine = null;
     }
 
