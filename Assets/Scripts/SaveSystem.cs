@@ -22,7 +22,14 @@ public class SaveSystem : MonoBehaviour
         }
     }
 
-public void Save()
+    //____________________________________________________________________________________________
+    //KI unterstützt
+    //Tool: ChatGPT (OpenAI, GPT-5.5)
+    //Prompt: wie kann ich mein Spiel in Unity so erweitern,
+    //dass Spieldaten permanent für den Spieler gespeichert werden?
+    //*Grundprinzip stammt von KI, Umsetzung wurde überarbeitet*
+
+    public void Save()
     {
         if (HighScoreController.Instance == null)
         {
@@ -36,7 +43,7 @@ public void Save()
         File.WriteAllText(path, json);
     }
 
-public void Load()
+    public void Load()
     {
         if (!File.Exists(path))
         {
@@ -56,4 +63,6 @@ public void Load()
             HighScoreController.Instance.SetHighScores(data.highscores);
         }
     }
+
+    //____________________________________________________________________________________________
 }

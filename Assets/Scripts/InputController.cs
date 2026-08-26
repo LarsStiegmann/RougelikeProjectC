@@ -33,10 +33,6 @@ public class InputController : MonoBehaviour
             return;
         }
 
-        // Make sure the correct action map is always active for the scene we just
-        // landed in, regardless of what state it was left in (e.g. paused) before
-        // the scene change. Prevents gameplay input from staying disabled after
-        // returning from the main menu.
         if (scene.name == "MainMenu")
         {
             Actions.Player.Disable();

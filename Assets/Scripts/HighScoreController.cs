@@ -23,6 +23,8 @@ public class HighScoreController : MonoBehaviour
         }
     }
 
+    //________________________________________________________________________________
+    //KI unterstützt: siehe "HighScoreEntry" Zeile 10
     public void AddScore(string playerName, int score)
     {
         highscores.Add(new HighScoreEntry(playerName, score));
@@ -34,6 +36,8 @@ public class HighScoreController : MonoBehaviour
 
         SaveSystem.Instance.Save();
     }
+
+    //________________________________________________________________________________
 
     public void SetHighScores(List<HighScoreEntry> newHighScores)
     {

@@ -5,11 +5,6 @@ using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-/// <summary>
-/// Shows the Game Over panel after the player dies. Deliberately minimal: it waits
-/// for the shatter to play, then fades the panel in. Kept separate from the pause
-/// menu so a fuller death screen can replace it later without untangling anything.
-/// </summary>
 public class GameOverController : MonoBehaviour
 {
     [SerializeField] private GameObject gameOverPanel;
@@ -52,7 +47,6 @@ public class GameOverController : MonoBehaviour
         }
         else
         {
-            // PlayerState may not have registered yet on the first frame.
             StartCoroutine(SubscribeWhenReady());
         }
     }
@@ -92,7 +86,6 @@ public class GameOverController : MonoBehaviour
 
     private IEnumerator ShowRoutine()
     {
-        // Unscaled so this still works if something else has paused the game.
         float t = 0f;
         while (t < showDelay)
         {
@@ -110,7 +103,6 @@ public class GameOverController : MonoBehaviour
             enterNamePanel.SetActive(true);
         }
 
-        // Hand control to the UI map so the button can be used with pad or keyboard.
         if (InputController.Instance != null && InputController.Instance.Actions != null)
         {
             InputController.Instance.Actions.Player.Disable();
@@ -137,11 +129,21 @@ public class GameOverController : MonoBehaviour
         }
     }
 
+    
     public void ConfirmName()
     {
         Time.timeScale = 1f;
 
+        //__________________________________________________________________________________________________
+        //Quelle: Christina Creates Games auf Youtube
+        //Titel: TextMeshPro Input Field in Unity 6: Basics to Pro Features
+        //URL: https://www.youtube.com/watch?v=zahrwl1125k&t=139s
+        //Datum: 23.05.2023
+        //*Diese Quelle wurde weniger für Code, sondern hauptsächlich für Einstellungen im Inspektor verwendet
+
         string playerName = nameInput.text.Trim();
+
+        //__________________________________________________________________________________________________
 
         if (string.IsNullOrEmpty(playerName))
         {
@@ -167,15 +169,14 @@ public class GameOverController : MonoBehaviour
             primaryGameOverButton.Select();
         }
     }
+    
 
-    /// <summary>Hooked up to the Game Over button.</summary>
     public void BackToMenu()
     {
         Time.timeScale = 1f;
         SceneManager.LoadScene(mainMenuScene);
     }
 
-    /// <summary>Restarts the current level. Available if you want a Retry button.</summary>
     public void Retry()
     {
         Time.timeScale = 1f;

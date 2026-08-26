@@ -70,23 +70,15 @@ private void SpawnSlash()
             return;
         }
 
-        // Parented to the character so the slash travels with them. Without this it
-        // would hang in world space while the player kept falling or running.
         GameObject slash = Instantiate(shlashVFX, transform);
 
         slash.transform.localPosition = new Vector3(0f, slashHeight, 0f) + Vector3.forward * slashForwardOffset;
         slash.transform.localRotation = Quaternion.Euler(0f, slashYawOffset, 0f);
         slash.transform.localPosition += slash.transform.localRotation * slashCenterCorrection;
 
-        // SlashEffect removes itself when its animation ends; this is only a
-        // safety net in case a VFX prefab without that script is assigned.
         Destroy(slash, 2f);
     }
 
-/// <summary>
-    /// Damages every enemy inside the arc the character is facing. Multiple enemies
-    /// can be hit by one swing, matching the feel of survivors-style games.
-    /// </summary>
     private int DamageEnemiesInArc()
     {
         if (PlayerState.Instance == null)
@@ -101,7 +93,7 @@ private void SpawnSlash()
             center,
             range,
             enemyLayer,
-            // Enemy capsules are triggers, so they must be included.
+            
             QueryTriggerInteraction.Collide
         );
 
@@ -133,7 +125,7 @@ private void SpawnSlash()
             Vector3 toEnemy = enemy.transform.position - transform.position;
             toEnemy.y = 0f;
 
-            // Anything essentially on top of the player always counts as in front.
+            
             if (toEnemy.sqrMagnitude > 0.0001f)
             {
                 if (Vector3.Angle(facing, toEnemy.normalized) > halfAngle)
@@ -153,13 +145,6 @@ private void SpawnSlash()
 
         return hitCount;
     }
-
-
-    /// <summary>
-    /// Fires a ray from the camera straight through the centre-screen crosshair and
-    /// returns the closest enemy under it that is also within the player's attack
-    /// range and not hidden behind geometry.
-    /// </summary>
 
 
     private bool IsBlocked(EnemyAIController enemy)
@@ -194,7 +179,6 @@ private void OnDrawGizmosSelected()
         Gizmos.color = new Color(1f, 0f, 0f, 0.35f);
         Gizmos.DrawWireSphere(center, range);
 
-        // Edges of the damage arc.
         Gizmos.color = Color.red;
         float half = attackArcAngle * 0.5f;
         Vector3 left = Quaternion.Euler(0f, -half, 0f) * transform.forward;

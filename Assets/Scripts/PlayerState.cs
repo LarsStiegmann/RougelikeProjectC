@@ -10,12 +10,12 @@ public class PlayerState : MonoBehaviour
     [SerializeField] private float baseMaxHealth = 100f;
     [SerializeField] private float baseDamage = 10f;
     [SerializeField] private float baseAttackSpeed = 1f;
-    [SerializeField] private float baseHealthRegeneration = 0f;
-    [SerializeField] private float baseSpeed = 5f;
+    [SerializeField] private float baseHealthRegeneration = 1f;
+    [SerializeField] private float baseSpeed = 7f;
     [SerializeField] private float baseJumpForce = 2f;
     [SerializeField] private float baseArmor = 0f;
     [SerializeField] private float baseLifeSteal = 0f;
-    [SerializeField] private float baseAttackRange = 2f;
+    [SerializeField] private float baseAttackRange = 4f;
     [SerializeField] private float baseCritChance = 0f;
     [SerializeField] private float baseCritMultiplier = 1.5f;
     [SerializeField] private float baseMaxXP = 100f;
@@ -49,7 +49,6 @@ public class PlayerState : MonoBehaviour
 
     private bool hasDied;
 
-    /// <summary>True once the player has died. Used by enemies to disengage.</summary>
     public bool IsDead => hasDied;
 
     private float bonusAttackSpeedPercentage = 0;
@@ -183,8 +182,6 @@ public class PlayerState : MonoBehaviour
                 Debug.Log(upgrade.value);
                 break;
         }
-        //levelUpPanel.SetActive(false);
-        //Time.timeScale = 1;
     }
 
     private void RegenerateHealth()
@@ -261,17 +258,12 @@ public class PlayerState : MonoBehaviour
             }
             hasDied = true;
 
-            //Fortschritt checken
-            //Belohnungen
-
             PlayerShatterDeath shatter = GetComponent<PlayerShatterDeath>();
             if (shatter != null)
             {
                 shatter.Shatter();
             }
 
-            // Stop the player acting once dead. Left deliberately minimal so the
-            // death screen / highscore flow can be added around this later.
             CharacterMovement movement = GetComponent<CharacterMovement>();
             if (movement != null)
             {
