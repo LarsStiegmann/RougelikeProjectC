@@ -11,10 +11,6 @@ public class HighScoreUI : MonoBehaviour
         Refresh();
     }
 
-    /// <summary>
-    /// Fills the board from the current highscores. Rows beyond the number of
-    /// scores are blanked, so leftover placeholder text is not left on screen.
-    /// </summary>
     public void Refresh()
     {
         if (nameTexts == null || scoreTexts == null)
@@ -25,8 +21,7 @@ public class HighScoreUI : MonoBehaviour
         HighScoreController controller = HighScoreController.Instance;
         int scoreCount = 0;
 
-        // The controller lives in this scene, but guard anyway so entering play from
-        // another scene cannot throw here.
+
         if (controller != null && controller.Highscores != null)
         {
             scoreCount = controller.Highscores.Count;

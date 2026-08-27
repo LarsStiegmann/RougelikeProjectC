@@ -8,6 +8,10 @@ public class SaveSystem : MonoBehaviour
 
     private string path;
 
+    public float mouseSensitivity;
+    public float controllerSensitivity;
+    public float volume;
+
     private void Awake()
     {
         if (Instance == null)
@@ -31,13 +35,16 @@ public class SaveSystem : MonoBehaviour
 
     public void Save()
     {
-        if (HighScoreController.Instance == null)
+        SaveData data = new SaveData();
+
+        if (HighScoreController.Instance != null)
         {
-            return;
+            data.highscores = new List<HighScoreEntry>(HighScoreController.Instance.Highscores);
         }
 
-        SaveData data = new SaveData();
-        data.highscores = new List<HighScoreEntry>(HighScoreController.Instance.Highscores);
+        data.mouseSensitivity = mouseSensitivity;
+        data.controllerSensitivity = controllerSensitivity;
+        data.volume = volume;
 
         string json = JsonUtility.ToJson(data, true);
         File.WriteAllText(path, json);
@@ -53,10 +60,16 @@ public class SaveSystem : MonoBehaviour
         string json = File.ReadAllText(path);
         SaveData data = JsonUtility.FromJson<SaveData>(json);
 
-        if (data == null || data.highscores == null)
+        if (data == null)
         {
             return;
         }
+
+        mouseSensitivity = data.mouseSensitivity;
+        controllerSensitivity = data.controllerSensitivity;
+        volume = data.volume;
+
+        AudioListener.volume = volume;
 
         if (HighScoreController.Instance != null)
         {

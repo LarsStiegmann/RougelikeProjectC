@@ -455,18 +455,6 @@ public class EnemyAIController : MonoBehaviour
         Destroy(gameObject);
     }
 
-    //private IEnumerator EnemyDieAfterDelay()
-    //{
-        //if (animator != null)
-        //{
-        //    animator.SetTrigger("Die");
-        //}
-
-        //yield return new WaitForSeconds(1f);
-
-        //Destroy(gameObject);
-    //}
-
     private void OnDrawGizmosSelected()
     {
         // Draw Aggro Range gizmo in Yellow
