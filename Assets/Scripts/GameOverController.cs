@@ -103,6 +103,8 @@ public class GameOverController : MonoBehaviour
             enterNamePanel.SetActive(true);
         }
 
+        CursorController.Instance.SetMenuCursor();
+
         if (InputController.Instance != null && InputController.Instance.Actions != null)
         {
             InputController.Instance.Actions.Player.Disable();

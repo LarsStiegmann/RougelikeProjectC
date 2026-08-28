@@ -273,6 +273,8 @@ public class PlayerState : MonoBehaviour
                 attack.enabled = false;
             }
 
+            currentHealthRegeneration = 0;
+
             OnPlayerDied?.Invoke();
         }
     }

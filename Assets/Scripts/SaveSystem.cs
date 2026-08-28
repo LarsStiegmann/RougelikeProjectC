@@ -10,7 +10,9 @@ public class SaveSystem : MonoBehaviour
 
     public float mouseSensitivity;
     public float controllerSensitivity;
-    public float volume;
+    public float masterVolume;
+    public float soundFXVolume;
+    public float musicVolume;
 
     private void Awake()
     {
@@ -44,7 +46,9 @@ public class SaveSystem : MonoBehaviour
 
         data.mouseSensitivity = mouseSensitivity;
         data.controllerSensitivity = controllerSensitivity;
-        data.volume = volume;
+        data.masterVolume = masterVolume;
+        data.soundFXVolume = soundFXVolume;
+        data.musicVolume = musicVolume;
 
         string json = JsonUtility.ToJson(data, true);
         File.WriteAllText(path, json);
@@ -67,9 +71,11 @@ public class SaveSystem : MonoBehaviour
 
         mouseSensitivity = data.mouseSensitivity;
         controllerSensitivity = data.controllerSensitivity;
-        volume = data.volume;
+        masterVolume = data.masterVolume;
+        soundFXVolume = data.soundFXVolume;
+        musicVolume = data.musicVolume;
 
-        AudioListener.volume = volume;
+        AudioListener.volume = masterVolume;
 
         if (HighScoreController.Instance != null)
         {

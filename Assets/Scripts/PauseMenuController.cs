@@ -13,6 +13,12 @@ public class PauseMenuController : MonoBehaviour
     [SerializeField] private GameObject settingsMenuPanel;
     [SerializeField] private Button primarySettingsButton;
 
+    [SerializeField] private GameObject audioSettingsPanel;
+    [SerializeField] private Button primaryAudioSettingsButton;
+
+    [SerializeField] private GameObject sensitivitySettingsPanel;
+    [SerializeField] private Button primarySensitivitySettingsButton;
+
     [SerializeField] private TMP_Text healthAmountText;
     [SerializeField] private TMP_Text healthRegenerationAmountText;
     [SerializeField] private TMP_Text lifeStealAmountText;
@@ -115,6 +121,30 @@ public class PauseMenuController : MonoBehaviour
     {
         settingsMenuPanel.SetActive(true);
 
+        primarySettingsButton.Select();
+    }
+
+    public void OpenAudioSettings()
+    {
+        audioSettingsPanel.SetActive(true);
+        primaryAudioSettingsButton.Select();
+    }
+
+    public void CloseAudioSettings()
+    {
+        audioSettingsPanel.SetActive(false);
+        primarySettingsButton.Select();
+    }
+
+    public void OpenSensitivitySettings()
+    {
+        sensitivitySettingsPanel.SetActive(true);
+        primarySensitivitySettingsButton.Select();
+    }
+
+    public void CloseSensitivitySettings()
+    {
+        sensitivitySettingsPanel.SetActive(false);
         primarySettingsButton.Select();
     }
 

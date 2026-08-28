@@ -8,10 +8,14 @@ public class MainMenuController : MonoBehaviour
     [SerializeField] private Button primarySettingsButton;
     [SerializeField] private Button primaryCollectionButton;
     [SerializeField] private Button primaryAchievementButton;
+    [SerializeField] private Button primaryAudioSettingsButton;
+    [SerializeField] private Button primarySensitivitySettingsButton;
 
     [SerializeField] private GameObject settingsPanel;
     [SerializeField] private GameObject collectionPanel;
     [SerializeField] private GameObject achievementPanel;
+    [SerializeField] private GameObject audioSettingsPanel;
+    [SerializeField] private GameObject sensitivitySettingsPanel;
 
     private void Awake()
     {
@@ -26,6 +30,8 @@ public class MainMenuController : MonoBehaviour
         settingsPanel.SetActive(false);
         collectionPanel.SetActive(false);
         achievementPanel.SetActive(false);
+        audioSettingsPanel.SetActive(false);
+        sensitivitySettingsPanel.SetActive(false);
 
         primaryMenuButton.Select();
     }
@@ -39,6 +45,30 @@ public class MainMenuController : MonoBehaviour
     public void OpenSettings()
     {
         settingsPanel.SetActive(true);
+        primarySettingsButton.Select();
+    }
+
+    public void OpenAudioSettings()
+    {
+        audioSettingsPanel.SetActive(true);
+        primaryAudioSettingsButton.Select();
+    }
+
+    public void CloseAudioSettings()
+    {
+        audioSettingsPanel.SetActive(false);
+        primarySettingsButton.Select();
+    }
+
+    public void OpenSensitivitySettings()
+    {
+        sensitivitySettingsPanel.SetActive(true);
+        primarySensitivitySettingsButton.Select();
+    }
+
+    public void CloseSensitivitySettings()
+    {
+        sensitivitySettingsPanel.SetActive(false);
         primarySettingsButton.Select();
     }
 
