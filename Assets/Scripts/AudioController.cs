@@ -3,15 +3,15 @@ using UnityEngine;
 
 public class AudioController : MonoBehaviour
 {
-    public static AudioController instance { get; private set; }
+    public static AudioController Instance { get; private set; }
 
     [SerializeField] private AudioSource soundObject;
 
     private void Awake()
     {
-        if (instance == null)
+        if (Instance == null)
         {
-            instance = this;
+            Instance = this;
             DontDestroyOnLoad(gameObject);
         }
         else
@@ -26,7 +26,7 @@ public class AudioController : MonoBehaviour
     //URL: https://www.youtube.com/watch?v=DU7cgVsU2rM
     //Datum: 08.12.2022
 
-    public void PlayRandomAudio(AudioClip[] audioClips, Transform spawnTransform, float volume)
+    public void PlayRandomAudio(AudioClip[] audioClips, Transform spawnTransform, float volume, bool is3D)
     {
         int rand = Random.Range(0, audioClips.Length);
 
@@ -35,6 +35,8 @@ public class AudioController : MonoBehaviour
         audioSource.clip = audioClips[rand];
 
         audioSource.volume = volume;
+
+        audioSource.spatialBlend = is3D ? 1f : 0f;
 
         audioSource.Play();
 

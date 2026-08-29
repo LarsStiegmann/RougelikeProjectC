@@ -18,6 +18,8 @@ public class UpgradeButton : MonoBehaviour
 
     Color rarityColor = Color.white;
 
+    [SerializeField] private AudioClip[] buttonSounds;
+
     public void Setup(StatUpgrade newUpgrade)
     {
         upgrade = newUpgrade;
@@ -48,6 +50,7 @@ public class UpgradeButton : MonoBehaviour
 
     public void Select()
     {
+        AudioController.Instance.PlayRandomAudio(buttonSounds, transform, 1f, false);
         PlayerState.Instance.ApplyUpgrade(upgrade);
         Debug.Log("Upgrade gewählt: " + upgrade.upgradeName);
     }

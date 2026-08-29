@@ -24,6 +24,9 @@ public class PlayerState : MonoBehaviour
 
     [SerializeField] private GameObject levelUpPanel;
 
+    [SerializeField] private AudioClip[] damageSounds;
+    [SerializeField] private AudioClip[] deathSounds;
+
     public float currentMaxHealth { get; private set; }
     public float currentDamage { get; private set; }
     public float currentHealthRegeneration { get; private set; }
@@ -86,6 +89,8 @@ public class PlayerState : MonoBehaviour
 
     public void TakeDamage(float damage)
     {
+        AudioController.Instance.PlayRandomAudio(damageSounds, transform, 1f, true);
+
         currentHealth -= CalculateDamage(damage);
         currentHealth = Mathf.Max(currentHealth, 0);
         OnHealthChanged?.Invoke();
@@ -188,7 +193,7 @@ public class PlayerState : MonoBehaviour
 
     private void RaiseMaxXP()
     {
-        currentMaxXP = currentMaxXP + (currentMaxXP / 10);
+        currentMaxXP = currentMaxXP + (currentMaxXP / 20);
     }
 
     public void RaiseMaxHealth(float amount)
@@ -254,6 +259,8 @@ public class PlayerState : MonoBehaviour
                 return;
             }
             hasDied = true;
+
+            AudioController.Instance.PlayRandomAudio(deathSounds, transform, 1f, true);
 
             PlayerShatterDeath shatter = GetComponent<PlayerShatterDeath>();
             if (shatter != null)

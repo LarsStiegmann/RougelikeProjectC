@@ -44,6 +44,9 @@ public class TreasureChest : MonoBehaviour
     public float InteractionRange => interactionRange;
     public string PromptText => promptText;
 
+    [SerializeField] private AudioClip[] openChestSounds;
+    [SerializeField] private AudioClip[] closeChestSounds;
+
     private void Awake()
     {
         if (lid == null)
@@ -118,6 +121,8 @@ public class TreasureChest : MonoBehaviour
             yield break;
         }
 
+        AudioController.Instance.PlayRandomAudio(openChestSounds, transform, 1f, true);
+
         float elapsed = 0f;
         while (elapsed < openDuration)
         {
@@ -169,6 +174,8 @@ public class TreasureChest : MonoBehaviour
             openRoutine = null;
             yield break;
         }
+
+        AudioController.Instance.PlayRandomAudio(closeChestSounds, transform, 1f, true);
 
         float elapsed = 0f;
         while (elapsed < closeDuration)

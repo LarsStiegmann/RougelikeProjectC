@@ -10408,6 +10408,8 @@ MonoBehaviour:
   achievementPanel: {fileID: 34819430}
   audioSettingsPanel: {fileID: 877310336}
   sensitivitySettingsPanel: {fileID: 2042199230}
+  buttonSounds:
+  - {fileID: 8300000, guid: 177bebf8d0740cc43a0c3c1513503831, type: 3}
 --- !u!4 &1683021602
 Transform:
   m_ObjectHideFlags: 0
@@ -13504,9 +13506,9 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: -4651444457635259796, guid: ab4ac7a5745a66a478e54688c6859078, type: 2}
   m_audioClip: {fileID: 0}
-  m_Resource: {fileID: 8300000, guid: fdbf0f590b0434ebb87af94ca313e3ed, type: 3}
+  m_Resource: {fileID: 8300000, guid: a9bcdf685e5f174449d055ab968f329b, type: 3}
   m_PlayOnAwake: 1
-  m_Volume: 1
+  m_Volume: 0.7
   m_Pitch: 1
   Loop: 1
   Mute: 0

@@ -12,8 +12,8 @@ public class LevelUpController : MonoBehaviour
 
     [SerializeField] private float commonChance = 70f;
     [SerializeField] private float rareChance = 25f;
-    //[SerializeField] private float epicChance = 5f;
 
+    [SerializeField] private AudioClip[] levelUpSounds;
 
     [SerializeField] private GameObject levelUpPanel;
     [SerializeField] private UpgradeButton[] statButtons;
@@ -88,12 +88,13 @@ public class LevelUpController : MonoBehaviour
             return;
         }
 
+        AudioController.Instance.PlayRandomAudio(levelUpSounds, transform, 1f, false);
+
         List<StatUpgrade> randomUpgrades = GetRandomUpgrades(slots);
 
         levelUpPanel.SetActive(true);
         Time.timeScale = 0f;
 
-        // Hand control to the UI map so the choice can be made with pad or keyboard.
         if (InputController.Instance != null && InputController.Instance.Actions != null)
         {
             InputController.Instance.Actions.Player.Disable();
@@ -114,7 +115,6 @@ public class LevelUpController : MonoBehaviour
             }
             else
             {
-                // fewer upgrades available than slots
                 statButtons[i].gameObject.SetActive(false);
             }
         }
@@ -126,10 +126,6 @@ public class LevelUpController : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Closes the menu and resumes play. Must run after an upgrade is chosen,
-    /// otherwise Time.timeScale stays at 0 and the game is frozen for good.
-    /// </summary>
     public void Close()
     {
         if (levelUpPanel != null)

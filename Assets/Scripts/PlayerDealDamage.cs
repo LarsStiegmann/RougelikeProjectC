@@ -36,6 +36,8 @@ public class PlayerDealDamage : MonoBehaviour
     [Tooltip("Positional nudge for the slash artwork, in the slash's own local space.")]
     [SerializeField] private Vector3 slashCenterCorrection = Vector3.zero;
 
+    [SerializeField] private AudioClip[] swordSounds;
+
     private Camera cam;
 
     private void Update()
@@ -51,7 +53,7 @@ public class PlayerDealDamage : MonoBehaviour
         }
     }
 
-private void PerformAttack()
+    private void PerformAttack()
     {
         SpawnSlash();
 
@@ -63,7 +65,7 @@ private void PerformAttack()
         }
     }
 
-private void SpawnSlash()
+    private void SpawnSlash()
     {
         if (shlashVFX == null)
         {
@@ -71,6 +73,8 @@ private void SpawnSlash()
         }
 
         GameObject slash = Instantiate(shlashVFX, transform);
+
+        AudioController.Instance.PlayRandomAudio(swordSounds, transform, 0.7f, true);
 
         slash.transform.localPosition = new Vector3(0f, slashHeight, 0f) + Vector3.forward * slashForwardOffset;
         slash.transform.localRotation = Quaternion.Euler(0f, slashYawOffset, 0f);
@@ -168,7 +172,7 @@ private void SpawnSlash()
     }
 
 
-private void OnDrawGizmosSelected()
+    private void OnDrawGizmosSelected()
     {
         float range = (Application.isPlaying && PlayerState.Instance != null)
             ? PlayerState.Instance.currentAttackRange

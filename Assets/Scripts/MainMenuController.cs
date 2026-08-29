@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -16,6 +17,8 @@ public class MainMenuController : MonoBehaviour
     [SerializeField] private GameObject achievementPanel;
     [SerializeField] private GameObject audioSettingsPanel;
     [SerializeField] private GameObject sensitivitySettingsPanel;
+
+    [SerializeField] private AudioClip[] buttonSounds;
 
     private void Awake()
     {
@@ -36,74 +39,91 @@ public class MainMenuController : MonoBehaviour
         primaryMenuButton.Select();
     }
 
+    private void PLaySound()
+    {
+        AudioController.Instance.PlayRandomAudio(buttonSounds, transform, 1f, false);
+    }
+
     public void StartGame()
     {
-        Debug.Log("Starting game");
+        //StartGameAfterDelay();
+        PLaySound();
         SceneManager.LoadScene("Level1");
     }
 
     public void OpenSettings()
     {
+        PLaySound();
         settingsPanel.SetActive(true);
         primarySettingsButton.Select();
     }
 
     public void OpenAudioSettings()
     {
+        PLaySound();
         audioSettingsPanel.SetActive(true);
         primaryAudioSettingsButton.Select();
     }
 
     public void CloseAudioSettings()
     {
+        PLaySound();
         audioSettingsPanel.SetActive(false);
         primarySettingsButton.Select();
     }
 
     public void OpenSensitivitySettings()
     {
+        PLaySound();
         sensitivitySettingsPanel.SetActive(true);
         primarySensitivitySettingsButton.Select();
     }
 
     public void CloseSensitivitySettings()
     {
+        PLaySound();
         sensitivitySettingsPanel.SetActive(false);
         primarySettingsButton.Select();
     }
 
     public void CloseSettings()
     {
+        PLaySound();
         settingsPanel.SetActive(false);
         primaryMenuButton.Select();
     }
 
     public void OpenCollection()
     {
+        PLaySound();
         collectionPanel.SetActive(true);
         primaryCollectionButton.Select();
     }
 
     public void CloseCollection()
     {
+        PLaySound();
         collectionPanel.SetActive(false);
         primaryMenuButton.Select();
     }
 
     public void OpenAchievements()
     {
+        PLaySound();
         achievementPanel.SetActive(true);
         primaryAchievementButton.Select();
     }
 
     public void CloseAchievements()
     {
+        PLaySound();
         achievementPanel.SetActive(false);
         primaryMenuButton.Select();
     }
 
     public void QuitGame()
     {
+        PLaySound();
         Application.Quit();
         Debug.Log("Application quit");
     }
