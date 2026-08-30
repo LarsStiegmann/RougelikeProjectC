@@ -11,6 +11,7 @@ public class EnemyAIController : MonoBehaviour
     [SerializeField] private float attackRange = 2f;
     [SerializeField] private float damage = 10f;
     [SerializeField] private float xpReward = 10f;
+    [SerializeField] private int coinReward = 5;
     [SerializeField] private float attackCooldown = 1.5f;
     
     [Header("Health Bar")]
@@ -306,7 +307,7 @@ public class EnemyAIController : MonoBehaviour
     }
 
     /// <summary>
-    /// Sets this enemy's stats before it is activated. RoomSpawner calls this while the
+    /// Sets this enemy's stats before it is activated. SwarmSpawner calls this while the
     /// object is still inactive, so the values are in place by the time Awake copies
     /// maxHealth into currentHealth.
     /// </summary>
@@ -315,6 +316,15 @@ public class EnemyAIController : MonoBehaviour
         maxHealth = Mathf.Max(1f, newMaxHealth);
         damage = Mathf.Max(0f, newDamage);
         xpReward = Mathf.Max(0f, newXpReward);
+    }
+
+    /// <summary>
+    /// Sets how many coins this enemy drops. Called by the spawner alongside Configure,
+    /// while the enemy is still inactive.
+    /// </summary>
+    public void ConfigureCoins(int newCoinReward)
+    {
+        coinReward = Mathf.Max(0, newCoinReward);
     }
 
     public void EnemyTakeDamage(float incomingDamage)
@@ -448,6 +458,13 @@ public class EnemyAIController : MonoBehaviour
         if (PlayerState.Instance != null)
         {
             PlayerState.Instance.AddXP(xpReward);
+        }
+
+        if (CurrencyController.Instance != null && coinReward > 0)
+        {
+            CurrencyController.Instance.Add(coinReward);
+            DamagePopupSpawner.SpawnCoins(
+                transform.position + Vector3.up * popupAnchorLocalY, coinReward);
         }
 
         StatCounter.Instance.AddKill();

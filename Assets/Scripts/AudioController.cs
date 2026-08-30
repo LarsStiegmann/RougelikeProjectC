@@ -3,15 +3,42 @@ using UnityEngine;
 
 public class AudioController : MonoBehaviour
 {
-    public static AudioController Instance { get; private set; }
+    private static AudioController instance;
+
+    /// <summary>
+    /// Finds the scene instance, or creates one on the fly so that scenes started
+    /// directly in the editor (without going through the MainMenu) still have audio.
+    /// An auto-created controller has no soundObject prefab; PlayRandomAudio falls
+    /// back to building a bare AudioSource in that case.
+    /// </summary>
+    public static AudioController Instance
+    {
+        get
+        {
+            if (instance == null)
+            {
+                instance = FindFirstObjectByType<AudioController>();
+            }
+
+            if (instance == null)
+            {
+                GameObject go = new GameObject("AudioController (auto)");
+                instance = go.AddComponent<AudioController>();
+            }
+
+            return instance;
+        }
+    }
 
     [SerializeField] private AudioSource soundObject;
 
     private void Awake()
     {
-        if (Instance == null)
+        // Compare against the backing field, not the property: the property getter
+        // would find this very component and then destroy it as a "duplicate".
+        if (instance == null || instance == this)
         {
-            Instance = this;
+            instance = this;
             DontDestroyOnLoad(gameObject);
         }
         else
@@ -28,9 +55,30 @@ public class AudioController : MonoBehaviour
 
     public void PlayRandomAudio(AudioClip[] audioClips, Transform spawnTransform, float volume, bool is3D)
     {
-        int rand = Random.Range(0, audioClips.Length);
+        if (audioClips == null || audioClips.Length == 0 || spawnTransform == null)
+        {
+            return;
+        }
 
-        AudioSource audioSource = Instantiate(soundObject, spawnTransform.position, Quaternion.identity);
+        int rand = Random.Range(0, audioClips.Length);
+        if (audioClips[rand] == null)
+        {
+            return;
+        }
+
+        AudioSource audioSource;
+        if (soundObject != null)
+        {
+            audioSource = Instantiate(soundObject, spawnTransform.position, Quaternion.identity);
+        }
+        else
+        {
+            // Auto-created controller without the prefab: a bare source still plays,
+            // it just skips the mixer routing.
+            GameObject fx = new GameObject("SoundFX (auto)");
+            fx.transform.position = spawnTransform.position;
+            audioSource = fx.AddComponent<AudioSource>();
+        }
 
         audioSource.clip = audioClips[rand];
 

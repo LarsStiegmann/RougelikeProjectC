@@ -37,6 +37,13 @@ public class DamagePopupSpawner : MonoBehaviour
     [Tooltip("Colour used for critical hits.")]
     [SerializeField] private Color critColor = new Color(1f, 0.95f, 0.4f, 1f);
 
+    [Tooltip("Colour used for coin pickups, matching the HUD counter.")]
+    [SerializeField] private Color coinColor = new Color(1f, 0.84f, 0.35f, 1f);
+
+    [Header("Coins")]
+    [Tooltip("Extra height for coin popups so they do not sit on top of the killing blow's number.")]
+    [SerializeField] private float coinExtraHeight = 0.55f;
+
     private void Awake()
     {
         instance = this;
@@ -71,6 +78,33 @@ public class DamagePopupSpawner : MonoBehaviour
         }
 
         spawner.SpawnInternal(worldPosition, amount, isCrit);
+    }
+
+    /// <summary>
+    /// Spawns a coin reward popup, using the same floating number as damage so the
+    /// feedback reads consistently.
+    /// </summary>
+    public static void SpawnCoins(Vector3 worldPosition, int amount)
+    {
+        DamagePopupSpawner spawner = Instance;
+        if (spawner == null || spawner.popupPrefab == null || amount <= 0)
+        {
+            return;
+        }
+
+        spawner.SpawnCoinsInternal(worldPosition, amount);
+    }
+
+    private void SpawnCoinsInternal(Vector3 worldPosition, int amount)
+    {
+        Vector3 jitter = new Vector3(
+            Random.Range(-horizontalSpread, horizontalSpread),
+            coinExtraHeight,
+            Random.Range(-horizontalSpread, horizontalSpread)
+        );
+
+        DamagePopup popup = Instantiate(popupPrefab, worldPosition + jitter, Quaternion.identity);
+        popup.Setup("+" + amount, coinColor);
     }
 
     private void SpawnInternal(Vector3 worldPosition, float amount, bool isCrit)

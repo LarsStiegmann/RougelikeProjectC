@@ -25,6 +25,9 @@ public class EnemyVariant : ScriptableObject
     [Tooltip("XP granted on death.")]
     public float xpReward = 10f;
 
+    [Tooltip("Coins dropped on death, spent on opening chests.")]
+    public int coinReward = 5;
+
     [Header("Selection")]
     [Tooltip("Relative chance of being picked within its room. Higher is more common.")]
     public float weight = 10f;

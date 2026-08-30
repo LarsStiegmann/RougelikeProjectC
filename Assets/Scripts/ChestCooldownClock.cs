@@ -27,9 +27,21 @@ public class ChestCooldownClock : MonoBehaviour
     [SerializeField] private float fadeDuration = 0.25f;
 
     [Header("Colour")]
-    [SerializeField] private Color fillColor = new Color(1f, 0.78f, 0.35f, 1f);
+    [SerializeField] private Color fillColor = new Color(0.88f, 0.15f, 0.15f, 1f);
     [SerializeField] private Color backingColor = new Color(0.04f, 0.04f, 0.06f, 0.8f);
-    [SerializeField] private Color rimColor = new Color(1f, 0.86f, 0.5f, 0.95f);
+    // Kept below full white on purpose: the scene bloom has a 0.4 threshold at
+    // 2.5 intensity, so pure white halos badly.
+    [SerializeField] private Color rimColor = new Color(0.7f, 0.7f, 0.7f, 1f);
+
+    [Header("Pie cuts")]
+    [Tooltip("How many wedges the face is divided into. 0 disables the cuts.")]
+    [SerializeField] private int segmentCount = 0;
+
+    [Tooltip("Colour of the dividing lines.")]
+    [SerializeField] private Color segmentColor = Color.white;
+
+    [Tooltip("Thickness of each dividing line, in texture pixels.")]
+    [SerializeField] private float segmentLineWidth = 1f;
 
     private Canvas canvas;
     private CanvasGroup group;
@@ -42,6 +54,7 @@ public class ChestCooldownClock : MonoBehaviour
 
     private static Sprite discSprite;
     private static Sprite ringSprite;
+    private Sprite spokesSprite;
 
     private void Awake()
     {
@@ -156,6 +169,13 @@ public class ChestCooldownClock : MonoBehaviour
         fillImage.fillClockwise = true;
         fillImage.fillAmount = 1f;
 
+        // Wedge dividers, drawn over the fill so the face reads as cut slices.
+        if (segmentCount > 1)
+        {
+            spokesSprite = BuildSpokesSprite(segmentCount, segmentLineWidth);
+            MakeImage("Cuts", crt, spokesSprite, segmentColor, 108f, Image.Type.Simple);
+        }
+
         // Rim so it reads as a clock face rather than a blob.
         MakeImage("Rim", crt, ringSprite, rimColor, 108f, Image.Type.Simple);
     }
@@ -179,6 +199,56 @@ public class ChestCooldownClock : MonoBehaviour
         return img;
     }
 
+    /// <summary>
+    /// Builds a transparent disc with `count` radial lines running from the centre to
+    /// the edge, so the clock face reads as a cut pie. The angular tolerance widens as
+    /// the radius shrinks, which keeps every line the same thickness in pixels rather
+    /// than letting them fan out towards the rim.
+    /// </summary>
+    private static Sprite BuildSpokesSprite(int count, float lineWidth)
+    {
+        // Double the disc's resolution: the cuts are thin details and would look
+        // like fat wedges at 64.
+        const int res = 128;
+        float centre = (res - 1) * 0.5f;
+        float outer = centre - 1f;
+        float step = Mathf.PI * 2f / count;
+
+        Texture2D tex = new Texture2D(res, res, TextureFormat.RGBA32, false);
+        tex.filterMode = FilterMode.Point;
+        tex.wrapMode = TextureWrapMode.Clamp;
+
+        for (int y = 0; y < res; y++)
+        {
+            for (int x = 0; x < res; x++)
+            {
+                float dx = x - centre;
+                float dy = y - centre;
+                float d = Mathf.Sqrt(dx * dx + dy * dy);
+
+                if (d > outer || d < 0.5f)
+                {
+                    tex.SetPixel(x, y, Color.clear);
+                    continue;
+                }
+
+                // Angle measured from the top, matching the fill's Radial360 origin.
+                float angle = Mathf.Atan2(dx, dy);
+                if (angle < 0f) angle += Mathf.PI * 2f;
+
+                // Distance to the nearest divider, in radians, converted to pixels.
+                float nearest = Mathf.Repeat(angle + step * 0.5f, step) - step * 0.5f;
+                float pixelsFromLine = Mathf.Abs(nearest) * d;
+
+                float scaledWidth = lineWidth * (res / 64f);
+                tex.SetPixel(x, y, pixelsFromLine <= scaledWidth * 0.5f ? Color.white : Color.clear);
+            }
+        }
+
+        tex.Apply();
+        return Sprite.Create(tex, new Rect(0f, 0f, res, res), new Vector2(0.5f, 0.5f), 100f);
+    }
+
     private static void EnsureSprites()
     {
         if (discSprite != null && ringSprite != null)
@@ -189,7 +259,7 @@ public class ChestCooldownClock : MonoBehaviour
         const int res = 64;
         float centre = (res - 1) * 0.5f;
         float outer = centre - 1f;
-        float inner = outer * 0.82f;
+        float inner = outer * 0.90f;
 
         Texture2D disc = new Texture2D(res, res, TextureFormat.RGBA32, false);
         Texture2D ring = new Texture2D(res, res, TextureFormat.RGBA32, false);

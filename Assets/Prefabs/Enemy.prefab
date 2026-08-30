@@ -3250,6 +3250,7 @@ GameObject:
   - component: {fileID: 8918294953842665690}
   - component: {fileID: 6220674422386725611}
   - component: {fileID: 7176142858156361464}
+  - component: {fileID: 7327662614610439605}
   m_Layer: 6
   m_Name: Enemy
   m_TagString: Enemy
@@ -3345,7 +3346,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 49bcce8d7ac28442cb64910bcded874a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyAIController
-  aggroRange: 8
+  aggroRange: 60
   attackRange: 2
   damage: 15
   xpReward: 10
@@ -3380,6 +3381,25 @@ CapsuleCollider:
   m_Height: 1.8
   m_Direction: 1
   m_Center: {x: 0, y: 0.9, z: 0}
+--- !u!114 &7327662614610439605
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6531514753795505868}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2511a2b3701354975b93660580930b40, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyEmerge
+  depth: 2.2
+  duration: 0.9
+  settleTime: 0.1
+  spawnDust: 1
+  dustParticles: 18
+  dustRadius: 0.55
+  dustColor: {r: 0.42, g: 0.35, b: 0.27, a: 1}
 --- !u!1 &6683646251418664711
 GameObject:
   m_ObjectHideFlags: 0

@@ -47,6 +47,24 @@ public class DamagePopup : MonoBehaviour
     }
 
     /// <summary>
+    /// Sets arbitrary text, for popups that are not plain damage numbers.
+    /// </summary>
+    public void Setup(string content, Color color)
+    {
+        if (label == null)
+        {
+            label = GetComponentInChildren<TextMeshPro>();
+        }
+
+        if (label != null)
+        {
+            label.text = content;
+            label.color = color;
+            startColor = color;
+        }
+    }
+
+    /// <summary>
     /// Sets the number shown. Call immediately after spawning.
     /// </summary>
     public void Setup(float amount, Color color)

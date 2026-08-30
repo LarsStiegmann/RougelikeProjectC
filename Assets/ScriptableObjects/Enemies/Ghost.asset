@@ -17,6 +17,7 @@ MonoBehaviour:
   maxHealth: 22
   damage: 14
   xpReward: 14
+  coinReward: 2
   weight: 25
   unlockAtMinutes: 0
   modelScale: 1

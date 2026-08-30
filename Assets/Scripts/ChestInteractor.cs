@@ -44,7 +44,7 @@ private void OnDisable()
 
         if (currentTarget != null)
         {
-            ShowPrompt(currentTarget.PromptText);
+            ShowPrompt(BuildPrompt(currentTarget));
         }
         else
         {
@@ -87,9 +87,35 @@ private void OnDisable()
             return;
         }
 
+        // Chests cost coins, and the price doubles each time this one is looted.
+        ChestPrice price = currentTarget.GetComponent<ChestPrice>();
+        if (price != null && !price.TryPay())
+        {
+            // Not enough coins: leave it shut and keep the prompt up.
+            return;
+        }
+
         currentTarget.Open();
         HidePrompt();
         currentTarget = null;
+    }
+
+    /// <summary>
+    /// Appends the chest's price to its prompt, and says so plainly when the player
+    /// cannot afford it.
+    /// </summary>
+    private string BuildPrompt(TreasureChest chest)
+    {
+        ChestPrice price = chest.GetComponent<ChestPrice>();
+        if (price == null)
+        {
+            return chest.PromptText;
+        }
+
+        int cost = price.CurrentCost;
+        return price.CanAfford()
+            ? chest.PromptText + " (" + cost + " coins)"
+            : "Need " + cost + " coins";
     }
 
     private void ShowPrompt(string message)
