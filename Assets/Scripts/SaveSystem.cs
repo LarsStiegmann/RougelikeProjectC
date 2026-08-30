@@ -4,31 +4,7 @@ using UnityEngine;
 
 public class SaveSystem : MonoBehaviour
 {
-    private static SaveSystem instance;
-
-    /// <summary>
-    /// Finds the scene instance, or creates one with default settings so that scenes
-    /// started directly in the editor (without the MainMenu) still have working
-    /// sensitivity and volume values.
-    /// </summary>
-    public static SaveSystem Instance
-    {
-        get
-        {
-            if (instance == null)
-            {
-                instance = FindFirstObjectByType<SaveSystem>();
-            }
-
-            if (instance == null)
-            {
-                GameObject go = new GameObject("SaveSystem (auto)");
-                instance = go.AddComponent<SaveSystem>();
-            }
-
-            return instance;
-        }
-    }
+    public static SaveSystem Instance { get; private set; }
 
     private string path;
 
@@ -38,13 +14,13 @@ public class SaveSystem : MonoBehaviour
     public float soundFXVolume;
     public float musicVolume;
 
+    public List<string> unlockedAchievements = new List<string>();
+
     private void Awake()
     {
-        // Compare against the backing field, not the property: the property getter
-        // would find this very component and then destroy it as a "duplicate".
-        if (instance == null || instance == this)
+        if (Instance == null)
         {
-            instance = this;
+            Instance = this;
             DontDestroyOnLoad(gameObject);
             path = Path.Combine(Application.persistentDataPath, "save.json");
             EnsureDefaults();
@@ -55,17 +31,11 @@ public class SaveSystem : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// An all-zero profile is unplayable (frozen camera, muted game) and only occurs
-    /// when the values were never initialised - a fresh scene object, or a save.json
-    /// written before the settings system existed. Replace it with sane defaults.
-    /// </summary>
     private void EnsureDefaults()
     {
         if (mouseSensitivity == 0f && controllerSensitivity == 0f
             && masterVolume == 0f && soundFXVolume == 0f && musicVolume == 0f)
         {
-            // Midpoint of the settings slider's 0-0.5 range.
             mouseSensitivity = 0.25f;
             controllerSensitivity = 180f;
             masterVolume = 1f;
@@ -96,6 +66,8 @@ public class SaveSystem : MonoBehaviour
         data.soundFXVolume = soundFXVolume;
         data.musicVolume = musicVolume;
 
+        data.unlockedAchievements = new List<string>(unlockedAchievements);
+
         string json = JsonUtility.ToJson(data, true);
         File.WriteAllText(path, json);
     }
@@ -121,8 +93,9 @@ public class SaveSystem : MonoBehaviour
         soundFXVolume = data.soundFXVolume;
         musicVolume = data.musicVolume;
 
-        // Old save files predate these fields and load them all as zero.
         EnsureDefaults();
+
+        unlockedAchievements = data.unlockedAchievements ?? new List<string>();
 
         AudioListener.volume = masterVolume;
 

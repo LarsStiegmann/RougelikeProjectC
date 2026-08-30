@@ -25,6 +25,7 @@ public class MainMenuController : MonoBehaviour
         if (SaveSystem.Instance != null)
         {
             SaveSystem.Instance.Load();
+            Debug.Log("loaded");
         }
     }
 
@@ -46,7 +47,6 @@ public class MainMenuController : MonoBehaviour
 
     public void StartGame()
     {
-        //StartGameAfterDelay();
         PLaySound();
         SceneManager.LoadScene("Level1");
     }
