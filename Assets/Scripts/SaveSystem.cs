@@ -16,6 +16,10 @@ public class SaveSystem : MonoBehaviour
 
     public List<string> unlockedAchievements = new List<string>();
 
+    public int allTimeKills;
+    public int allTimeOpenedChests;
+    public int deaths;
+
     private void Awake()
     {
         if (Instance == null)
@@ -68,6 +72,10 @@ public class SaveSystem : MonoBehaviour
 
         data.unlockedAchievements = new List<string>(unlockedAchievements);
 
+        data.allTimeKills = allTimeKills;
+        data.allTimeOpenedChests = allTimeOpenedChests;
+        data.deaths = deaths;
+
         string json = JsonUtility.ToJson(data, true);
         File.WriteAllText(path, json);
     }
@@ -96,6 +104,10 @@ public class SaveSystem : MonoBehaviour
         EnsureDefaults();
 
         unlockedAchievements = data.unlockedAchievements ?? new List<string>();
+
+        allTimeKills = data.allTimeKills;
+        allTimeOpenedChests = data.allTimeOpenedChests;
+        deaths = data.deaths;
 
         AudioListener.volume = masterVolume;
 

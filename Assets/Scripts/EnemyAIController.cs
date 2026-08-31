@@ -43,6 +43,8 @@ public class EnemyAIController : MonoBehaviour
     [Tooltip("How fast the enemy turns back to its original facing after arriving home, in degrees per second.")]
     [SerializeField] private float homeTurnSpeed = 220f;
 
+    [SerializeField] private Achievement damageAchievement;
+
     private float defaultAgentSpeed;
     private float defaultAnimatorSpeed = 1f;
     private bool isTurningHome;
@@ -338,6 +340,8 @@ public class EnemyAIController : MonoBehaviour
             isCrit = true;
         }
 
+        AchievementController.Instance.UpdateAchievement(damageAchievement, damageTaken);
+
         currentHealth -= damageTaken;
         currentHealth = Mathf.Max(currentHealth, 0);
         UpdateHealthBar();
@@ -454,7 +458,6 @@ public class EnemyAIController : MonoBehaviour
 
     private void EnemyDie()
     {
-        //StartCoroutine(EnemyDieAfterDelay());
         if (PlayerState.Instance != null)
         {
             PlayerState.Instance.AddXP(xpReward);

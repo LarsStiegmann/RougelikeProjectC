@@ -3350,6 +3350,7 @@ MonoBehaviour:
   attackRange: 2
   damage: 15
   xpReward: 10
+  coinReward: 5
   attackCooldown: 2
   healthBarOffset: {x: 0, y: 0.3, z: 0}
   healthBarWorldSize: {x: 1, y: 0.14}
@@ -3358,6 +3359,7 @@ MonoBehaviour:
   returnHomeSpeed: 1.4
   returnHomeAnimationSpeed: 0.5
   homeTurnSpeed: 220
+  damageAchievement: {fileID: 11400000, guid: a330f8bd547e9a241bb6ff4991f64ca7, type: 2}
 --- !u!136 &7176142858156361464
 CapsuleCollider:
   m_ObjectHideFlags: 0

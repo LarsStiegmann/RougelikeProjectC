@@ -15,3 +15,4 @@ MonoBehaviour:
   id: Big_Boy
   achievementName: Big Boy
   achievementDescription: Have 200+ Health
+  requiredValue: 200

@@ -98,6 +98,8 @@ public class TreasureChest : MonoBehaviour
 
         isOpened = true;
 
+        StatCounter.Instance.AddChest();
+
         if (lid != null)
         {
             if (openRoutine != null)

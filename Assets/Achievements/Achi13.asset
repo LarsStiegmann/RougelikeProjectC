@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a6ea24a987920cc4781f3be305b77447, type: 3}
-  m_Name: Achi1
+  m_Name: Achi13
   m_EditorClassIdentifier: Assembly-CSharp::Achievement
-  id: Tank
-  achievementName: Tank
-  achievementDescription: Have 20+ Armor
-  requiredValue: 20
+  id: Killing_Spree
+  achievementName: Killing Spree
+  achievementDescription: Kill 500+ Enemies in one Run
+  requiredValue: 500

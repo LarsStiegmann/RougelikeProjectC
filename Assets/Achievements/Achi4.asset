@@ -15,3 +15,4 @@ MonoBehaviour:
   id: All_Crits
   achievementName: All Crits
   achievementDescription: Have 100% Crit Chance
+  requiredValue: 100

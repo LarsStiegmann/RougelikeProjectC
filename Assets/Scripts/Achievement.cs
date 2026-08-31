@@ -9,4 +9,6 @@ public class Achievement : ScriptableObject
 
     [TextArea]
     public string achievementDescription;
+
+    public float requiredValue;
 }

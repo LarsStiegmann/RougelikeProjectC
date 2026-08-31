@@ -27,6 +27,21 @@ public class PlayerState : MonoBehaviour
     [SerializeField] private AudioClip[] damageSounds;
     [SerializeField] private AudioClip[] deathSounds;
 
+    [SerializeField] private Achievement healthAchievement;
+    [SerializeField] private Achievement damageAchievement;
+    [SerializeField] private Achievement attackSpeedAchievement;
+    [SerializeField] private Achievement healthRegenerationAchievement;
+    [SerializeField] private Achievement speedAchievement;
+    [SerializeField] private Achievement jumpForceAchievement;
+    [SerializeField] private Achievement armorAchievement;
+    [SerializeField] private Achievement lifeStealAchievement;
+    [SerializeField] private Achievement attackRangeAchievement;
+    [SerializeField] private Achievement critChanceAchievement;
+    [SerializeField] private Achievement critMiltiplierAchievement;
+
+    [SerializeField] private Achievement levelAchievement1;
+    [SerializeField] private Achievement levelAchievement2;
+
     public float currentMaxHealth { get; private set; }
     public float currentDamage { get; private set; }
     public float currentHealthRegeneration { get; private set; }
@@ -130,6 +145,10 @@ public class PlayerState : MonoBehaviour
                 levelUpController.Open();
             }
 
+            AchievementController.Instance.UpdateAchievement(levelAchievement1, currentLevel);
+            AchievementController.Instance.UpdateAchievement(levelAchievement2, currentLevel);
+
+
             OnLevelUp?.Invoke();
         }
         OnXPChanged?.Invoke();
@@ -199,55 +218,77 @@ public class PlayerState : MonoBehaviour
     public void RaiseMaxHealth(float amount)
     {
         currentMaxHealth += amount;
+
+        AchievementController.Instance.UpdateAchievement(healthAchievement, currentMaxHealth);
     }
 
     public void RaiseDamage(float amount)
     {
         currentDamage += amount;
+
+        AchievementController.Instance.UpdateAchievement(damageAchievement, currentDamage);
     }
 
     public void RaiseAttackSpeed(float amount)
     {
         bonusAttackSpeedPercentage += amount;
+
+        AchievementController.Instance.UpdateAchievement(attackSpeedAchievement, bonusAttackSpeedPercentage);
     }
     public void RaiseHealthRegeneration(float amount)
     {
         currentHealthRegeneration += amount;
+
+        AchievementController.Instance.UpdateAchievement(healthRegenerationAchievement, currentHealthRegeneration);
     }
 
     public void RaiseSpeed(float amount)
     {
         currentSpeed += amount;
+
+        AchievementController.Instance.UpdateAchievement(speedAchievement, currentSpeed);
     }
 
     public void RaiseJumpForce(float amount)
     {
         currentJumpForce += amount;
+
+        AchievementController.Instance.UpdateAchievement(jumpForceAchievement, currentJumpForce);
     }
 
     public void RaiseArmor(float amount)
     {
         currentArmor += amount;
+
+        AchievementController.Instance.UpdateAchievement(armorAchievement, currentArmor);
     }
 
     public void RaiseLifeSteal(float amount)
     {
         currentLifeSteal += amount;
+
+        AchievementController.Instance.UpdateAchievement(lifeStealAchievement, currentLifeSteal);
     }
 
     public void RaiseAttackRange(float amount)
     {
         currentAttackRange += amount;
+
+        AchievementController.Instance.UpdateAchievement(attackRangeAchievement, currentAttackRange);
     }
 
     public void RaiseCritChance(float amount)
     {
         currentCritChance = Mathf.Clamp(currentCritChance + amount, 0f, 1f);
+
+        AchievementController.Instance.UpdateAchievement(critChanceAchievement, currentCritChance);
     }
 
     public void RaiseCritDamage(float amount)
     {
         currentCritMultiplier += amount;
+
+        AchievementController.Instance.UpdateAchievement(critMiltiplierAchievement, currentCritMultiplier);
     }
 
     private void Die()
@@ -261,6 +302,8 @@ public class PlayerState : MonoBehaviour
             hasDied = true;
 
             AudioController.Instance.PlayRandomAudio(deathSounds, transform, 1f, true);
+
+            StatCounter.Instance.AddDeath();
 
             PlayerShatterDeath shatter = GetComponent<PlayerShatterDeath>();
             if (shatter != null)

@@ -13,4 +13,8 @@ public class SaveData
     public float musicVolume = 1;
 
     public List<string> unlockedAchievements = new List<string>();
+
+    public int allTimeKills;
+    public int allTimeOpenedChests;
+    public int deaths;
 }

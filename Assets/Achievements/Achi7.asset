@@ -15,3 +15,4 @@ MonoBehaviour:
   id: I_Can_Fly
   achievementName: I Can Fly
   achievementDescription: Have 6+ Jump Height
+  requiredValue: 6

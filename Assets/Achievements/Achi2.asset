@@ -15,3 +15,4 @@ MonoBehaviour:
   id: Speedster
   achievementName: Speedster
   achievementDescription: Have 15+ Speed
+  requiredValue: 15

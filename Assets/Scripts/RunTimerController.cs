@@ -11,7 +11,10 @@ public class RunTimerController : MonoBehaviour
     [SerializeField] private float damageRampDuration = 300f;
     [Tooltip("Enemy damage multiplier once the ramp duration has fully elapsed.")]
     [SerializeField] private float maxDamageMultiplier = 2.5f;
-[SerializeField] private TMP_Text timerText;
+    [SerializeField] private TMP_Text timerText;
+
+    [SerializeField] private Achievement surviveAchievement;
+    [SerializeField] private Achievement surviveAchievement2;
 
     public float ElapsedTime { get; private set; }
     public bool IsRunning { get; private set; } = true;
@@ -39,6 +42,10 @@ public class RunTimerController : MonoBehaviour
         }
 
         ElapsedTime += Time.deltaTime;
+
+        AchievementController.Instance.UpdateAchievement(surviveAchievement, ElapsedTime);
+        AchievementController.Instance.UpdateAchievement(surviveAchievement2, ElapsedTime);
+
         UpdateTimerDisplay();
     }
 

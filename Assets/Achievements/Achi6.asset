@@ -15,3 +15,4 @@ MonoBehaviour:
   id: Hard_Crits
   achievementName: Hard Crits
   achievementDescription: Have a Crit Multiplikator of 2+
+  requiredValue: 2

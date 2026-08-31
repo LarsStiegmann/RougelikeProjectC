@@ -8,6 +8,8 @@ public class AchievementController : MonoBehaviour
 
     [SerializeField] private List<Achievement> achievements;
 
+    [SerializeField] private Achievement platin;
+
     private void Awake()
     {
         if (Instance == null)
@@ -36,5 +38,38 @@ public class AchievementController : MonoBehaviour
         SaveSystem.Instance.unlockedAchievements.Add(achievement.id);
 
         SaveSystem.Instance.Save();
+
+        CheckAchievements();
+    }
+
+    public void UpdateAchievement(Achievement achievement, float currentValue)
+    {
+        if (IsUnlocked(achievement))
+        {
+            return;
+        }
+
+        if (currentValue >= achievement.requiredValue)
+        {
+            UnlockAchievement(achievement);
+        }
+    }
+
+    private void CheckAchievements()
+    {
+        foreach (var achievement in achievements)
+        {
+            if (achievement == platin)
+            {
+                continue;
+            }
+
+            if (!IsUnlocked(achievement))
+            {
+                return;
+            }
+        }
+
+        UnlockAchievement(platin);
     }
 }
