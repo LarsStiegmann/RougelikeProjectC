@@ -3399,9 +3399,18 @@ MonoBehaviour:
   duration: 0.9
   settleTime: 0.1
   spawnDust: 1
-  dustParticles: 18
-  dustRadius: 0.55
+  dustParticles: 36
+  dustRadius: 0.8
   dustColor: {r: 0.42, g: 0.35, b: 0.27, a: 1}
+  chunkCount: 16
+  chunkSize: 0.3
+  clodMeshes:
+  - {fileID: -1899712292577873081, guid: fef0af30e46004a6c9a630b64065338f, type: 3}
+  - {fileID: -7779650001615530816, guid: fef0af30e46004a6c9a630b64065338f, type: 3}
+  - {fileID: 2258324207057112218, guid: fef0af30e46004a6c9a630b64065338f, type: 3}
+  - {fileID: -6995567092204738845, guid: fef0af30e46004a6c9a630b64065338f, type: 3}
+  - {fileID: -310589799129505235, guid: fef0af30e46004a6c9a630b64065338f, type: 3}
+  clodMaterial: {fileID: 2100000, guid: 76e1a4f2dc60a426d898400992a64552, type: 2}
 --- !u!1 &6683646251418664711
 GameObject:
   m_ObjectHideFlags: 0
