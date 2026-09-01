@@ -20,6 +20,8 @@ public class SaveSystem : MonoBehaviour
     public int allTimeOpenedChests;
     public int deaths;
 
+    public List<AchievementProgress> achievementProgress = new List<AchievementProgress>();
+
     private void Awake()
     {
         if (Instance == null)
@@ -76,6 +78,8 @@ public class SaveSystem : MonoBehaviour
         data.allTimeOpenedChests = allTimeOpenedChests;
         data.deaths = deaths;
 
+        data.achievementProgress = new List<AchievementProgress>(achievementProgress);
+
         string json = JsonUtility.ToJson(data, true);
         File.WriteAllText(path, json);
     }
@@ -109,7 +113,7 @@ public class SaveSystem : MonoBehaviour
         allTimeOpenedChests = data.allTimeOpenedChests;
         deaths = data.deaths;
 
-        AudioListener.volume = masterVolume;
+        achievementProgress = data.achievementProgress ?? new List<AchievementProgress>();
 
         if (HighScoreController.Instance != null)
         {

@@ -15,4 +15,6 @@ MonoBehaviour:
   id: Overachiever
   achievementName: Overachiever
   achievementDescription: Unlock every Achievement
+  progressType: 1
   requiredValue: 0
+  isPlatinAchievement: 1

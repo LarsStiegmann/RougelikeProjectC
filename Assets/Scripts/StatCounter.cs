@@ -38,8 +38,6 @@ public class StatCounter : MonoBehaviour
 
         SaveSystem.Instance.allTimeKills++;
 
-        SaveSystem.Instance.Save();
-
         AchievementController.Instance.UpdateAchievement(killsAchievement1, kills);
         AchievementController.Instance.UpdateAchievement(killsAchievement2, kills);
 
@@ -53,8 +51,6 @@ public class StatCounter : MonoBehaviour
 
         SaveSystem.Instance.allTimeOpenedChests++;
 
-        SaveSystem.Instance.Save();
-
         AchievementController.Instance.UpdateAchievement(chestAchievement, chests);
         AchievementController.Instance.UpdateAchievement(chestAllTimeAchievement, SaveSystem.Instance.allTimeOpenedChests);
     }
@@ -62,8 +58,6 @@ public class StatCounter : MonoBehaviour
     public void AddDeath()
     {
         SaveSystem.Instance.deaths++;
-
-        SaveSystem.Instance.Save();
 
         AchievementController.Instance.UpdateAchievement(firstDeathAchievement, SaveSystem.Instance.deaths);
         AchievementController.Instance.UpdateAchievement(deathsAchievement, SaveSystem.Instance.deaths);

@@ -15,4 +15,5 @@ MonoBehaviour:
   id: Chest_Lover
   achievementName: Chest Lover
   achievementDescription: Open 100 Chests
+  progressType: 1
   requiredValue: 100

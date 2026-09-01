@@ -12,7 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a6ea24a987920cc4781f3be305b77447, type: 3}
   m_Name: Achi17
   m_EditorClassIdentifier: Assembly-CSharp::Achievement
-  id: Stacking_Bodies
-  achievementName: Stacking Bodies
-  achievementDescription: Kill 1000 Enemies
-  requiredValue: 1000
+  id: Kill_Them_All
+  achievementName: Kill Them All
+  achievementDescription: Kill 10000 Enemies
+  progressType: 1
+  requiredValue: 10000

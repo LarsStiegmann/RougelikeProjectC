@@ -10,6 +10,8 @@ public class AchievementController : MonoBehaviour
 
     [SerializeField] private Achievement platin;
 
+    private List<AchievementProgress> runAchievementProgress = new List<AchievementProgress>();
+
     private void Awake()
     {
         if (Instance == null)
@@ -39,6 +41,8 @@ public class AchievementController : MonoBehaviour
 
         SaveSystem.Instance.Save();
 
+        AchievementNotification.Instance.ShowNotification(achievement);
+
         CheckAchievements();
     }
 
@@ -49,10 +53,47 @@ public class AchievementController : MonoBehaviour
             return;
         }
 
+        AchievementProgress progress = GetProgress(achievement);
+
+        progress.currentValue = currentValue;
+
         if (currentValue >= achievement.requiredValue)
         {
             UnlockAchievement(achievement);
         }
+    }
+
+    private AchievementProgress GetProgress(Achievement achievement)
+    {
+        List<AchievementProgress> list;
+
+        if (achievement.progressType == AchievementProgressType.Run)
+        {
+            list = runAchievementProgress;
+        }
+        else
+        {
+            list = SaveSystem.Instance.achievementProgress;
+        }
+
+        AchievementProgress progress = list.Find(x => x.id == achievement.id);
+
+        if (progress == null)
+        {
+            progress = new AchievementProgress
+            {
+                id = achievement.id,
+                currentValue = 0
+            };
+            list.Add(progress);
+        }
+
+        return progress;
+    }
+
+    public float GetCurrentProgress(Achievement achievement)
+    {
+        return GetProgress(achievement).currentValue;
     }
 
     private void CheckAchievements()
@@ -71,5 +112,27 @@ public class AchievementController : MonoBehaviour
         }
 
         UnlockAchievement(platin);
+    }
+
+    public int GetPlatinAchievementProgress()
+    {
+        return SaveSystem.Instance.unlockedAchievements.Count;
+    }
+
+    public int GetTotalAchievementCount()
+    {
+        return achievements.Count - 1;
+    }
+
+    public bool AllAchievementsUnlocked()
+    {
+        int totalAchievements = achievements.Count;
+
+        return SaveSystem.Instance.unlockedAchievements.Count >= totalAchievements;
+    }
+
+    public Achievement GetPlatinAchievement()
+    {
+        return achievements.Find(x => x.isPlatinAchievement);
     }
 }

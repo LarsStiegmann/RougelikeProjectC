@@ -17,4 +17,6 @@ public class SaveData
     public int allTimeKills;
     public int allTimeOpenedChests;
     public int deaths;
+
+    public List<AchievementProgress> achievementProgress = new List<AchievementProgress>();
 }

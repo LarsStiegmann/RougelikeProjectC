@@ -219,6 +219,8 @@ public class PlayerState : MonoBehaviour
     {
         currentMaxHealth += amount;
 
+        Heal(amount);
+
         AchievementController.Instance.UpdateAchievement(healthAchievement, currentMaxHealth);
     }
 

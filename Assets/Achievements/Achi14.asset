@@ -15,4 +15,6 @@ MonoBehaviour:
   id: The_Shattering
   achievementName: The Shattering
   achievementDescription: Die for the first Time
+  progressType: 1
   requiredValue: 1
+  isPlatinAchievement: 0

@@ -188,7 +188,7 @@ MonoBehaviour:
     m_Top: 0
     m_Bottom: 0
   m_ChildAlignment: 1
-  m_Spacing: 10
+  m_Spacing: 0
   m_ChildForceExpandWidth: 1
   m_ChildForceExpandHeight: 0
   m_ChildControlWidth: 1
@@ -707,8 +707,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: a637792b115bbf14f89d5e9e23c298af, type: 2}
   - {fileID: 11400000, guid: 722ecd2d4fc809045bd5f4d05493c13b, type: 2}
   - {fileID: 11400000, guid: cf16860bcdb21e4438400d0c01a8c934, type: 2}
-  - {fileID: 11400000, guid: edef025cbaeaecc45b2c67ee3fc9ad91, type: 2}
   - {fileID: 11400000, guid: 298b3746d957f15478f198e14e23a3d7, type: 2}
+  - {fileID: 11400000, guid: edef025cbaeaecc45b2c67ee3fc9ad91, type: 2}
   - {fileID: 11400000, guid: c781274ec707051449dfcd3ecb4ca1de, type: 2}
   - {fileID: 11400000, guid: c1f0e1c0d435b3145b89eef0ff7d3dff, type: 2}
   - {fileID: 11400000, guid: fadde5bba149dfd46ae4fd7054331cb6, type: 2}
@@ -3135,6 +3135,7 @@ MonoBehaviour:
   allTimeKills: 0
   allTimeOpenedChests: 0
   deaths: 0
+  achievementProgress: []
 --- !u!4 &535388388
 Transform:
   m_ObjectHideFlags: 0
@@ -14251,8 +14252,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: a637792b115bbf14f89d5e9e23c298af, type: 2}
   - {fileID: 11400000, guid: 722ecd2d4fc809045bd5f4d05493c13b, type: 2}
   - {fileID: 11400000, guid: cf16860bcdb21e4438400d0c01a8c934, type: 2}
-  - {fileID: 11400000, guid: edef025cbaeaecc45b2c67ee3fc9ad91, type: 2}
   - {fileID: 11400000, guid: 298b3746d957f15478f198e14e23a3d7, type: 2}
+  - {fileID: 11400000, guid: edef025cbaeaecc45b2c67ee3fc9ad91, type: 2}
   - {fileID: 11400000, guid: c781274ec707051449dfcd3ecb4ca1de, type: 2}
   - {fileID: 11400000, guid: c1f0e1c0d435b3145b89eef0ff7d3dff, type: 2}
   - {fileID: 11400000, guid: fadde5bba149dfd46ae4fd7054331cb6, type: 2}
