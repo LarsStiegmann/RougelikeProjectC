@@ -12,7 +12,8 @@ public enum UpgradeType
     LifeSteal,
     Range,
     CritChance,
-    CritDamage
+    CritDamage,
+    Ability
 }
 
 public enum UpgradeRarity
@@ -33,4 +34,7 @@ public class StatUpgrade : ScriptableObject
     public UpgradeRarity rarity;
 
     public float value;
+
+    [Tooltip("Only used when upgradeType is Ability: the ability to grant or level up.")]
+    public AbilityDefinition ability;
 }

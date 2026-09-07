@@ -123,6 +123,14 @@ public class PlayerState : MonoBehaviour
 
     public void Heal(float amount)
     {
+        // A corpse does not heal: regeneration and life steal used to revive the
+        // player above zero after Die() had already fired, which made death
+        // look like it simply never happened.
+        if (hasDied)
+        {
+            return;
+        }
+
         currentHealth += amount;
         currentHealth = Mathf.Min(currentHealth, currentMaxHealth);
         OnHealthChanged?.Invoke();
@@ -198,6 +206,13 @@ public class PlayerState : MonoBehaviour
                 RaiseCritChance(upgrade.value);
                 Debug.Log(upgrade.value);
                 break;
+            case UpgradeType.Ability:
+                if (PlayerAbilities.Instance != null)
+                {
+                    PlayerAbilities.Instance.Grant(upgrade.ability);
+                }
+                break;
+
             case UpgradeType.CritDamage:
                 RaiseCritDamage(upgrade.value);
                 Debug.Log(upgrade.value);

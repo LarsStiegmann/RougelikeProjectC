@@ -3251,6 +3251,7 @@ GameObject:
   - component: {fileID: 6220674422386725611}
   - component: {fileID: 7176142858156361464}
   - component: {fileID: 7327662614610439605}
+  - component: {fileID: 8735734108637169032}
   m_Layer: 6
   m_Name: Enemy
   m_TagString: Enemy
@@ -3322,10 +3323,10 @@ NavMeshAgent:
   m_Enabled: 1
   m_AgentTypeID: 0
   m_Radius: 0.5
-  m_Speed: 3.5
-  m_Acceleration: 12
+  m_Speed: 5
+  m_Acceleration: 20
   avoidancePriority: 50
-  m_AngularSpeed: 120
+  m_AngularSpeed: 360
   m_StoppingDistance: 1.8
   m_AutoTraverseOffMeshLink: 1
   m_AutoBraking: 1
@@ -3409,8 +3410,31 @@ MonoBehaviour:
   - {fileID: -7779650001615530816, guid: fef0af30e46004a6c9a630b64065338f, type: 3}
   - {fileID: 2258324207057112218, guid: fef0af30e46004a6c9a630b64065338f, type: 3}
   - {fileID: -6995567092204738845, guid: fef0af30e46004a6c9a630b64065338f, type: 3}
-  - {fileID: -310589799129505235, guid: fef0af30e46004a6c9a630b64065338f, type: 3}
   clodMaterial: {fileID: 2100000, guid: 76e1a4f2dc60a426d898400992a64552, type: 2}
+--- !u!114 &8735734108637169032
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6531514753795505868}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4b1fde2bfbbbe4c0899b754a5ad37ca6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GlowingEyes
+  eyeSize: 0.045
+  eyeSeparation: 0.038
+  forwardOffset: 0
+  heightOffset: 0
+  faceTilt: 22
+  glowIntensity: 3.2
+  lightIntensity: 0
+  lightRange: 1.5
+  flickerSpeed: 6.5
+  flickerDepth: 0.1
+  lightCullDistance: 26
+  maxSimultaneousLights: 14
 --- !u!1 &6683646251418664711
 GameObject:
   m_ObjectHideFlags: 0

@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 915a3056e7c5e4fab9ad4ac990ec469e, type: 3}
+  m_Name: Ability_HomingBolts
+  m_EditorClassIdentifier: Assembly-CSharp::AbilityDefinition
+  displayName: Seeker Bolts
+  description: Fires a volley of homing bolts at the nearest enemies.
+  icon: {fileID: 21300000, guid: d899cf14eb9a740178046713d7fb66c4, type: 3}
+  kind: 2
+  baseCooldown: 2.6
+  cooldownReductionPerLevel: 0.09
+  minimumCooldown: 0.7
+  baseDamageMultiplier: 0.85
+  damageGrowthPerLevel: 0.22
+  baseRadius: 7
+  radiusGrowthPerLevel: 0.5
+  baseCount: 3
+  maxLevel: 5
+  effectColour: {r: 1, g: 0.62, b: 0.25, a: 1}

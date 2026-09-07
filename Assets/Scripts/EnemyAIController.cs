@@ -110,13 +110,6 @@ public class EnemyAIController : MonoBehaviour
 
     private void UpdateAIState()
     {
-        // Once the player is dead, stop hunting and head back to where we started.
-        if (PlayerState.Instance != null && PlayerState.Instance.IsDead)
-        {
-            ReturnHome();
-            return;
-        }
-
         // Find player if reference is lost or not yet set
         if (player == null)
         {

@@ -31,8 +31,9 @@ public class ChestCooldown : MonoBehaviour
     [SerializeField] private float cooldownSeconds = 120f;
 
     [Tooltip("How many times this chest can be opened in total. " +
-             "After the last one it stays open permanently.")]
-    [SerializeField] private int maxUses = 3;
+             "Set to 0 (or less) for unlimited opens - the chest just keeps cycling " +
+             "through its cooldown forever.")]
+    [SerializeField] private int maxUses = 0;
 
     [Header("Timing")]
     [Tooltip("Time allowed for the lid to finish swinging shut before the clock starts. " +
@@ -52,7 +53,7 @@ public class ChestCooldown : MonoBehaviour
     public int UsesConsumed => usesConsumed;
 
     /// <summary>How many opens remain before the chest is spent for good.</summary>
-    public int UsesRemaining => Mathf.Max(0, maxUses - usesConsumed);
+    public int UsesRemaining => maxUses <= 0 ? int.MaxValue : Mathf.Max(0, maxUses - usesConsumed);
 
     /// <summary>True while the chest is waiting to become lootable again.</summary>
     public bool IsCoolingDown => phase == Phase.CoolingDown;
@@ -112,7 +113,7 @@ public class ChestCooldown : MonoBehaviour
         // wheel is still up or the lid is mid-swing.
         TreasureChest.ActiveChests.Remove(chest);
 
-        if (usesConsumed >= maxUses)
+        if (maxUses > 0 && usesConsumed >= maxUses)
         {
             // Final use: leave it open and unlootable for the rest of the run.
             phase = Phase.Exhausted;

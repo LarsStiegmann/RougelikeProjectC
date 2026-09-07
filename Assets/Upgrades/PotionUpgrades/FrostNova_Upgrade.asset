@@ -10,10 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 44047ea776626b545b5b9cfad4b15c35, type: 3}
-  m_Name: Armor1
+  m_Name: FrostNova_Upgrade
   m_EditorClassIdentifier: Assembly-CSharp::StatUpgrade
-  upgradeName: Armor +2
-  description: 
-  upgradeType: 6
-  rarity: 0
-  value: 2
+  upgradeName: Frost Nova
+  description: Unleash a freezing burst around you on a timer.
+  upgradeType: 11
+  rarity: 2
+  value: 0
+  ability: {fileID: 11400000, guid: 68095cff529bf43dda2097ed773d63c0, type: 2}

@@ -10,10 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 44047ea776626b545b5b9cfad4b15c35, type: 3}
-  m_Name: Armor1
+  m_Name: ArcaneOrbs_Upgrade
   m_EditorClassIdentifier: Assembly-CSharp::StatUpgrade
-  upgradeName: Armor +2
-  description: 
-  upgradeType: 6
-  rarity: 0
-  value: 2
+  upgradeName: Arcane Orbs
+  description: Glowing orbs wheel around you, burning anything they pass through.
+  upgradeType: 11
+  rarity: 2
+  value: 0
+  ability: {fileID: 11400000, guid: a1a95d55a98684b9bafc88a55f1e5889, type: 2}

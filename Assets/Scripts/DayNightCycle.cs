@@ -59,6 +59,13 @@ public class DayNightCycle : MonoBehaviour
 
     public float TimeOfDay => timeOfDay;
 
+    /// <summary>
+    /// 0 in full daylight, 1 at deep night. Read from the same curve that drives
+    /// the torches, so anything that lights up after dark stays in step with them.
+    /// Static so per-enemy effects can read it without a scene lookup every frame.
+    /// </summary>
+    public static float Darkness { get; private set; } = 1f;
+
     private void Start()
     {
         timeOfDay = startTime;
@@ -117,9 +124,15 @@ public class DayNightCycle : MonoBehaviour
         Apply();
     }
 
+    [Header("Phases")]
+    [Tooltip("When enabled, the cycle loops golden afternoon -> dusk -> night -> dawn and never reaches bright midday.")]
+    [SerializeField] private bool skipDay = true;
+
     private void Apply()
     {
-        float t = timeOfDay;
+        // With skipDay the accumulated phase maps onto t in [0.45 .. 1.08]:
+        // late golden light, sunset, a long night, then dawn - midday never happens.
+        float t = skipDay ? Mathf.Repeat(0.45f + timeOfDay * 0.63f, 1f) : timeOfDay;
         float elevation = Mathf.Sin(t * Mathf.PI * 2f) * 72f;
         bool night = elevation < 2f;
 
@@ -146,6 +159,8 @@ public class DayNightCycle : MonoBehaviour
             skyboxMaterial.SetFloat("_Exposure", skyExposure.Evaluate(t));
             skyboxMaterial.SetFloat("_AtmosphereThickness", atmosphereThickness.Evaluate(t));
         }
+
+        Darkness = torchFactor != null ? Mathf.Clamp01(torchFactor.Evaluate(t)) : 1f;
 
         if (torchLights != null)
         {
