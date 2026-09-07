@@ -3361,6 +3361,14 @@ MonoBehaviour:
   returnHomeAnimationSpeed: 0.5
   homeTurnSpeed: 220
   damageAchievement: {fileID: 11400000, guid: a330f8bd547e9a241bb6ff4991f64ca7, type: 2}
+  dreadKnightBoss: {fileID: 11400000, guid: dcfe7d948b4144fc6aafac1079d01782, type: 2}
+  golemBoss: {fileID: 11400000, guid: fcb521d9e3ccf40c2bf16775d2c7a91f, type: 2}
+  chieftainBoss: {fileID: 11400000, guid: 497454a80e2af4caabb9081f547ec71a, type: 2}
+  wraithLordBoss: {fileID: 11400000, guid: 260ec3120e1ca4e37a416764fd62f630, type: 2}
+  dreadKnightAchievement: {fileID: 11400000, guid: a157328dd1cfbd246acad44f07cc7ffd, type: 2}
+  golemAchievement: {fileID: 11400000, guid: f6ed76bad068fe84397faeb625643533, type: 2}
+  chieftainAchievement: {fileID: 11400000, guid: 38405bbab87b1c144a9d564190d94e01, type: 2}
+  wraithLordAchievement: {fileID: 11400000, guid: 7a1aa47bb8f988a4a9e41f695ca6cf40, type: 2}
 --- !u!136 &7176142858156361464
 CapsuleCollider:
   m_ObjectHideFlags: 0

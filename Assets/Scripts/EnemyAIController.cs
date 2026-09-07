@@ -56,6 +56,19 @@ public class EnemyAIController : MonoBehaviour
     private Camera mainCam;
     private Coroutine aiCoroutine;
 
+    [Header("Achievements")]
+    private EnemyVariant variant;
+
+    [SerializeField] private EnemyVariant dreadKnightBoss;
+    [SerializeField] private EnemyVariant golemBoss;
+    [SerializeField] private EnemyVariant chieftainBoss;
+    [SerializeField] private EnemyVariant wraithLordBoss;
+
+    [SerializeField] private Achievement dreadKnightAchievement;
+    [SerializeField] private Achievement golemAchievement;
+    [SerializeField] private Achievement chieftainAchievement;
+    [SerializeField] private Achievement wraithLordAchievement;
+
     private void Awake()
     {
         agent = GetComponent<NavMeshAgent>();
@@ -322,6 +335,11 @@ public class EnemyAIController : MonoBehaviour
         coinReward = Mathf.Max(0, newCoinReward);
     }
 
+    public void ConfigureVariant(EnemyVariant variant)
+    {
+        this.variant = variant;
+    }
+
     public void EnemyTakeDamage(float incomingDamage)
     {
         float damageTaken = incomingDamage;
@@ -463,7 +481,30 @@ public class EnemyAIController : MonoBehaviour
                 transform.position + Vector3.up * popupAnchorLocalY, coinReward);
         }
 
-        StatCounter.Instance.AddKill();
+        if (variant == dreadKnightBoss)
+        {
+            AchievementController.Instance.UnlockAchievement(dreadKnightAchievement);
+            StatCounter.Instance.AddBossKill();
+        }
+        else if (variant == golemBoss)
+        {
+            AchievementController.Instance.UnlockAchievement(golemAchievement);
+            StatCounter.Instance.AddBossKill();
+        }
+        else if (variant = chieftainBoss)
+        {
+            AchievementController.Instance.UnlockAchievement(chieftainAchievement);
+            StatCounter.Instance.AddBossKill();
+        }
+        else if (variant == wraithLordBoss)
+        {
+            AchievementController.Instance.UnlockAchievement(wraithLordAchievement);
+            StatCounter.Instance.AddBossKill();
+        }
+        else 
+        {
+            StatCounter.Instance.AddKill();
+        }
 
         Destroy(gameObject);
     }

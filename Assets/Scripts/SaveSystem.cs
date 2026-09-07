@@ -19,6 +19,7 @@ public class SaveSystem : MonoBehaviour
     public int allTimeKills;
     public int allTimeOpenedChests;
     public int deaths;
+    public int allTimeBosskills;
 
     public List<AchievementProgress> achievementProgress = new List<AchievementProgress>();
 
@@ -77,6 +78,7 @@ public class SaveSystem : MonoBehaviour
         data.allTimeKills = allTimeKills;
         data.allTimeOpenedChests = allTimeOpenedChests;
         data.deaths = deaths;
+        data.allTimeBossKills = allTimeBosskills;
 
         data.achievementProgress = new List<AchievementProgress>(achievementProgress);
 
@@ -112,6 +114,7 @@ public class SaveSystem : MonoBehaviour
         allTimeKills = data.allTimeKills;
         allTimeOpenedChests = data.allTimeOpenedChests;
         deaths = data.deaths;
+        allTimeBosskills = data.allTimeBossKills;
 
         achievementProgress = data.achievementProgress ?? new List<AchievementProgress>();
 

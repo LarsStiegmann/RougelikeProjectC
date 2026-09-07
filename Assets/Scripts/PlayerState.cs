@@ -206,16 +206,15 @@ public class PlayerState : MonoBehaviour
                 RaiseCritChance(upgrade.value);
                 Debug.Log(upgrade.value);
                 break;
+            case UpgradeType.CritDamage:
+                RaiseCritDamage(upgrade.value);
+                Debug.Log(upgrade.value);
+                break;
             case UpgradeType.Ability:
                 if (PlayerAbilities.Instance != null)
                 {
                     PlayerAbilities.Instance.Grant(upgrade.ability);
                 }
-                break;
-
-            case UpgradeType.CritDamage:
-                RaiseCritDamage(upgrade.value);
-                Debug.Log(upgrade.value);
                 break;
         }
     }

@@ -30,6 +30,10 @@ public class PlayerAbilities : MonoBehaviour
     [Tooltip("How far the ability looks for targets, as a multiple of its radius.")]
     [SerializeField] private float boltSearchMultiplier = 2.5f;
 
+    [SerializeField] private Achievement frostNovaAchievement;
+    [SerializeField] private Achievement orbitingOrbsAchievement;
+    [SerializeField] private Achievement homingBoltsAchievement;
+
     /// <summary>One ability the player owns, with its level and cooldown state.</summary>
     public class OwnedAbility
     {
@@ -83,6 +87,20 @@ public class PlayerAbilities : MonoBehaviour
             if (a.definition == definition)
             {
                 a.level = Mathf.Min(a.level + 1, Mathf.Max(1, definition.maxLevel));
+
+                switch (a.definition.kind)
+                {
+                    case AbilityKind.FrostNova:
+                        AchievementController.Instance.UpdateAchievement(frostNovaAchievement, a.level);
+                        break;
+                    case AbilityKind.OrbitingOrbs:
+                        AchievementController.Instance.UpdateAchievement(orbitingOrbsAchievement, a.level);
+                        break;
+                    case AbilityKind.HomingBolts:
+                        AchievementController.Instance.UpdateAchievement(homingBoltsAchievement, a.level);
+                        break;
+                }
+
                 return;
             }
         }
@@ -92,7 +110,24 @@ public class PlayerAbilities : MonoBehaviour
             definition = definition,
             level = 1,
             timer = Mathf.Max(0f, definition.CooldownAt(1) - initialDelay)
+
+
         });
+
+        switch (definition.kind)
+        {
+            case AbilityKind.FrostNova:
+                AchievementController.Instance.UpdateAchievement(frostNovaAchievement, 1);
+                break;
+            case AbilityKind.OrbitingOrbs:
+                AchievementController.Instance.UpdateAchievement(orbitingOrbsAchievement, 1);
+                break;
+            case AbilityKind.HomingBolts:
+                AchievementController.Instance.UpdateAchievement(homingBoltsAchievement, 1);
+                break;
+        }
+
+        return;
     }
 
     /// <summary>Current level of an ability, or 0 if it is not owned.</summary>

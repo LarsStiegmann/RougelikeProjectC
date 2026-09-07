@@ -10,9 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a6ea24a987920cc4781f3be305b77447, type: 3}
-  m_Name: Achi24
+  m_Name: Achi29
   m_EditorClassIdentifier: Assembly-CSharp::Achievement
-  id: Overkill
-  achievementName: Overkill
-  achievementDescription: Deal 150+ Damage with one Hit
-  requiredValue: 150
+  id: A_Giant_Golem
+  achievementName: A Giant Golem
+  achievementDescription: Kill a Golem Colossus Boss
+  progressType: 1
+  requiredValue: 1
+  isPlatinAchievement: 0

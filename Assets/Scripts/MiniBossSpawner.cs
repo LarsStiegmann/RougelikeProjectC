@@ -140,6 +140,7 @@ public class MiniBossSpawner : MonoBehaviour
         {
             ai.Configure(variant.maxHealth * mult, variant.damage * mult, variant.xpReward);
             ai.ConfigureCoins(Mathf.RoundToInt(variant.coinReward * coinMult));
+            ai.ConfigureVariant(variant);
         }
 
         boss.transform.localScale = Vector3.one * variant.modelScale;

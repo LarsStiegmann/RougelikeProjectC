@@ -8,6 +8,8 @@ public class StatCounter : MonoBehaviour
 
     public int chests { get; private set; }
 
+    public int bossKills { get; private set; }
+
     [SerializeField] private Achievement killsAchievement1;
     [SerializeField] private Achievement killsAchievement2;
 
@@ -19,6 +21,10 @@ public class StatCounter : MonoBehaviour
 
     [SerializeField] private Achievement firstDeathAchievement;
     [SerializeField] private Achievement deathsAchievement;
+
+    [SerializeField] private Achievement bossKillsRunAchievement;
+    [SerializeField] private Achievement bossKillsAll1Achievement;
+    [SerializeField] private Achievement bossKillsAll2Achievement;
 
     private void Awake()
     {
@@ -61,5 +67,16 @@ public class StatCounter : MonoBehaviour
 
         AchievementController.Instance.UpdateAchievement(firstDeathAchievement, SaveSystem.Instance.deaths);
         AchievementController.Instance.UpdateAchievement(deathsAchievement, SaveSystem.Instance.deaths);
+    }
+
+    public void AddBossKill()
+    {
+        bossKills++;
+
+        SaveSystem.Instance.allTimeBosskills++;
+
+        AchievementController.Instance.UpdateAchievement(bossKillsRunAchievement, bossKills);
+        AchievementController.Instance.UpdateAchievement(bossKillsAll1Achievement, SaveSystem.Instance.allTimeBosskills);
+        AchievementController.Instance.UpdateAchievement(bossKillsAll2Achievement, SaveSystem.Instance.allTimeBosskills);
     }
 }

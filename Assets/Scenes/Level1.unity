@@ -81475,6 +81475,9 @@ MonoBehaviour:
   chestAllTimeAchievement: {fileID: 11400000, guid: 638e8e8ec2d6876469aa1a308984157c, type: 2}
   firstDeathAchievement: {fileID: 11400000, guid: 722ecd2d4fc809045bd5f4d05493c13b, type: 2}
   deathsAchievement: {fileID: 11400000, guid: cf16860bcdb21e4438400d0c01a8c934, type: 2}
+  bossKillsRunAchievement: {fileID: 11400000, guid: dad8781694eccaf49b02c7779bc85549, type: 2}
+  bossKillsAll1Achievement: {fileID: 11400000, guid: 324111fcd528c83489908cced0254dcd, type: 2}
+  bossKillsAll2Achievement: {fileID: 11400000, guid: 06a0f1628f698b940bc8b271da7c989c, type: 2}
 --- !u!4 &1155322963
 Transform:
   m_ObjectHideFlags: 0
@@ -147248,6 +147251,9 @@ MonoBehaviour:
   initialDelay: 0.6
   boltSpeed: 16
   boltSearchMultiplier: 2.5
+  frostNovaAchievement: {fileID: 11400000, guid: d3bd1c21e1187724fa89a208fc2fc0d1, type: 2}
+  orbitingOrbsAchievement: {fileID: 11400000, guid: 69cd2a8dbce23a54eb0b502d10cbfba9, type: 2}
+  homingBoltsAchievement: {fileID: 11400000, guid: 66725781e4bffd04fbce8343ea1ee443, type: 2}
 --- !u!1 &1807678962
 GameObject:
   m_ObjectHideFlags: 0
@@ -148711,6 +148717,7 @@ MonoBehaviour:
   allTimeKills: 0
   allTimeOpenedChests: 0
   deaths: 0
+  allTimeBosskills: 0
   achievementProgress: []
 --- !u!4 &1817605940
 Transform:
