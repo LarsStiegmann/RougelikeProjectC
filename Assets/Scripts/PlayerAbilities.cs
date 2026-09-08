@@ -34,6 +34,11 @@ public class PlayerAbilities : MonoBehaviour
     [SerializeField] private Achievement orbitingOrbsAchievement;
     [SerializeField] private Achievement homingBoltsAchievement;
 
+    [SerializeField] private AudioClip[] freezeSounds;
+    [SerializeField] private AudioClip[] boltCastSounds;
+    [SerializeField] private AudioClip[] boltHitSounds;
+    [SerializeField] private AudioClip[] orbHitSounds;
+
     /// <summary>One ability the player owns, with its level and cooldown state.</summary>
     public class OwnedAbility
     {
@@ -211,7 +216,7 @@ public class PlayerAbilities : MonoBehaviour
 
         if (a.rigLevel != a.level)
         {
-            a.rig.Configure(a.definition, a.level, enemyLayer);
+            a.rig.Configure(a.definition, a.level, enemyLayer, orbHitSounds);
             a.rigLevel = a.level;
         }
 
@@ -299,7 +304,7 @@ public class PlayerAbilities : MonoBehaviour
         }
 
         AbilityBolt bolt = go.AddComponent<AbilityBolt>();
-        bolt.Launch(target, damage, boltSpeed, enemyLayer, colour);
+        bolt.Launch(target, damage, boltSpeed, enemyLayer, colour, boltCastSounds, boltHitSounds);
     }
 
     private void CastFrostNova(OwnedAbility a)
@@ -311,6 +316,8 @@ public class PlayerAbilities : MonoBehaviour
         Vector3 centre = transform.position + Vector3.up * castHeight;
 
         SpawnBurst(centre, radius, def.effectColour);
+
+        AudioController.Instance.PlayRandomAudio(freezeSounds, transform, 0.5f, true);
 
         Collider[] candidates = Physics.OverlapSphere(
             centre,

@@ -88,7 +88,7 @@ public class LevelUpController : MonoBehaviour
             return;
         }
 
-        AudioController.Instance.PlayRandomAudio(levelUpSounds, transform, 1f, false);
+        AudioController.Instance.PlayRandomAudio(levelUpSounds, transform, 0.5f, false);
 
         List<StatUpgrade> randomUpgrades = GetRandomUpgrades(slots);
 

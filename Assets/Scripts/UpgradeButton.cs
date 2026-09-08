@@ -50,7 +50,7 @@ public class UpgradeButton : MonoBehaviour
 
     public void Select()
     {
-        AudioController.Instance.PlayRandomAudio(buttonSounds, transform, 1f, false);
+        AudioController.Instance.PlayRandomAudio(buttonSounds, transform, 0.5f, false);
         PlayerState.Instance.ApplyUpgrade(upgrade);
         Debug.Log("Upgrade gewählt: " + upgrade.upgradeName);
     }

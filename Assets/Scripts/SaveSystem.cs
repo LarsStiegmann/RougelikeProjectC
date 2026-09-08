@@ -65,6 +65,7 @@ public class SaveSystem : MonoBehaviour
         if (HighScoreController.Instance != null)
         {
             data.highscores = new List<HighScoreEntry>(HighScoreController.Instance.Highscores);
+            Debug.Log("saved");
         }
 
         data.mouseSensitivity = mouseSensitivity;

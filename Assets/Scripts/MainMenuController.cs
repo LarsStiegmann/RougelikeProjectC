@@ -42,7 +42,7 @@ public class MainMenuController : MonoBehaviour
 
     private void PLaySound()
     {
-        AudioController.Instance.PlayRandomAudio(buttonSounds, transform, 1f, false);
+        AudioController.Instance.PlayRandomAudio(buttonSounds, transform, 0.5f, false);
     }
 
     public void StartGame()

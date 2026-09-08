@@ -34,7 +34,7 @@ public class AchievementNotification : MonoBehaviour
     {
         achievementName.text = achievement.achievementName;
 
-        AudioController.Instance.PlayRandomAudio(achievementAudios, transform, 1f, false);
+        AudioController.Instance.PlayRandomAudio(achievementAudios, transform, 0.5f, false);
 
         notificationPanel.SetActive(true);
 

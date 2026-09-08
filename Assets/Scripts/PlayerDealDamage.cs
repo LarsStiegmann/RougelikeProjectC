@@ -74,7 +74,7 @@ public class PlayerDealDamage : MonoBehaviour
 
         GameObject slash = Instantiate(shlashVFX, transform);
 
-        AudioController.Instance.PlayRandomAudio(swordSounds, transform, 0.7f, true);
+        AudioController.Instance.PlayRandomAudio(swordSounds, transform, 0.3f, true);
 
         slash.transform.localPosition = new Vector3(0f, slashHeight, 0f) + Vector3.forward * slashForwardOffset;
         slash.transform.localRotation = Quaternion.Euler(0f, slashYawOffset, 0f);

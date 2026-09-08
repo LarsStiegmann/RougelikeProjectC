@@ -40,12 +40,16 @@ public class OrbitingOrbs : MonoBehaviour
     private static Texture2D glowTexture;
     private static readonly int ColourId = Shader.PropertyToID("_Color");
 
-    public void Configure(AbilityDefinition def, int newLevel, LayerMask layer)
+    private AudioClip[] orbHitSounds;
+
+    public void Configure(AbilityDefinition def, int newLevel, LayerMask layer, AudioClip[] orbHits)
     {
         definition = def;
         level = newLevel;
         enemyLayer = layer;
         colour = def.effectColour;
+
+        orbHitSounds = orbHits;
 
         int wanted = Mathf.Max(1, def.CountAt(newLevel));
 
@@ -282,6 +286,8 @@ public class OrbitingOrbs : MonoBehaviour
 
                 hitCooldowns[enemy] = PerEnemyCooldown;
                 enemy.EnemyTakeDamage(damage);
+
+                AudioController.Instance.PlayRandomAudio(orbHitSounds, transform, 0.4f, true);
             }
         }
     }

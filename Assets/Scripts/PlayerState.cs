@@ -104,7 +104,7 @@ public class PlayerState : MonoBehaviour
 
     public void TakeDamage(float damage)
     {
-        AudioController.Instance.PlayRandomAudio(damageSounds, transform, 1f, true);
+        AudioController.Instance.PlayRandomAudio(damageSounds, transform, 0.3f, true);
 
         currentHealth -= CalculateDamage(damage);
         currentHealth = Mathf.Max(currentHealth, 0);
@@ -317,7 +317,7 @@ public class PlayerState : MonoBehaviour
             }
             hasDied = true;
 
-            AudioController.Instance.PlayRandomAudio(deathSounds, transform, 1f, true);
+            AudioController.Instance.PlayRandomAudio(deathSounds, transform, 0.3f, true);
 
             StatCounter.Instance.AddDeath();
 

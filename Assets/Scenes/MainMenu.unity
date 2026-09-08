@@ -3145,6 +3145,7 @@ MonoBehaviour:
   allTimeKills: 0
   allTimeOpenedChests: 0
   deaths: 0
+  allTimeBosskills: 0
   achievementProgress: []
 --- !u!4 &535388388
 Transform:
@@ -14327,7 +14328,7 @@ AudioSource:
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 8300000, guid: a9bcdf685e5f174449d055ab968f329b, type: 3}
   m_PlayOnAwake: 1
-  m_Volume: 0.7
+  m_Volume: 0.3
   m_Pitch: 1
   Loop: 1
   Mute: 0

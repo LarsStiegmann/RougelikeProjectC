@@ -491,7 +491,7 @@ public class EnemyAIController : MonoBehaviour
             AchievementController.Instance.UnlockAchievement(golemAchievement);
             StatCounter.Instance.AddBossKill();
         }
-        else if (variant = chieftainBoss)
+        else if (variant == chieftainBoss)
         {
             AchievementController.Instance.UnlockAchievement(chieftainAchievement);
             StatCounter.Instance.AddBossKill();

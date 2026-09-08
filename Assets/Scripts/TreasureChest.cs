@@ -123,7 +123,7 @@ public class TreasureChest : MonoBehaviour
             yield break;
         }
 
-        AudioController.Instance.PlayRandomAudio(openChestSounds, transform, 1f, true);
+        AudioController.Instance.PlayRandomAudio(openChestSounds, transform, 0.5f, true);
 
         float elapsed = 0f;
         while (elapsed < openDuration)
@@ -177,7 +177,7 @@ public class TreasureChest : MonoBehaviour
             yield break;
         }
 
-        AudioController.Instance.PlayRandomAudio(closeChestSounds, transform, 1f, true);
+        AudioController.Instance.PlayRandomAudio(closeChestSounds, transform, 0.5f, true);
 
         float elapsed = 0f;
         while (elapsed < closeDuration)

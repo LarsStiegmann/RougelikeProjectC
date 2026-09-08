@@ -16,12 +16,20 @@ public class AbilityBolt : MonoBehaviour
     private const float HitDistance = 0.9f;
     private const float MaxLife = 4f;
 
-    public void Launch(Transform newTarget, float newDamage, float newSpeed, LayerMask layer, Color colour)
+    private AudioClip[] boltCastSounds;
+    private AudioClip[] boltHitSounds;
+
+    public void Launch(Transform newTarget, float newDamage, float newSpeed, LayerMask layer, Color colour, AudioClip[] boltCasts, AudioClip[] boltHits)
     {
         target = newTarget;
         damage = newDamage;
         speed = newSpeed;
         enemyLayer = layer;
+
+        boltCastSounds = boltCasts;
+        boltHitSounds = boltHits;
+
+        AudioController.Instance.PlayRandomAudio(boltCastSounds, transform, 0.5f, true);
 
         Light glow = gameObject.AddComponent<Light>();
         glow.type = LightType.Point;
@@ -59,6 +67,8 @@ public class AbilityBolt : MonoBehaviour
             if (enemy != null)
             {
                 enemy.EnemyTakeDamage(damage);
+
+                AudioController.Instance.PlayRandomAudio(boltHitSounds, transform, 0.5f, true);
             }
 
             Destroy(gameObject);
