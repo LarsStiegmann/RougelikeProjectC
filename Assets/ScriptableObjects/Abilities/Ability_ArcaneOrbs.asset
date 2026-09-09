@@ -20,9 +20,11 @@ MonoBehaviour:
   cooldownReductionPerLevel: 0
   minimumCooldown: 0
   baseDamageMultiplier: 0.55
-  damageGrowthPerLevel: 0.15
+  damageGrowthPerLevel: 0.105
   baseRadius: 3
-  radiusGrowthPerLevel: 0.5
+  radiusGrowthPerLevel: 0.16
   baseCount: 3
-  maxLevel: 5
+  levelsPerExtraCount: 3
+  maxCount: 8
+  maxLevel: 20
   effectColour: {r: 0.42, g: 0.5, b: 1, a: 1}

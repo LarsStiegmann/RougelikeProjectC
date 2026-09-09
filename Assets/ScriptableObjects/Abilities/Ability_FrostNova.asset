@@ -17,12 +17,14 @@ MonoBehaviour:
   icon: {fileID: 21300000, guid: 4d19c26dfa43a493aae13dde15eaab8c, type: 3}
   kind: 0
   baseCooldown: 4
-  cooldownReductionPerLevel: 0.08
+  cooldownReductionPerLevel: 0.037
   minimumCooldown: 1.2
   baseDamageMultiplier: 0.9
-  damageGrowthPerLevel: 0.18
+  damageGrowthPerLevel: 0.14
   baseRadius: 5
-  radiusGrowthPerLevel: 0.5
+  radiusGrowthPerLevel: 0.3
   baseCount: 3
-  maxLevel: 5
+  levelsPerExtraCount: 99
+  maxCount: 1
+  maxLevel: 20
   effectColour: {r: 0.45, g: 0.85, b: 1, a: 1}

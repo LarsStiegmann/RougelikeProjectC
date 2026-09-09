@@ -10309,7 +10309,7 @@ Camera:
     height: 1
   near clip plane: 0.1
   far clip plane: 5000
-  field of view: 55
+  field of view: 50
   orthographic: 0
   orthographic size: 10
   m_Depth: -1
@@ -10336,7 +10336,7 @@ Transform:
   m_GameObject: {fileID: 153281675}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2.53934, y: 1.665, z: 1.9700003}
+  m_LocalPosition: {x: 0, y: 1.8399985, z: -15}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -145831,6 +145831,7 @@ MonoBehaviour:
   frameColour: {r: 0.09, g: 0.1, b: 0.14, a: 0.85}
   cooldownColour: {r: 0, g: 0, b: 0, a: 0.72}
   readyFlashColour: {r: 1, g: 1, b: 1, a: 0.55}
+  emptyFrameColour: {r: 0.09, g: 0.1, b: 0.14, a: 0.4}
   font: {fileID: 11400000, guid: 3d076443407d54cbe85d81535c102285, type: 2}
 --- !u!1 &1783218306
 GameObject:
@@ -148404,6 +148405,9 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   skipDay: 1
+  handoverBand: 14
+  handoverDip: 0.7
+  smoothCurveTangents: 1
 --- !u!4 &1813266146
 Transform:
   m_ObjectHideFlags: 0

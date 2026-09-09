@@ -14,6 +14,12 @@ public class PlayerAbilities : MonoBehaviour
 {
     public static PlayerAbilities Instance { get; private set; }
 
+    /// <summary>
+    /// How many abilities the player can carry at once. The HUD draws this many
+    /// slots from the start so the limit is visible before anything is picked up.
+    /// </summary>
+    public const int MaxAbilities = 2;
+
     [Tooltip("Same layer mask the auto-attack uses to find enemies.")]
     [SerializeField] private LayerMask enemyLayer;
 
@@ -79,6 +85,10 @@ public class PlayerAbilities : MonoBehaviour
     /// <summary>
     /// Grants an ability, or levels it up if it is already owned. Called from
     /// PlayerState.ApplyUpgrade when an Ability upgrade is applied.
+    ///
+    /// The player carries at most MaxAbilities. Once both slots are taken a third
+    /// ability is not thrown away - it is converted into a level for whichever
+    /// carried ability is furthest from its cap, so the reward still counts.
     /// </summary>
     public void Grant(AbilityDefinition definition)
     {
@@ -91,49 +101,76 @@ public class PlayerAbilities : MonoBehaviour
         {
             if (a.definition == definition)
             {
-                a.level = Mathf.Min(a.level + 1, Mathf.Max(1, definition.maxLevel));
-
-                switch (a.definition.kind)
-                {
-                    case AbilityKind.FrostNova:
-                        AchievementController.Instance.UpdateAchievement(frostNovaAchievement, a.level);
-                        break;
-                    case AbilityKind.OrbitingOrbs:
-                        AchievementController.Instance.UpdateAchievement(orbitingOrbsAchievement, a.level);
-                        break;
-                    case AbilityKind.HomingBolts:
-                        AchievementController.Instance.UpdateAchievement(homingBoltsAchievement, a.level);
-                        break;
-                }
-
+                LevelUp(a);
                 return;
             }
         }
 
-        owned.Add(new OwnedAbility
+        if (owned.Count >= MaxAbilities)
+        {
+            OwnedAbility lowest = null;
+            foreach (OwnedAbility a in owned)
+            {
+                if (a.definition == null)
+                {
+                    continue;
+                }
+
+                if (lowest == null || a.level < lowest.level)
+                {
+                    lowest = a;
+                }
+            }
+
+            if (lowest != null)
+            {
+                LevelUp(lowest);
+            }
+
+            return;
+        }
+
+        OwnedAbility added = new OwnedAbility
         {
             definition = definition,
             level = 1,
             timer = Mathf.Max(0f, definition.CooldownAt(1) - initialDelay)
+        };
 
+        owned.Add(added);
+        ReportAchievement(added);
+    }
 
-        });
+    /// <summary>Raises an owned ability by one, capped by its own ceiling.</summary>
+    private void LevelUp(OwnedAbility a)
+    {
+        a.level = Mathf.Min(a.level + 1, Mathf.Max(1, a.definition.maxLevel));
+        ReportAchievement(a);
+    }
 
-        switch (definition.kind)
+    private void ReportAchievement(OwnedAbility a)
+    {
+        if (a == null || a.definition == null || AchievementController.Instance == null)
         {
-            case AbilityKind.FrostNova:
-                AchievementController.Instance.UpdateAchievement(frostNovaAchievement, 1);
-                break;
-            case AbilityKind.OrbitingOrbs:
-                AchievementController.Instance.UpdateAchievement(orbitingOrbsAchievement, 1);
-                break;
-            case AbilityKind.HomingBolts:
-                AchievementController.Instance.UpdateAchievement(homingBoltsAchievement, 1);
-                break;
+            return;
         }
 
-        return;
+        switch (a.definition.kind)
+        {
+            case AbilityKind.FrostNova:
+                AchievementController.Instance.UpdateAchievement(frostNovaAchievement, a.level);
+                break;
+            case AbilityKind.OrbitingOrbs:
+                AchievementController.Instance.UpdateAchievement(orbitingOrbsAchievement, a.level);
+                break;
+            case AbilityKind.HomingBolts:
+                AchievementController.Instance.UpdateAchievement(homingBoltsAchievement, a.level);
+                break;
+        }
     }
+
+    /// <summary>True once both ability slots are taken.</summary>
+    public bool IsFull => owned.Count >= MaxAbilities;
 
     /// <summary>Current level of an ability, or 0 if it is not owned.</summary>
     public int LevelOf(AbilityDefinition definition)

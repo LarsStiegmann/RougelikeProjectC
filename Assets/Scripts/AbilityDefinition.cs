@@ -63,31 +63,44 @@ public class AbilityDefinition : ScriptableObject
     [Tooltip("Projectile or orbiter count at level 1, for abilities that use it.")]
     public int baseCount = 3;
 
+    [Tooltip("Levels needed to gain one more projectile / orbiter.")]
+    public int levelsPerExtraCount = 2;
+
+    [Tooltip("Hard ceiling on projectiles / orbiters, so a maxed ability stays readable and cheap.")]
+    public int maxCount = 8;
+
     [Header("Progression")]
-    public int maxLevel = 5;
+    public int maxLevel = 20;
 
     [Header("Look")]
     [Tooltip("Tint used for the burst particles and flash light.")]
     public Color effectColour = new Color(0.45f, 0.85f, 1f);
 
+    /// <summary>Levels are clamped to the ability's own ceiling everywhere below.</summary>
+    private int Steps(int level)
+    {
+        return Mathf.Clamp(level, 1, Mathf.Max(1, maxLevel)) - 1;
+    }
+
     public float CooldownAt(int level)
     {
-        float reduction = 1f - cooldownReductionPerLevel * (level - 1);
-        return Mathf.Max(minimumCooldown, baseCooldown * Mathf.Max(0.1f, reduction));
+        float reduction = 1f - cooldownReductionPerLevel * Steps(level);
+        return Mathf.Max(minimumCooldown, baseCooldown * Mathf.Max(0.05f, reduction));
     }
 
     public float DamageMultiplierAt(int level)
     {
-        return baseDamageMultiplier + damageGrowthPerLevel * (level - 1);
+        return baseDamageMultiplier + damageGrowthPerLevel * Steps(level);
     }
 
     public float RadiusAt(int level)
     {
-        return baseRadius + radiusGrowthPerLevel * (level - 1);
+        return baseRadius + radiusGrowthPerLevel * Steps(level);
     }
 
     public int CountAt(int level)
     {
-        return baseCount + (level - 1) / 2;
+        int extra = Steps(level) / Mathf.Max(1, levelsPerExtraCount);
+        return Mathf.Min(Mathf.Max(1, maxCount), baseCount + extra);
     }
 }

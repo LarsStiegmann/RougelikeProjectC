@@ -22,6 +22,10 @@ public class AbilityHudBar : MonoBehaviour
     [SerializeField] private Color frameColour = new Color(0.09f, 0.10f, 0.14f, 0.85f);
     [SerializeField] private Color cooldownColour = new Color(0f, 0f, 0f, 0.72f);
     [SerializeField] private Color readyFlashColour = new Color(1f, 1f, 1f, 0.55f);
+
+    [Tooltip("Frame colour for a slot the player has not filled yet.")]
+    [SerializeField] private Color emptyFrameColour = new Color(0.09f, 0.10f, 0.14f, 0.4f);
+
     [SerializeField] private TMP_FontAsset font;
 
     private class Slot
@@ -50,16 +54,32 @@ public class AbilityHudBar : MonoBehaviour
 
         IReadOnlyList<PlayerAbilities.OwnedAbility> owned = abilities.Owned;
 
-        // Add a slot for anything newly acquired.
-        for (int i = slots.Count; i < owned.Count; i++)
+        // Draw every slot the player could ever fill, not just the filled ones,
+        // so the two-slot limit is visible from the start of the run.
+        for (int i = slots.Count; i < PlayerAbilities.MaxAbilities; i++)
         {
-            slots.Add(BuildSlot(owned[i].definition, i));
+            slots.Add(BuildSlot(i));
         }
 
-        for (int i = 0; i < slots.Count && i < owned.Count; i++)
+        for (int i = 0; i < slots.Count; i++)
         {
             Slot slot = slots[i];
+
+            if (i >= owned.Count)
+            {
+                ShowEmpty(slot);
+                continue;
+            }
+
             PlayerAbilities.OwnedAbility ability = owned[i];
+
+            // An empty slot just got filled: adopt the ability's art and name.
+            if (slot.definition != ability.definition)
+            {
+                Assign(slot, ability.definition);
+            }
+
+            slot.frame.color = frameColour;
 
             float charge = ability.Charge;
 
@@ -95,11 +115,49 @@ public class AbilityHudBar : MonoBehaviour
         }
     }
 
-    private Slot BuildSlot(AbilityDefinition definition, int index)
+    /// <summary>Blanks a slot the player has not earned yet.</summary>
+    private void ShowEmpty(Slot slot)
     {
-        var slot = new Slot { definition = definition };
+        slot.definition = null;
+        slot.frame.color = emptyFrameColour;
+        slot.icon.sprite = null;
+        slot.icon.color = Color.clear;
+        slot.cooldownOverlay.fillAmount = 0f;
+        slot.readyFlash.color = Color.clear;
+        slot.lastCharge = 0f;
+        slot.flashTimer = 0f;
 
-        GameObject go = new GameObject("AbilitySlot_" + (definition != null ? definition.displayName : index.ToString()));
+        if (slot.levelLabel != null)
+        {
+            slot.levelLabel.text = string.Empty;
+        }
+    }
+
+    private void Assign(Slot slot, AbilityDefinition definition)
+    {
+        slot.definition = definition;
+
+        if (definition != null && definition.icon != null)
+        {
+            slot.icon.sprite = definition.icon;
+            slot.icon.color = Color.white;
+        }
+        else
+        {
+            slot.icon.color = Color.clear;
+        }
+
+        if (slot.root != null)
+        {
+            slot.root.name = "AbilitySlot_" + (definition != null ? definition.displayName : "Empty");
+        }
+    }
+
+    private Slot BuildSlot(int index)
+    {
+        var slot = new Slot();
+
+        GameObject go = new GameObject("AbilitySlot_Empty_" + index);
         slot.root = go.AddComponent<RectTransform>();
         slot.root.SetParent(transform, false);
         slot.root.anchorMin = new Vector2(0f, 0f);
@@ -108,20 +166,13 @@ public class AbilityHudBar : MonoBehaviour
         slot.root.sizeDelta = new Vector2(slotSize, slotSize);
         slot.root.anchoredPosition = firstSlotPosition + new Vector2(index * (slotSize + slotSpacing), 0f);
 
-        slot.frame = CreateImage(slot.root, "Frame", frameColour);
+        slot.frame = CreateImage(slot.root, "Frame", emptyFrameColour);
         StretchFull(slot.frame.rectTransform);
 
-        slot.icon = CreateImage(slot.root, "Icon", Color.white);
+        // Starts blank; Assign() fills it in the moment an ability lands here.
+        slot.icon = CreateImage(slot.root, "Icon", Color.clear);
         StretchFull(slot.icon.rectTransform, 8f);
-        if (definition != null && definition.icon != null)
-        {
-            slot.icon.sprite = definition.icon;
-        }
-        else
-        {
-            // No art yet: show the frame rather than a blank white square.
-            slot.icon.color = Color.clear;
-        }
+        slot.icon.sprite = null;
         slot.icon.preserveAspect = true;
 
         slot.cooldownOverlay = CreateImage(slot.root, "Cooldown", cooldownColour);
@@ -130,7 +181,7 @@ public class AbilityHudBar : MonoBehaviour
         slot.cooldownOverlay.fillMethod = Image.FillMethod.Radial360;
         slot.cooldownOverlay.fillOrigin = (int)Image.Origin360.Top;
         slot.cooldownOverlay.fillClockwise = true;
-        slot.cooldownOverlay.fillAmount = 1f;
+        slot.cooldownOverlay.fillAmount = 0f;
 
         slot.readyFlash = CreateImage(slot.root, "ReadyFlash", Color.clear);
         StretchFull(slot.readyFlash.rectTransform);

@@ -26,6 +26,17 @@ public class OrbitingOrbs : MonoBehaviour
     private float spin;
     private Color colour = new Color(0.55f, 0.75f, 1f);
 
+    private Vector3 ringCentre;
+    private bool centreReady;
+
+    // How quickly the ring centre chases the player. High enough that the ring
+    // never visibly lags, low enough to swallow a single jittery frame of
+    // CharacterController sliding along a prop.
+    private const float FollowSharpness = 25f;
+
+    // Past this gap the ring snaps instead of sweeping - covers spawns and teleports.
+    private const float SnapDistance = 5f;
+
     private const float PerEnemyCooldown = 0.55f;
     private const float OrbHitRadius = 0.85f;
     private const float RingHeight = 1f;
@@ -203,6 +214,23 @@ public class OrbitingOrbs : MonoBehaviour
 
         Camera cam = Camera.main;
 
+        // The ring used to be placed in local space, so it inherited the player's
+        // rotation - a single sharp turn whipped every orb several metres sideways,
+        // which is exactly when the player turns most: dodging props and enemies.
+        // Placing them in world space around the player's position instead means
+        // facing has no effect on the ring at all.
+        Vector3 target = transform.position;
+
+        if (!centreReady || (target - ringCentre).sqrMagnitude > SnapDistance * SnapDistance)
+        {
+            ringCentre = target;
+            centreReady = true;
+        }
+        else
+        {
+            ringCentre = Vector3.Lerp(ringCentre, target, 1f - Mathf.Exp(-FollowSharpness * Time.deltaTime));
+        }
+
         for (int i = 0; i < orbs.Count; i++)
         {
             if (orbs[i] == null)
@@ -217,7 +245,7 @@ public class OrbitingOrbs : MonoBehaviour
             float bob = Mathf.Sin((Time.time * BobSpeed) + i * 1.7f) * BobHeight;
 
             Vector3 offset = Quaternion.Euler(0f, angle, 0f) * Vector3.forward * radius;
-            orbs[i].localPosition = offset + Vector3.up * (RingHeight + bob);
+            orbs[i].position = ringCentre + offset + Vector3.up * (RingHeight + bob);
 
             // Keep the halo facing the camera.
             if (cam != null && i < halos.Count && halos[i] != null)
@@ -292,6 +320,16 @@ public class OrbitingOrbs : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// The depth-ignoring orb shader, falling back to Sprites/Default if the
+    /// asset is ever missing from a build.
+    /// </summary>
+    private static Shader GetOrbShader()
+    {
+        Shader s = Shader.Find("Roguelike/OrbGlow");
+        return s != null ? s : Shader.Find("Sprites/Default");
+    }
+
     private static Material GetCoreMaterial()
     {
         if (coreMaterial != null)
@@ -300,12 +338,11 @@ public class OrbitingOrbs : MonoBehaviour
         }
 
         // Unlit and untextured, so the core is a flat blob of colour rather than
-        // a shaded ball that reads as a marble.
-        coreMaterial = new Material(Shader.Find("Sprites/Default"));
+        // a shaded ball that reads as a marble. OrbGlow draws with ZTest Always,
+        // so the ring sweeps through rocks and arches instead of being clipped by
+        // them - Sprites/Default has no ZTest property and could not be told to.
+        coreMaterial = new Material(GetOrbShader());
         coreMaterial.name = "OrbCore";
-        coreMaterial.SetInt("unity_GUIZTestMode", (int)UnityEngine.Rendering.CompareFunction.LessEqual);
-        coreMaterial.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent;
-        coreMaterial.enableInstancing = true;
         return coreMaterial;
     }
 
@@ -316,11 +353,9 @@ public class OrbitingOrbs : MonoBehaviour
             return glowMaterial;
         }
 
-        glowMaterial = new Material(Shader.Find("Sprites/Default"));
+        glowMaterial = new Material(GetOrbShader());
         glowMaterial.name = "OrbGlow";
         glowMaterial.mainTexture = GetGlowTexture();
-        glowMaterial.SetInt("unity_GUIZTestMode", (int)UnityEngine.Rendering.CompareFunction.LessEqual);
-        glowMaterial.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent;
         return glowMaterial;
     }
 
