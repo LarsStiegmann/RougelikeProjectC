@@ -155,7 +155,7 @@ public class GameOverController : MonoBehaviour
 
         if (HighScoreController.Instance != null && StatCounter.Instance != null)
         {
-            HighScoreController.Instance.AddScore(playerName, StatCounter.Instance.kills);
+            HighScoreController.Instance.AddScore(playerName, StatCounter.Instance.score);
             Debug.Log("eingetragen");
         }
 

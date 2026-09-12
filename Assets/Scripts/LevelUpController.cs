@@ -27,6 +27,14 @@ public class LevelUpController : MonoBehaviour
         }
     }
 
+    //_________________________________________________________________________________
+    //KI unterstützt
+    //Tool: ChatGPT (OpenAI, GPT-5.5)
+    //Prompt: ich will ein LevelMenü machen,
+    //in dem drei zufällige Stats angeboten werden sollen,
+    //zwischen denen der Spieler auswählt welches aufgewertet werden soll
+    //*Das zufällige Auswählen von Upgrades ist von der KI,
+    //das Zuteilen auf Buttons nicht und die Anwendung der Upgrades auch nicht.*
     public List<StatUpgrade> GetRandomUpgrades(int amount)
     {
         List<StatUpgrade> result = new List<StatUpgrade>();
@@ -43,7 +51,7 @@ public class LevelUpController : MonoBehaviour
 
         return result;
     }
-
+    
     private StatUpgrade GetRandomUpgrade(List<StatUpgrade> alreadySelected)
     {
         float randomValue = Random.Range(0f, 100f);
@@ -73,7 +81,7 @@ public class LevelUpController : MonoBehaviour
 
         return available[Random.Range(0, available.Count)];
     }
-
+    //_________________________________________________________________________________
 
     public void Open()
     {

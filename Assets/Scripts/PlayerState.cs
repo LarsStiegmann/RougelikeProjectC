@@ -123,9 +123,6 @@ public class PlayerState : MonoBehaviour
 
     public void Heal(float amount)
     {
-        // A corpse does not heal: regeneration and life steal used to revive the
-        // player above zero after Die() had already fired, which made death
-        // look like it simply never happened.
         if (hasDied)
         {
             return;

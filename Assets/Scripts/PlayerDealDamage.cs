@@ -53,6 +53,11 @@ public class PlayerDealDamage : MonoBehaviour
         }
     }
 
+    //_________________________________________________________________________________________________________
+    //KI unterstützt
+    //Tool: ChatGPT (OpenAI, GPT-5.5)
+    //Prompt: Ich möchte einen AutoAttack Slash in bestimmten
+    //Zeitabständen haben, der Gegnern Schaden macht.
     private void PerformAttack()
     {
         SpawnSlash();
@@ -149,6 +154,8 @@ public class PlayerDealDamage : MonoBehaviour
 
         return hitCount;
     }
+    //_________________________________________________________________________________________________________
+
 
 
     private bool IsBlocked(EnemyAIController enemy)

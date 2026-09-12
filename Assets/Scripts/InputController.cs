@@ -26,6 +26,13 @@ public class InputController : MonoBehaviour
         SceneManager.sceneLoaded += OnSceneLoaded;
     }
 
+    //______________________________________________________________
+    //KI unterstützt
+    //Tool: ChatGPT (OpenAI, GPT-5.5)
+    //Prompt: wie würde ein InputManager aussehen?
+    //*Dieses Skript wurde durch verschiedenste Probleme
+    //mehrfach komplett überarbeitet und dieser Prompt ist
+    //lediglich der Anfang.*
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         if (Actions == null)
@@ -44,6 +51,7 @@ public class InputController : MonoBehaviour
             Actions.Player.Enable();
         }
     }
+    //______________________________________________________________
 
     private void OnDestroy()
     {

@@ -150,6 +150,12 @@ public class CharacterMovement : MonoBehaviour
         Look();
     }
 
+    //___________________________________________________________________________________________
+    //KI unterstützt
+    //Tool: ChatGPT (OpenAI, GPT-5.5)
+    //Prompt: kannst du mir ein Beispiel für einen CharacterController + 3rd Person Kamera
+    //mit dem neuen Input System geben? 
+
     private void OnMove(InputAction.CallbackContext context)
     {
         moveInput = context.ReadValue<Vector2>();
@@ -262,6 +268,7 @@ public class CharacterMovement : MonoBehaviour
 
         return Mathf.Clamp(lfAngle, lfMin, lfMax);
     }
+    //___________________________________________________________________________________________
 
     private void UpdateAnimator()
     {

@@ -30,6 +30,16 @@ public class AchievementController : MonoBehaviour
         return SaveSystem.Instance.unlockedAchievements.Contains(achievement.id);
     }
 
+    //__________________________________________________________________________________
+    //KI unterstützt
+    //Tool: ChatGPT (OpenAI, GPT-5.5)
+    //Prompt: Ich möchte meinem Projekt Erfolge hinzufügen,
+    //die im Hauptmenü angesehen werden können um zu sehen
+    //ob sie bereits freigeschaltet wurden.
+    //*die grundlegende Idee eine Liste mit allen und eine mit freigeschalteten
+    //Erfolgen zu haben und zu vergleichen kommt von der KI. Die Enbindung 
+    //in das SaveSystem sowie die Freischaltung der Erfolge nicht.*
+
     public void UnlockAchievement(Achievement achievement)
     {
         if (IsUnlocked(achievement))
@@ -41,10 +51,14 @@ public class AchievementController : MonoBehaviour
 
         SaveSystem.Instance.Save();
 
-        AchievementNotification.Instance.ShowNotification(achievement);
+        if (achievement != platin)
+        {
+            AchievementNotification.Instance.ShowNotification(achievement);
 
-        CheckAchievements();
+            CheckAchievements();
+        }
     }
+    //__________________________________________________________________________________
 
     public void UpdateAchievement(Achievement achievement, float currentValue)
     {
@@ -62,6 +76,12 @@ public class AchievementController : MonoBehaviour
             UnlockAchievement(achievement);
         }
     }
+
+    //_______________________________________________________________________________
+    //KI unterstützt
+    //Tool: ChatGPT (OpenAI, GPT-5.5)
+    //Prompt: ich möchte, dass man im Menü den Fortschritt von Erfolgen sehen kann.
+    //In der Form z.B. 1 / 5
 
     private AchievementProgress GetProgress(Achievement achievement)
     {
@@ -90,6 +110,7 @@ public class AchievementController : MonoBehaviour
 
         return progress;
     }
+    //_______________________________________________________________________________
 
     public float GetCurrentProgress(Achievement achievement)
     {
