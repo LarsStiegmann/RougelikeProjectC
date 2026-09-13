@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 44047ea776626b545b5b9cfad4b15c35, type: 3}
   m_Name: Speed3
   m_EditorClassIdentifier: Assembly-CSharp::StatUpgrade
-  upgradeName: Speed +3
+  upgradeName: Speed +1.5
   description: 
   upgradeType: 4
   rarity: 2
-  value: 1.1
+  value: 1.5
   ability: {fileID: 0}

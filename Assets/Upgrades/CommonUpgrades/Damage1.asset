@@ -16,5 +16,5 @@ MonoBehaviour:
   description: 
   upgradeType: 1
   rarity: 0
-  value: 4
+  value: 5
   ability: {fileID: 0}

@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 44047ea776626b545b5b9cfad4b15c35, type: 3}
   m_Name: Range1
   m_EditorClassIdentifier: Assembly-CSharp::StatUpgrade
-  upgradeName: Range +1
+  upgradeName: Range +0.5
   description: 
   upgradeType: 8
   rarity: 0
