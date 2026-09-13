@@ -173,12 +173,12 @@ public class PauseMenuController : MonoBehaviour
     {
         healthAmountText.text = PlayerState.Instance.currentMaxHealth.ToString();
         healthRegenerationAmountText.text = PlayerState.Instance.currentHealthRegeneration.ToString();
-        lifeStealAmountText.text = PlayerState.Instance.currentLifeSteal.ToString();
+        lifeStealAmountText.text = PlayerState.Instance.currentLifeSteal.ToString() + "%";
         armorAmountText.text = PlayerState.Instance.currentArmor.ToString();
         damageAmountText.text = PlayerState.Instance.currentDamage.ToString();
         attackSpeedAmountText.text = PlayerState.Instance.bonusAttackSpeedPercentage.ToString() + "%";
         rangeAmountText.text = PlayerState.Instance.currentAttackRange.ToString();
-        critChanceAmountText.text = PlayerState.Instance.currentCritChance.ToString() + "%";
+        critChanceAmountText.text = (PlayerState.Instance.currentCritChance * 100).ToString() + "%";
         critDamageAmountText.text = PlayerState.Instance.currentCritMultiplier.ToString();
         speedAmountText.text = PlayerState.Instance.currentSpeed.ToString();
         jumpHeightAmountText.text = PlayerState.Instance.currentJumpForce.ToString();

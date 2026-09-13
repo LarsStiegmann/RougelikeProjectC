@@ -177,6 +177,9 @@ public class PlayerDealDamage : MonoBehaviour
         for (int i = 0; i < hitCount; i++)
         {
             inArc[i].Value.EnemyTakeDamage(PlayerState.Instance.currentDamage);
+
+            float enemyCurrentHealth = inArc[i].Value.currentHealth;
+            PlayerState.Instance.Heal(PlayerState.Instance.currentDamage * (PlayerState.Instance.currentLifeSteal / 100));
         }
 
         return hitCount;

@@ -19,7 +19,7 @@ public class EnemyAIController : MonoBehaviour
     [SerializeField] private Vector2 healthBarWorldSize = new Vector2(1.0f, 0.14f);
     [SerializeField] private float maxHealth = 20f;
 
-    private float currentHealth;
+    public float currentHealth { get; private set; }
 
     private NavMeshAgent agent;
     private Animator animator;
@@ -327,8 +327,6 @@ public class EnemyAIController : MonoBehaviour
         currentHealth -= damageTaken;
         currentHealth = Mathf.Max(currentHealth, 0);
         UpdateHealthBar();
-
-        PlayerState.Instance.Heal(incomingDamage * (PlayerState.Instance.currentLifeSteal / 100));
 
         DamagePopupSpawner.Spawn(
             transform.position + Vector3.up * popupAnchorLocalY,
