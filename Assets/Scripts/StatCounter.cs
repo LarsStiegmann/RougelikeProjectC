@@ -10,6 +10,8 @@ public class StatCounter : MonoBehaviour
 
     public int bossKills { get; private set; }
 
+    public int score { get; private set; }
+
     [SerializeField] private Achievement killsAchievement1;
     [SerializeField] private Achievement killsAchievement2;
 
@@ -41,6 +43,7 @@ public class StatCounter : MonoBehaviour
     public void AddKill()
     {
         kills++;
+        score++;
 
         SaveSystem.Instance.allTimeKills++;
 
@@ -72,6 +75,7 @@ public class StatCounter : MonoBehaviour
     public void AddBossKill()
     {
         bossKills++;
+        score += 5;
 
         SaveSystem.Instance.allTimeBosskills++;
 
