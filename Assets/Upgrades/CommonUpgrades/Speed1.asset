@@ -15,4 +15,6 @@ MonoBehaviour:
   upgradeName: Speed 1
   description: 
   upgradeType: 4
-  value: 1
+  rarity: 0
+  value: 0.4
+  ability: {fileID: 0}

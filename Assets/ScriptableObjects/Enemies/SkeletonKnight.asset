@@ -14,10 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyVariant
   displayName: Skeleton Knight
   meshChildName: Character_Skeleton_Knight
-  maxHealth: 45
-  damage: 18
-  xpReward: 22
+  maxHealth: 55
+  damage: 15
+  xpReward: 26
   coinReward: 3
   weight: 12
-  unlockAtMinutes: 2
+  unlockAtMinutes: 3
   modelScale: 1.05

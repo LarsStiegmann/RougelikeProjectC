@@ -14,10 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyVariant
   displayName: Tormented Soul
   meshChildName: Character_Tormented_Soul
-  maxHealth: 38
-  damage: 19
-  xpReward: 24
+  maxHealth: 44
+  damage: 16
+  xpReward: 26
   coinReward: 3
   weight: 12
-  unlockAtMinutes: 2
+  unlockAtMinutes: 3.5
   modelScale: 1.05

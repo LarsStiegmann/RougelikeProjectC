@@ -3,12 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
-/// <summary>
-/// Spawns Megabonk-style mini-bosses on a timer: a red telegraph flares on the
-/// ground, then a giant elite erupts (EnemyEmerge handles the dig-out), wearing a
-/// golden crown and a red aura light. Each successive boss is stronger.
-/// Uses only the public Configure API of the enemy — no controller scripts touched.
-/// </summary>
+    //_________________________________________________________________________________________________________
+    //Quelle: KI (Claude Opus 5)
+    //Prompt: Generate Mini boss spawner for the game run
+    //Datum: 28.08.2026
 public class MiniBossSpawner : MonoBehaviour
 {
     [Header("Timing")]
@@ -17,6 +15,12 @@ public class MiniBossSpawner : MonoBehaviour
 
     [Header("Scaling per boss")]
     [SerializeField] private float statGrowth = 1.3f;
+
+    [Tooltip("Boss damage multiplier per boss already spawned. Kept below the health growth so late bosses are long fights, not one-shots.")]
+    [SerializeField] private float damageGrowth = 1.12f;
+
+    [Tooltip("Boss XP multiplier per boss already spawned.")]
+    [SerializeField] private float xpGrowth = 1.15f;
     [SerializeField] private float coinGrowth = 1.25f;
 
     [Header("Placement")]
@@ -43,8 +47,6 @@ public class MiniBossSpawner : MonoBehaviour
     {
         nextSpawnTime = Time.timeSinceLevelLoad + firstSpawnAt;
 
-        // Bosses are assembled inside this inactive holder so Configure lands
-        // before Awake copies maxHealth into currentHealth.
         GameObject holder = new GameObject("~bossNursery");
         holder.transform.SetParent(transform, false);
         holder.SetActive(false);
@@ -65,7 +67,6 @@ public class MiniBossSpawner : MonoBehaviour
         }
     }
 
-    /// <summary>Force a boss right now (testing).</summary>
     public void SpawnNow()
     {
         StartCoroutine(TelegraphAndSpawn());
@@ -79,7 +80,6 @@ public class MiniBossSpawner : MonoBehaviour
             yield break;
         }
 
-        // --- telegraph: pulsing red light column + dust swirl ---
         GameObject tele = new GameObject("BossTelegraph");
         tele.transform.position = point;
 
@@ -111,6 +111,8 @@ public class MiniBossSpawner : MonoBehaviour
 
         EnemyVariant variant = bossVariants[bossCount % bossVariants.Count];
         float mult = Mathf.Pow(statGrowth, bossCount);
+        float dmgMult = Mathf.Pow(damageGrowth, bossCount);
+        float xpMult = Mathf.Pow(xpGrowth, bossCount);
         float coinMult = Mathf.Pow(coinGrowth, bossCount);
         bossCount++;
 
@@ -138,13 +140,13 @@ public class MiniBossSpawner : MonoBehaviour
         EnemyAIController ai = boss.GetComponent<EnemyAIController>();
         if (ai != null)
         {
-            ai.Configure(variant.maxHealth * mult, variant.damage * mult, variant.xpReward);
+            ai.Configure(variant.maxHealth * mult, variant.damage * dmgMult, variant.xpReward * xpMult);
             ai.ConfigureCoins(Mathf.RoundToInt(variant.coinReward * coinMult));
             ai.ConfigureVariant(variant);
         }
 
         boss.transform.localScale = Vector3.one * variant.modelScale;
-        boss.transform.SetParent(null, false);   // leave the nursery -> Awake runs with configured stats
+        boss.transform.SetParent(null, false);
         boss.transform.position = point;
 
         Vector3 toPlayer = PlayerState.Instance != null
@@ -167,7 +169,7 @@ public class MiniBossSpawner : MonoBehaviour
 
     private IEnumerator AttachRegalia(GameObject boss, float scale)
     {
-        // wait for the emerge rise to finish so bounds are final
+
         yield return new WaitForSeconds(1.3f);
         if (boss == null)
         {
@@ -246,7 +248,6 @@ public class MiniBossSpawner : MonoBehaviour
     }
 }
 
-/// <summary>Slow ceremonial spin for the boss crown.</summary>
 public class BossCrownSpin : MonoBehaviour
 {
     private void Update()
@@ -254,3 +255,4 @@ public class BossCrownSpin : MonoBehaviour
         transform.Rotate(0f, 45f * Time.deltaTime, 0f, Space.Self);
     }
 }
+    //_________________________________________________________________________________________________________

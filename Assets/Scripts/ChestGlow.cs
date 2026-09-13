@@ -1,11 +1,5 @@
 using UnityEngine;
 
-/// <summary>
-/// Makes an unopened chest shimmer: golden pixel sparkles drift up around it and
-/// twinkle in and out, with a faint steady light underneath so it still reads in
-/// the dark. Everything is built at runtime, and it shuts off once the chest is
-/// opened so a shimmering chest always means "not looted yet".
-/// </summary>
 [RequireComponent(typeof(TreasureChest))]
 public class ChestGlow : MonoBehaviour
 {
@@ -60,10 +54,7 @@ public class ChestGlow : MonoBehaviour
             return;
         }
 
-        // The sparkles double as the readiness cue: they run only while the chest can
-        // actually be looted right now. A chest that is open, cooling down, or spent for
-        // the run is pulled out of ActiveChests, so that list is the authority. IsOpened
-        // is still checked so a chest with no ChestCooldown behaves sensibly too.
+      
         bool ready = !chest.IsOpened && TreasureChest.ActiveChests.Contains(chest);
 
         if (!ready)
@@ -75,7 +66,6 @@ public class ChestGlow : MonoBehaviour
 
             stopped = true;
 
-            // Stop emitting but let the sparkles already in the air finish.
             if (sparkles != null)
             {
                 sparkles.Stop(true, ParticleSystemStopBehavior.StopEmitting);
@@ -93,7 +83,6 @@ public class ChestGlow : MonoBehaviour
             return;
         }
 
-        // Chest is lootable again, so bring the glow back.
         stopped = false;
 
         if (sparkles != null)
@@ -134,23 +123,19 @@ public class ChestGlow : MonoBehaviour
         var em = sparkles.emission;
         em.rateOverTime = emissionRate;
 
-        // spawn across the chest rather than from a single point
         var shape = sparkles.shape;
         shape.enabled = true;
         shape.shapeType = ParticleSystemShapeType.Box;
         shape.scale = spawnArea;
 
-        // drift sideways a touch so they do not rise in straight lines
         var vel = sparkles.velocityOverLifetime;
         vel.enabled = true;
         vel.space = ParticleSystemSimulationSpace.Local;
-        // All three axes must use the same MinMaxCurve mode, so Y is set explicitly
-        // as a two-constant curve too even though it contributes nothing.
+    
         vel.x = new ParticleSystem.MinMaxCurve(-0.12f, 0.12f);
         vel.y = new ParticleSystem.MinMaxCurve(0f, 0f);
         vel.z = new ParticleSystem.MinMaxCurve(-0.12f, 0.12f);
 
-        // the shimmer itself: each sparkle swells and shrinks several times
         var sol = sparkles.sizeOverLifetime;
         sol.enabled = true;
         var keys = new Keyframe[24];
@@ -196,7 +181,7 @@ public class ChestGlow : MonoBehaviour
         glowLight.type = LightType.Point;
         glowLight.color = lightColor;
         glowLight.range = lightRange;
-        glowLight.intensity = lightIntensity;   // steady, no pulsing
+        glowLight.intensity = lightIntensity;
         glowLight.shadows = LightShadows.None;
         glowLight.renderMode = LightRenderMode.ForceVertex;
     }

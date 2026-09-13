@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyVariant
   displayName: Dread Knight
   meshChildName: Character_Skeleton_Knight
-  maxHealth: 750
-  damage: 42
+  maxHealth: 480
+  damage: 26
   xpReward: 260
   coinReward: 50
   weight: 1

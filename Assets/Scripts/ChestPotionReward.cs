@@ -1,15 +1,5 @@
 using UnityEngine;
 
-/// <summary>
-/// Bridges an opened chest to the potion lottery wheel.
-///
-/// Wire this component's GiveReward() into the chest's existing onOpened UnityEvent
-/// in the Inspector. That keeps TreasureChest itself untouched: the event field is
-/// already there and documented as "Hook rewards up here".
-///
-/// As a safety net, if the event was never wired the component also watches the
-/// chest's public IsOpened flag and fires once on the frame it flips.
-/// </summary>
 [RequireComponent(typeof(TreasureChest))]
 public class ChestPotionReward : MonoBehaviour
 {
@@ -45,18 +35,13 @@ public class ChestPotionReward : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Re-arms this chest so the next open grants another potion. Called by
-    /// ChestCooldown once the chest has closed again.
-    /// </summary>
+
     public void ResetReward()
     {
         rewardGiven = false;
     }
 
-    /// <summary>
-    /// Hook this into TreasureChest.onOpened. Safe to call more than once.
-    /// </summary>
+
     public void GiveReward()
     {
         if (rewardGiven)

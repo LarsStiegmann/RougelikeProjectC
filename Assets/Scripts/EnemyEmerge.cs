@@ -2,19 +2,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
 
-/// <summary>
-/// Makes an enemy climb out of the ground when it spawns instead of popping into
-/// existence. The NavMeshAgent and the AI are switched off for the duration, so the
-/// enemy cannot walk or attack while it is still half buried, then handed back once
-/// it is standing.
-///
-/// This runs from Start rather than Awake on purpose: the spawner positions the enemy
-/// and enables its agent immediately after activating it, and Start is the first point
-/// after that where we can safely take control back.
-///
-/// EnemyAIController records its spawn point in Awake, which happens while the enemy is
-/// still at ground level, so sinking it here does not corrupt the return-home position.
-/// </summary>
+
 [RequireComponent(typeof(EnemyAIController))]
 public class EnemyEmerge : MonoBehaviour
 {
@@ -64,8 +52,6 @@ public class EnemyEmerge : MonoBehaviour
         Vector3 ground = transform.position;
         Vector3 start = ground - Vector3.up * depth;
 
-        // Take control: a live agent would fight the manual transform moves, and a live
-        // AI would try to chase while still underground.
         if (agent != null)
         {
             agent.enabled = false;
@@ -94,7 +80,6 @@ public class EnemyEmerge : MonoBehaviour
             elapsed += Time.deltaTime;
             float t = Mathf.Clamp01(elapsed / duration);
 
-            // Ease out: quick initial heave, then a slow settle as it stands up.
             float eased = 1f - (1f - t) * (1f - t);
 
             transform.position = Vector3.Lerp(start, ground, eased);
@@ -113,7 +98,6 @@ public class EnemyEmerge : MonoBehaviour
             animator.speed = 1f;
         }
 
-        // Hand control back. Warp re-seats the agent on the NavMesh at the final spot.
         if (agent != null)
         {
             agent.enabled = true;
@@ -131,7 +115,6 @@ public class EnemyEmerge : MonoBehaviour
 
     private void SpawnDust(Vector3 groundPosition)
     {
-        // --- dust plume ---
         GameObject go = new GameObject("EmergeDust");
         go.transform.position = groundPosition;
 
@@ -162,7 +145,7 @@ public class EnemyEmerge : MonoBehaviour
         shape.shapeType = ParticleSystemShapeType.Cone;
         shape.angle = 32f;
         shape.radius = dustRadius;
-        shape.rotation = new Vector3(-90f, 0f, 0f);   // cone pointing up
+        shape.rotation = new Vector3(-90f, 0f, 0f);
 
         var sol = ps.sizeOverLifetime;
         sol.enabled = true;
@@ -184,7 +167,6 @@ public class EnemyEmerge : MonoBehaviour
 
         ps.Play();
 
-        // --- dirt clods: solid chunks that erupt and rain back down ---
         GameObject ck = new GameObject("EmergeChunks");
         ck.transform.position = groundPosition;
 

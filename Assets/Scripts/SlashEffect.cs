@@ -1,10 +1,6 @@
 using UnityEngine;
 
-/// <summary>
-/// Drives a single crescent slash: it snaps in, sweeps a little, then fades out
-/// quickly. Deliberately short and punchy rather than a lingering particle effect.
-/// Destroys itself when finished.
-/// </summary>
+
 public class SlashEffect : MonoBehaviour
 {
     [Header("Timing")]
@@ -44,9 +40,6 @@ public class SlashEffect : MonoBehaviour
 
 private void Start()
     {
-        // Captured in Start rather than Awake: the effect is parented to the player
-        // immediately after being instantiated, and localRotation is only meaningful
-        // once that parenting has happened.
         meshRenderer = GetComponentInChildren<MeshRenderer>();
         propertyBlock = new MaterialPropertyBlock();
 
@@ -85,15 +78,12 @@ private void Update()
         {
             destroyScheduled = true;
 
-            // The blade is invisible by now, but child particle systems may still be
-            // playing, so give them time rather than cutting them off.
             Destroy(gameObject, childLinger);
         }
     }
 
 private void Apply(float t)
     {
-        // Ease out so most of the travel happens immediately.
         float eased = 1f - Mathf.Pow(1f - t, 3f);
 
         transform.localRotation = baseRotation * Quaternion.Euler(
@@ -104,12 +94,11 @@ private void Apply(float t)
 
         transform.localScale = baseScale * Mathf.Lerp(startScale, endScale, eased);
 
-        // Hold briefly at full brightness, then fade off.
         float alpha = t <= holdFraction
             ? 1f
             : 1f - Mathf.InverseLerp(holdFraction, 1f, t);
         alpha = Mathf.Clamp01(alpha);
-        alpha *= alpha; // sharper tail
+        alpha *= alpha;
 
         Color c = new Color(baseColor.r, baseColor.g, baseColor.b, baseColor.a * alpha);
 

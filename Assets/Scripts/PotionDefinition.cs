@@ -1,9 +1,6 @@
 using UnityEngine;
 
-/// <summary>
-/// Rarity tier of a potion. Drives both the reel cell colour and how often the
-/// potion is rolled.
-/// </summary>
+
 public enum PotionRarity
 {
     Common,
@@ -11,11 +8,6 @@ public enum PotionRarity
     Epic
 }
 
-/// <summary>
-/// One potion the lottery wheel can award. The actual stat change is delegated to
-/// an existing StatUpgrade asset so potions and level-up rewards share the same
-/// tuning data and the same PlayerState.ApplyUpgrade path.
-/// </summary>
 [CreateAssetMenu(fileName = "Potion", menuName = "Roguelike/Potion Definition")]
 public class PotionDefinition : ScriptableObject
 {

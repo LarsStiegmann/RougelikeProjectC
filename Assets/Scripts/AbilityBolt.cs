@@ -1,10 +1,5 @@
 using UnityEngine;
 
-/// <summary>
-/// A single seeking bolt fired by the Homing Bolts ability. Flies at its target,
-/// damages it on arrival and fades out. Dies on its own if the target is killed
-/// by something else first.
-/// </summary>
 public class AbilityBolt : MonoBehaviour
 {
     private Transform target;
@@ -37,7 +32,10 @@ public class AbilityBolt : MonoBehaviour
         glow.range = 4f;
         glow.intensity = 2.2f;
     }
-
+    //_________________________________________________________________________________________________________
+    //Quelle: KI (Claude Opus 5)
+    //Prompt: Generate code that throws a firebolt per Update() function with autoaim on enemies
+    //Datum: 02.09.2026
     private void Update()
     {
         life += Time.deltaTime;
@@ -49,7 +47,6 @@ public class AbilityBolt : MonoBehaviour
 
         if (target == null)
         {
-            // Target died mid-flight: keep going briefly, then expire.
             transform.position += transform.forward * speed * Time.deltaTime;
             if (life > 0.6f)
             {
@@ -79,4 +76,5 @@ public class AbilityBolt : MonoBehaviour
         transform.position += transform.forward * speed * Time.deltaTime;
         transform.Rotate(0f, 0f, 360f * Time.deltaTime, Space.Self);
     }
+    //_________________________________________________________________________________________________________ 
 }

@@ -19,7 +19,7 @@ MonoBehaviour:
   baseCooldown: 2.6
   cooldownReductionPerLevel: 0.04
   minimumCooldown: 0.8
-  baseDamageMultiplier: 0.85
+  baseDamageMultiplier: 1.1
   damageGrowthPerLevel: 0.115
   baseRadius: 7
   radiusGrowthPerLevel: 0.35

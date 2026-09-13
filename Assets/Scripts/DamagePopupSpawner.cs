@@ -1,9 +1,6 @@
 using UnityEngine;
 
-/// <summary>
-/// Central spawner for floating damage numbers. Lives in the scene so that any
-/// enemy can request a popup without each one needing its own prefab reference.
-/// </summary>
+
 public class DamagePopupSpawner : MonoBehaviour
 {
     private static DamagePopupSpawner instance;
@@ -57,18 +54,13 @@ public class DamagePopupSpawner : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Spawns a damage number at a world position. Safe to call when no spawner or
-    /// prefab is configured; it simply does nothing.
-    /// </summary>
+ 
     public static void Spawn(Vector3 worldPosition, float amount)
     {
         Spawn(worldPosition, amount, false);
     }
 
-    /// <summary>
-    /// Spawns a damage number coloured according to whether the hit was critical.
-    /// </summary>
+ 
     public static void Spawn(Vector3 worldPosition, float amount, bool isCrit)
     {
         DamagePopupSpawner spawner = Instance;
@@ -80,10 +72,7 @@ public class DamagePopupSpawner : MonoBehaviour
         spawner.SpawnInternal(worldPosition, amount, isCrit);
     }
 
-    /// <summary>
-    /// Spawns a coin reward popup, using the same floating number as damage so the
-    /// feedback reads consistently.
-    /// </summary>
+
     public static void SpawnCoins(Vector3 worldPosition, int amount)
     {
         DamagePopupSpawner spawner = Instance;

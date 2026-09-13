@@ -15,9 +15,9 @@ MonoBehaviour:
   displayName: Ghost
   meshChildName: Character_Ghost_01
   maxHealth: 22
-  damage: 14
-  xpReward: 14
+  damage: 10
+  xpReward: 13
   coinReward: 2
-  weight: 25
-  unlockAtMinutes: 0
+  weight: 22
+  unlockAtMinutes: 0.75
   modelScale: 1

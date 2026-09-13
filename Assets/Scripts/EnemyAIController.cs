@@ -73,7 +73,6 @@ public class EnemyAIController : MonoBehaviour
     {
         agent = GetComponent<NavMeshAgent>();
         
-        // Cache animator, check parent or children if not on this GameObject
         animator = GetComponent<Animator>();
         if (animator == null)
         {
@@ -83,7 +82,6 @@ public class EnemyAIController : MonoBehaviour
 
         mainCam = Camera.main;
 
-        // Remembered so the enemy can walk back here once the player is dead.
         spawnPosition = transform.position;
         spawnRotation = transform.rotation;
 
@@ -98,7 +96,6 @@ public class EnemyAIController : MonoBehaviour
 
     private void OnEnable()
     {
-        // Start the decision-making loop
         aiCoroutine = StartCoroutine(AIDecisionLoop());
     }
 
@@ -123,7 +120,6 @@ public class EnemyAIController : MonoBehaviour
 
     private void UpdateAIState()
     {
-        // Find player if reference is lost or not yet set
         if (player == null)
         {
             player = GameObject.FindWithTag("Player");
@@ -150,10 +146,6 @@ public class EnemyAIController : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Walks back to the spawn point and settles there. Used after the player dies
-    /// so enemies do not stand around the corpse mid-swing.
-    /// </summary>
     private void ReturnHome()
     {
         if (hasSettledHome || isTurningHome)
@@ -167,22 +159,18 @@ public class EnemyAIController : MonoBehaviour
         {
             if (agent.isActiveAndEnabled)
             {
-                // Stroll rather than sprint on the way back.
                 agent.speed = returnHomeSpeed;
                 agent.SetDestination(spawnPosition);
             }
 
             if (animator != null)
             {
-                // No walk clip exists on this rig, so the run is slowed down to read
-                // as a walk instead.
                 animator.speed = returnHomeAnimationSpeed;
                 animator.SetBool("isMoving", true);
             }
             return;
         }
 
-        // Arrived: come to a full stop before turning.
         if (agent.isActiveAndEnabled && agent.isOnNavMesh)
         {
             agent.ResetPath();
@@ -190,8 +178,7 @@ public class EnemyAIController : MonoBehaviour
             agent.isStopped = true;
             agent.speed = defaultAgentSpeed;
 
-            // The agent steers its own rotation while pathing, which would fight the
-            // turn back to the original facing, so hand rotation control back to us.
+
             agent.updateRotation = false;
         }
 
@@ -211,7 +198,6 @@ public class EnemyAIController : MonoBehaviour
             return;
         }
 
-        // Smoothly rotate back to the facing this enemy started with, then settle.
         transform.rotation = Quaternion.RotateTowards(
             transform.rotation,
             spawnRotation,
@@ -263,27 +249,20 @@ public class EnemyAIController : MonoBehaviour
         {
             animator.SetBool("isMoving", false);
 
-            // Avoid triggering an attack if it is on cooldown
             if (Time.time - lastAttackTime >= attackCooldown)
             {
                 lastAttackTime = Time.time;
                 
-                // Randomly set 'attackIndex' to 0 or 1
                 int attackIndex = Random.Range(0, 2);
                 animator.SetInteger("attackIndex", attackIndex);
                 
-                // Set the 'isAttacking' trigger
                 animator.SetTrigger("isAttacking");
             }
         }
     }
 
-    /// <summary>
-    /// Performs damage to the player if they are still within range. Called via Animation Events.
-    /// </summary>
     public void PerformDamage()
     {
-        // An attack animation already in flight must not land on a dead player.
         if (PlayerState.Instance != null && PlayerState.Instance.IsDead)
         {
             return;
@@ -314,11 +293,6 @@ public class EnemyAIController : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Sets this enemy's stats before it is activated. SwarmSpawner calls this while the
-    /// object is still inactive, so the values are in place by the time Awake copies
-    /// maxHealth into currentHealth.
-    /// </summary>
     public void Configure(float newMaxHealth, float newDamage, float newXpReward)
     {
         maxHealth = Mathf.Max(1f, newMaxHealth);
@@ -326,10 +300,7 @@ public class EnemyAIController : MonoBehaviour
         xpReward = Mathf.Max(0f, newXpReward);
     }
 
-    /// <summary>
-    /// Sets how many coins this enemy drops. Called by the spawner alongside Configure,
-    /// while the enemy is still inactive.
-    /// </summary>
+
     public void ConfigureCoins(int newCoinReward)
     {
         coinReward = Mathf.Max(0, newCoinReward);

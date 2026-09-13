@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyVariant
   displayName: Skeleton Slave
   meshChildName: Character_Skeleton_Slave_01
-  maxHealth: 20
-  damage: 12
+  maxHealth: 18
+  damage: 8
   xpReward: 10
   coinReward: 1
   weight: 30

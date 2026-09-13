@@ -1,10 +1,10 @@
 using TMPro;
 using UnityEngine;
 
-/// <summary>
-/// Shows the coin balance on the HUD. Subscribes to the currency change event rather
-/// than polling, and refreshes once on enable so it is correct on the first frame.
-/// </summary>
+    //_________________________________________________________________________________________________________
+    //Quelle: KI (Claude Opus 5)
+    //Prompt: Generate a Coin HUD for the Player HUD
+    //Datum: 01.09.2026
 public class CoinHUD : MonoBehaviour
 {
     [SerializeField] private TMP_Text label;
@@ -52,3 +52,4 @@ public class CoinHUD : MonoBehaviour
         label.text = prefix + coins;
     }
 }
+    //_________________________________________________________________________________________________________

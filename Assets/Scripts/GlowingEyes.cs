@@ -1,14 +1,5 @@
 using UnityEngine;
 
-/// <summary>
-/// Two billboarded glow sprites pinned to the head, plus a small point light for
-/// spill. Everything is built at runtime, so no enemy prefab needs authored eye
-/// geometry, and the colour is picked from whichever character mesh is active -
-/// skeletons burn ember red, ghosts glow spectral, goblins go sickly green.
-///
-/// Brightness follows DayNightCycle.Darkness: nearly out at dusk, blazing at
-/// night, which is when the effect is meant to read.
-/// </summary>
 public class GlowingEyes : MonoBehaviour
 {
     [Header("Placement")]
@@ -60,12 +51,10 @@ public class GlowingEyes : MonoBehaviour
     private float flickerSeed;
     private MaterialPropertyBlock block;
 
-    // Shared across every enemy so the eyes cost one material, not one per corpse.
     private static Material sharedMaterial;
     private static Mesh sharedQuad;
     private static readonly int ColourId = Shader.PropertyToID("_Color");
 
-    // Frame-scoped light budget.
     private static int lightsThisFrame;
     private static int budgetFrame = -1;
 
@@ -77,7 +66,6 @@ public class GlowingEyes : MonoBehaviour
 
     private void Build()
     {
-        // Recycled enemy: the rig is already there, but the mesh may have changed.
         if (leftEye != null && anchor != null)
         {
             eyeColour = PickColour();
@@ -97,7 +85,6 @@ public class GlowingEyes : MonoBehaviour
         leftEye = CreateEye("EyeGlow_L", out leftRenderer);
         rightEye = CreateEye("EyeGlow_R", out rightRenderer);
 
-        // Only built when someone actually wants spill; at 0 it is pure overhead.
         if (lightIntensity > 0f)
         {
             GameObject lightGo = new GameObject("EyeSpill");
@@ -130,7 +117,6 @@ public class GlowingEyes : MonoBehaviour
         return go.transform;
     }
 
-    /// <summary>Colour keyed off whichever character mesh this enemy is wearing.</summary>
     private Color PickColour()
     {
         string mesh = string.Empty;
@@ -159,7 +145,6 @@ public class GlowingEyes : MonoBehaviour
             return new Color(1f, 0.55f, 0.15f);
         }
 
-        // Skeletons - the ones this effect is really for. Hot ember red.
         return new Color(1f, 0.28f, 0.12f);
     }
 
@@ -171,7 +156,6 @@ public class GlowingEyes : MonoBehaviour
             return t;
         }
 
-        // Rig variations: fall back to any bone named Eyes, then the head.
         Transform head = null;
         foreach (Transform b in GetComponentsInChildren<Transform>(true))
         {
@@ -198,7 +182,6 @@ public class GlowingEyes : MonoBehaviour
 
         float darkness = DayNightCycle.Darkness;
 
-        // A little flicker so the eyes read as alive rather than as decals.
         float flicker = 1f - flickerDepth * (0.5f + 0.5f * Mathf.Sin((Time.time + flickerSeed) * flickerSpeed));
         float strength = darkness * flicker;
 
@@ -219,8 +202,7 @@ public class GlowingEyes : MonoBehaviour
             return;
         }
 
-        // Positioned from the body's own axes rather than the bone's, because the
-        // Synty rig runs its bones down -X and the head barely turns on its own.
+
         float s = transform.lossyScale.x;
         Vector3 fwd = transform.forward;
         Vector3 right = transform.right;
@@ -246,10 +228,6 @@ public class GlowingEyes : MonoBehaviour
         UpdateSpill(cam, centre, strength);
     }
 
-    /// <summary>
-    /// The point light is the expensive half, so it is distance culled and capped
-    /// per frame. Losing it only costs a little bounce on the ground nearby.
-    /// </summary>
     private void UpdateSpill(Camera cam, Vector3 centre, float strength)
     {
         if (spill == null)
@@ -314,22 +292,17 @@ public class GlowingEyes : MonoBehaviour
             return sharedMaterial;
         }
 
-        // Sprites/Default is unlit, alpha blended and honours _Color, including
-        // values above 1 - which is what makes bloom bite on the glow.
         sharedMaterial = new Material(Shader.Find("Sprites/Default"));
         sharedMaterial.name = "EyeGlow";
         sharedMaterial.mainTexture = BuildGlowTexture();
         sharedMaterial.enableInstancing = true;
 
-        // Sprites/Default exposes the GUI depth mode, which defaults to Always and
-        // let the eyes shine straight through pillars. Force a real depth test.
         sharedMaterial.SetInt("unity_GUIZTestMode", (int)UnityEngine.Rendering.CompareFunction.LessEqual);
         sharedMaterial.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent;
         return sharedMaterial;
     }
 
-    /// <summary>Hot core fading out, so the sprite reads as a glow not a flat disc.</summary>
-    private static Texture2D BuildGlowTexture()
+     private static Texture2D BuildGlowTexture()
     {
         const int S = 64;
         Texture2D tex = new Texture2D(S, S, TextureFormat.RGBA32, false);

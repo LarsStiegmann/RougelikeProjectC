@@ -1,10 +1,11 @@
 using UnityEngine;
 using TMPro;
 
-/// <summary>
-/// A single floating damage number. Rises, fades out, and always faces the camera.
-/// Destroys itself when finished.
-/// </summary>
+//_________________________________________________________________________________________________________
+    //Quelle: KI (Claude Opus 5)
+    //Prompt: Generate a popup UI for enemy damage to show the damage that the player deals against the damage
+    //Datum: 01.09.2026
+
 public class DamagePopup : MonoBehaviour
 {
     [SerializeField] private TextMeshPro label;
@@ -46,9 +47,7 @@ public class DamagePopup : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Sets arbitrary text, for popups that are not plain damage numbers.
-    /// </summary>
+
     public void Setup(string content, Color color)
     {
         if (label == null)
@@ -64,9 +63,7 @@ public class DamagePopup : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Sets the number shown. Call immediately after spawning.
-    /// </summary>
+
     public void Setup(float amount, Color color)
     {
         if (label == null)
@@ -92,16 +89,13 @@ public class DamagePopup : MonoBehaviour
         elapsed += Time.deltaTime;
         float t = lifetime > 0f ? Mathf.Clamp01(elapsed / lifetime) : 1f;
 
-        // Drift upward, easing out.
         transform.position += Vector3.up * (riseSpeed * riseFalloff.Evaluate(t) * Time.deltaTime);
 
-        // Face the camera so the number is readable from any angle.
         if (cam != null)
         {
             transform.rotation = cam.transform.rotation;
         }
 
-        // Quick pop on appear, then settle back to normal size.
         float scaleMultiplier = 1f;
         if (popDuration > 0f && elapsed < popDuration)
         {
@@ -110,7 +104,6 @@ public class DamagePopup : MonoBehaviour
         }
         transform.localScale = baseScale * scaleMultiplier;
 
-        // Fade out over the back half of the life.
         if (label != null)
         {
             float alpha = Mathf.Clamp01(1f - Mathf.InverseLerp(0.45f, 1f, t));
@@ -123,3 +116,5 @@ public class DamagePopup : MonoBehaviour
         }
     }
 }
+
+//_________________________________________________________________________________________________________

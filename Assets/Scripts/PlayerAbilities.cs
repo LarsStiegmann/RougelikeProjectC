@@ -2,22 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-/// <summary>
-/// Runtime home for the player's auto-cast abilities.
-///
-/// Each owned ability ticks its own cooldown and fires itself, mirroring how
-/// PlayerDealDamage drives the auto-attack. All ability damage is dealt through
-/// EnemyAIController.EnemyTakeDamage - the same call the auto-attack uses - so
-/// crits, damage popups, coin drops and life steal all work without extra code.
-/// </summary>
+
 public class PlayerAbilities : MonoBehaviour
 {
     public static PlayerAbilities Instance { get; private set; }
 
-    /// <summary>
-    /// How many abilities the player can carry at once. The HUD draws this many
-    /// slots from the start so the limit is visible before anything is picked up.
-    /// </summary>
+
     public const int MaxAbilities = 2;
 
     [Tooltip("Same layer mask the auto-attack uses to find enemies.")]
@@ -45,17 +35,14 @@ public class PlayerAbilities : MonoBehaviour
     [SerializeField] private AudioClip[] boltHitSounds;
     [SerializeField] private AudioClip[] orbHitSounds;
 
-    /// <summary>One ability the player owns, with its level and cooldown state.</summary>
     public class OwnedAbility
     {
         public AbilityDefinition definition;
         public int level = 1;
         public float timer;
 
-        /// <summary>Persistent rig for always-on abilities such as the orb ring.</summary>
         public OrbitingOrbs rig;
 
-        /// <summary>Level the rig was last configured at, so we only rebuild on change.</summary>
         public int rigLevel = -1;
 
         public float Cooldown => definition.CooldownAt(level);
@@ -66,7 +53,6 @@ public class PlayerAbilities : MonoBehaviour
 
     private readonly List<OwnedAbility> owned = new List<OwnedAbility>();
 
-    /// <summary>Read-only view for the HUD.</summary>
     public IReadOnlyList<OwnedAbility> Owned => owned;
 
     private void Awake()
@@ -82,14 +68,6 @@ public class PlayerAbilities : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Grants an ability, or levels it up if it is already owned. Called from
-    /// PlayerState.ApplyUpgrade when an Ability upgrade is applied.
-    ///
-    /// The player carries at most MaxAbilities. Once both slots are taken a third
-    /// ability is not thrown away - it is converted into a level for whichever
-    /// carried ability is furthest from its cap, so the reward still counts.
-    /// </summary>
     public void Grant(AbilityDefinition definition)
     {
         if (definition == null)
@@ -141,7 +119,6 @@ public class PlayerAbilities : MonoBehaviour
         ReportAchievement(added);
     }
 
-    /// <summary>Raises an owned ability by one, capped by its own ceiling.</summary>
     private void LevelUp(OwnedAbility a)
     {
         a.level = Mathf.Min(a.level + 1, Mathf.Max(1, a.definition.maxLevel));
@@ -169,10 +146,8 @@ public class PlayerAbilities : MonoBehaviour
         }
     }
 
-    /// <summary>True once both ability slots are taken.</summary>
     public bool IsFull => owned.Count >= MaxAbilities;
 
-    /// <summary>Current level of an ability, or 0 if it is not owned.</summary>
     public int LevelOf(AbilityDefinition definition)
     {
         foreach (OwnedAbility a in owned)
@@ -201,7 +176,6 @@ public class PlayerAbilities : MonoBehaviour
                 continue;
             }
 
-            // The orb ring is always-on: keep it in sync instead of firing it.
             if (a.definition.kind == AbilityKind.OrbitingOrbs)
             {
                 EnsureOrbiters(a);
@@ -236,10 +210,6 @@ public class PlayerAbilities : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Always-on ring of arcane orbs. Creates the rig on first tick and
-    /// re-configures it whenever the ability levels up.
-    /// </summary>
     private void EnsureOrbiters(OwnedAbility a)
     {
         if (a.rig == null)
@@ -257,14 +227,9 @@ public class PlayerAbilities : MonoBehaviour
             a.rigLevel = a.level;
         }
 
-        // The HUD reads Charge; an always-on ability simply reads as ready.
         a.timer = a.Cooldown;
     }
 
-    /// <summary>
-    /// Fires one homing bolt per CountAt(level) at the nearest enemies, cycling
-    /// through the found targets when there are fewer enemies than bolts.
-    /// </summary>
     private void FireHomingBolts(OwnedAbility a)
     {
         AbilityDefinition def = a.definition;
@@ -279,7 +244,6 @@ public class PlayerAbilities : MonoBehaviour
             enemyLayer,
             QueryTriggerInteraction.Collide);
 
-        // De-duplicate: a single enemy can own several colliders.
         List<Transform> targets = new List<Transform>();
         HashSet<EnemyAIController> seen = new HashSet<EnemyAIController>();
 
@@ -296,7 +260,6 @@ public class PlayerAbilities : MonoBehaviour
 
         if (targets.Count == 0)
         {
-            // Nothing in range - retry shortly instead of burning the full cooldown.
             a.timer = Mathf.Max(0f, a.Cooldown - 0.35f);
             return;
         }
@@ -325,7 +288,6 @@ public class PlayerAbilities : MonoBehaviour
             Destroy(c);
         }
 
-        // Fan the spawn points slightly so a volley reads as several projectiles.
         float spread = total <= 1 ? 0f : (index / (float)(total - 1) - 0.5f) * 1.6f;
         go.transform.position = origin + transform.right * spread + Vector3.up * 0.2f;
         go.transform.forward = (target.position + Vector3.up * 0.8f - go.transform.position).normalized;
@@ -372,16 +334,10 @@ public class PlayerAbilities : MonoBehaviour
                 continue;
             }
 
-            // Same entry point as the auto-attack, so crit / popup / coin / life
-            // steal behaviour is identical.
             enemy.EnemyTakeDamage(damage);
         }
     }
 
-    /// <summary>
-    /// Expanding ring of particles plus a brief flash, built at runtime so the
-    /// ability needs no authored prefab.
-    /// </summary>
     private void SpawnBurst(Vector3 centre, float radius, Color colour)
     {
         GameObject go = new GameObject("AbilityBurst");
@@ -453,8 +409,6 @@ public class PlayerAbilities : MonoBehaviour
             return burstMaterial;
         }
 
-        // Sprites/Default is alpha blended and honours vertex colour, which is
-        // what the particle tint relies on.
         burstMaterial = new Material(Shader.Find("Sprites/Default"));
         burstMaterial.name = "AbilityBurst";
         burstMaterial.mainTexture = GetBurstTexture();

@@ -4,14 +4,6 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-/// <summary>
-/// Megabonk-style horizontal lottery reel. A strip of potion cells scrolls past a
-/// fixed centre marker, decelerates, and lands on a weighted-random winner. The
-/// winning potion's StatUpgrade is then handed to PlayerState.ApplyUpgrade.
-///
-/// This builds its own reel cells at runtime, so the scene only needs an empty
-/// panel, a viewport and a content transform.
-/// </summary>
 public class PotionWheelController : MonoBehaviour
 {
     public static PotionWheelController Instance { get; private set; }
@@ -82,16 +74,10 @@ public class PotionWheelController : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// True while a roll is in progress, so chests opened back to back queue up
-    /// rather than fighting over the panel.
-    /// </summary>
+
     public bool IsSpinning => isSpinning;
 
-    /// <summary>
-    /// Rolls a potion and shows the reel. <paramref name="spawnAnchor"/> is where the
-    /// 3D potion model pops out, normally the chest that was just opened.
-    /// </summary>
+
     public void Roll(Transform spawnAnchor)
     {
         if (isSpinning || panel == null || potions == null || potions.Count == 0)
@@ -206,7 +192,6 @@ public class PotionWheelController : MonoBehaviour
         float viewportWidth = viewport != null ? viewport.rect.width : 800f;
 
         float startX = (viewportWidth * 0.5f) - (cellWidth * 0.5f);
-        // Land with a little jitter so the winner is not always dead centre.
         float jitter = Random.Range(-cellWidth * 0.28f, cellWidth * 0.28f);
         float endX = (viewportWidth * 0.5f) - (winIndex * step) - (cellWidth * 0.5f) + jitter;
 
@@ -217,12 +202,10 @@ public class PotionWheelController : MonoBehaviour
             t += Time.unscaledDeltaTime;
             float n = Mathf.Clamp01(t / spinDuration);
 
-            // Ease-out quart: fast launch, long slow settle onto the winner.
             float eased = 1f - Mathf.Pow(1f - n, 4f);
             float x = Mathf.Lerp(startX, endX, eased);
             reelContent.anchoredPosition = new Vector2(x, 0f);
 
-            // Pop whichever cell is currently under the centre marker.
             int centred = Mathf.RoundToInt(((viewportWidth * 0.5f) - x - (cellWidth * 0.5f)) / step);
             if (centred != lastCell)
             {
@@ -236,7 +219,6 @@ public class PotionWheelController : MonoBehaviour
         reelContent.anchoredPosition = new Vector2(endX, 0f);
         HighlightCell(winIndex);
 
-        // Reveal the result.
         if (resultNameText != null)
         {
             resultNameText.text = winner.displayName;
@@ -250,13 +232,11 @@ public class PotionWheelController : MonoBehaviour
                 : winner.description;
         }
 
-        // Apply the stat change through the existing public API.
         if (winner.upgrade != null && PlayerState.Instance != null)
         {
             PlayerState.Instance.ApplyUpgrade(winner.upgrade);
         }
 
-        // Pop the 3D model out of the chest while the banner is up.
         if (winner.modelPrefab != null && spawnAnchor != null)
         {
             PotionPopup.Spawn(winner, spawnAnchor);
@@ -269,7 +249,6 @@ public class PotionWheelController : MonoBehaviour
             yield return null;
         }
 
-        // Fade out and hand control back.
         t = 0f;
         while (t < openFade)
         {
@@ -364,7 +343,6 @@ public class PotionWheelController : MonoBehaviour
         ert.anchoredPosition = Vector2.zero;
         edge.GetComponent<Image>().color = c;
 
-        // Icon.
         if (potion != null && potion.icon != null)
         {
             GameObject icon = new GameObject("Icon", typeof(RectTransform), typeof(Image));
@@ -381,7 +359,6 @@ public class PotionWheelController : MonoBehaviour
             img.preserveAspect = true;
         }
 
-        // Name.
         GameObject label = new GameObject("Label", typeof(RectTransform));
         RectTransform lrt = label.GetComponent<RectTransform>();
         lrt.SetParent(rt, false);

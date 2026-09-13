@@ -3,14 +3,10 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-/// <summary>
-/// Shows one slot per ability the player owns: the potion icon, a radial sweep
-/// that empties as the ability recharges, and its level.
-///
-/// Slots are built at runtime from PlayerAbilities, so gaining an ability makes
-/// a slot appear on its own. This lives on its own object under the HUD canvas
-/// rather than inside PlayerHUDController.
-/// </summary>
+ //_________________________________________________________________________________________________________
+    //Quelle: KI (Claude Opus 5)
+    //Prompt: Generate an ability hud bar for the Player UI
+    //Datum: 02.09.2026
 public class AbilityHudBar : MonoBehaviour
 {
     [Header("Layout")]
@@ -54,8 +50,6 @@ public class AbilityHudBar : MonoBehaviour
 
         IReadOnlyList<PlayerAbilities.OwnedAbility> owned = abilities.Owned;
 
-        // Draw every slot the player could ever fill, not just the filled ones,
-        // so the two-slot limit is visible from the start of the run.
         for (int i = slots.Count; i < PlayerAbilities.MaxAbilities; i++)
         {
             slots.Add(BuildSlot(i));
@@ -73,7 +67,7 @@ public class AbilityHudBar : MonoBehaviour
 
             PlayerAbilities.OwnedAbility ability = owned[i];
 
-            // An empty slot just got filled: adopt the ability's art and name.
+      
             if (slot.definition != ability.definition)
             {
                 Assign(slot, ability.definition);
@@ -83,10 +77,10 @@ public class AbilityHudBar : MonoBehaviour
 
             float charge = ability.Charge;
 
-            // Radial sweep: full dark at 0 charge, gone when ready.
+           
             slot.cooldownOverlay.fillAmount = 1f - charge;
 
-            // Flash the frame the instant it comes off cooldown.
+
             if (charge < slot.lastCharge - 0.2f)
             {
                 slot.flashTimer = 0.35f;
@@ -105,7 +99,6 @@ public class AbilityHudBar : MonoBehaviour
                 slot.readyFlash.color = Color.clear;
             }
 
-            // Icon dims slightly while recharging so ready-ness reads at a glance.
             slot.icon.color = charge >= 1f ? Color.white : new Color(0.75f, 0.75f, 0.75f, 1f);
 
             if (slot.levelLabel != null)
@@ -115,7 +108,6 @@ public class AbilityHudBar : MonoBehaviour
         }
     }
 
-    /// <summary>Blanks a slot the player has not earned yet.</summary>
     private void ShowEmpty(Slot slot)
     {
         slot.definition = null;
@@ -169,7 +161,6 @@ public class AbilityHudBar : MonoBehaviour
         slot.frame = CreateImage(slot.root, "Frame", emptyFrameColour);
         StretchFull(slot.frame.rectTransform);
 
-        // Starts blank; Assign() fills it in the moment an ability lands here.
         slot.icon = CreateImage(slot.root, "Icon", Color.clear);
         StretchFull(slot.icon.rectTransform, 8f);
         slot.icon.sprite = null;
@@ -249,3 +240,5 @@ public class AbilityHudBar : MonoBehaviour
         return whiteSprite;
     }
 }
+
+//_________________________________________________________________________________________________________

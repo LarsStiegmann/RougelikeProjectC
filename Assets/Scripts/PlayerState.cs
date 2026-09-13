@@ -19,6 +19,15 @@ public class PlayerState : MonoBehaviour
     [SerializeField] private float baseCritChance = 0f;
     [SerializeField] private float baseCritMultiplier = 1.5f;
     [SerializeField] private float baseMaxXP = 100f;
+
+    [Tooltip("Flat XP added to the next level's requirement each level.")]
+    [SerializeField] private float xpStepPerLevel = 28f;
+
+    [Tooltip("Extra XP per level that itself grows with level, for a gentle upward bend.")]
+    [SerializeField] private float xpStepGrowth = 2.5f;
+
+    [Tooltip("Max health gained automatically on every level-up.")]
+    [SerializeField] private float healthPerLevel = 4f;
     [SerializeField] private float baseXP = 0f;
     [SerializeField] private int baseLevel = 1;
 
@@ -143,10 +152,12 @@ public class PlayerState : MonoBehaviour
         {
             currentXP -= currentMaxXP;
             currentLevel++;
-            currentMaxXP = Mathf.Round(currentMaxXP * 1.5f);
-            
-            RaiseMaxHealth(1f);
+
+            // Was geometric (x1.575 per level), which stalled runs around level 8
+            // because a single level cost hundreds of kills. Linear with a gentle
+            // bend keeps level-ups arriving all run long.
             RaiseMaxXP();
+            RaiseMaxHealth(healthPerLevel);
 
             if (levelUpController != null)
             {
@@ -226,7 +237,7 @@ public class PlayerState : MonoBehaviour
 
     private void RaiseMaxXP()
     {
-        currentMaxXP = currentMaxXP + (currentMaxXP / 20);
+        currentMaxXP = Mathf.Round(currentMaxXP + xpStepPerLevel + xpStepGrowth * currentLevel);
     }
 
     public void RaiseMaxHealth(float amount)

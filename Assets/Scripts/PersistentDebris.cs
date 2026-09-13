@@ -3,12 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-/// <summary>
-/// Keeps death debris alive across scene reloads, so retrying a run leaves the
-/// previous corpses' glass lying where it fell. Debris is cleared when leaving
-/// gameplay (e.g. back to the main menu), and old piles are trimmed so repeated
-/// deaths cannot grow without limit.
-/// </summary>
+
 public class PersistentDebris : MonoBehaviour
 {
     private static PersistentDebris instance;
@@ -61,9 +56,7 @@ public class PersistentDebris : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Creates a root for one death's worth of debris and keeps it across reloads.
-    /// </summary>
+
     public Transform CreatePile()
     {
         GameObject pile = new GameObject("DebrisPile");
@@ -75,11 +68,7 @@ public class PersistentDebris : MonoBehaviour
         return pile.transform;
     }
 
-    /// <summary>
-    /// Waits for a piece to come to rest, then freezes it so a large pile of old
-    /// debris costs nothing to simulate. Runs here rather than on the player, since
-    /// the player is destroyed when the scene reloads.
-    /// </summary>
+
     public void SettleWhenAsleep(Rigidbody rb)
     {
         if (rb != null)
@@ -137,7 +126,6 @@ public class PersistentDebris : MonoBehaviour
         }
     }
 
-    /// <summary>Destroys every kept pile.</summary>
     public void ClearAll()
     {
         for (int i = 0; i < piles.Count; i++)

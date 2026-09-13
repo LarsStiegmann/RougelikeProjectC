@@ -15,4 +15,6 @@ MonoBehaviour:
   upgradeName: Life Steal +2%
   description: 
   upgradeType: 7
+  rarity: 0
   value: 2
+  ability: {fileID: 0}

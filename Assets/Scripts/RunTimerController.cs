@@ -77,11 +77,6 @@ public class RunTimerController : MonoBehaviour
         UpdateTimerDisplay();
     }
 
-/// <summary>
-    /// Smoothly scales from 1x at the start of the run up to maxDamageMultiplier once
-    /// damageRampDuration seconds have elapsed, then holds steady so late runs stay
-    /// survivable instead of spiraling into one-shots.
-    /// </summary>
     public float EnemyDamageMultiplier
     {
         get

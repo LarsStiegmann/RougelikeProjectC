@@ -1,9 +1,5 @@
 using UnityEngine;
 
-/// <summary>
-/// The shape an ability takes when it fires. Each kind is handled by
-/// PlayerAbilities.Execute.
-/// </summary>
 public enum AbilityKind
 {
     FrostNova,
@@ -11,15 +7,6 @@ public enum AbilityKind
     HomingBolts
 }
 
-/// <summary>
-/// Tuning data for one auto-cast ability.
-///
-/// Abilities are granted through the normal reward pipeline: a StatUpgrade of
-/// type Ability points at one of these, so a potion (or any other upgrade
-/// source) can hand it to the player without any new plumbing.
-///
-/// Rolling the same ability again levels it up instead of being wasted.
-/// </summary>
 [CreateAssetMenu(fileName = "Ability", menuName = "Roguelike/Ability Definition")]
 public class AbilityDefinition : ScriptableObject
 {
@@ -76,7 +63,6 @@ public class AbilityDefinition : ScriptableObject
     [Tooltip("Tint used for the burst particles and flash light.")]
     public Color effectColour = new Color(0.45f, 0.85f, 1f);
 
-    /// <summary>Levels are clamped to the ability's own ceiling everywhere below.</summary>
     private int Steps(int level)
     {
         return Mathf.Clamp(level, 1, Mathf.Max(1, maxLevel)) - 1;

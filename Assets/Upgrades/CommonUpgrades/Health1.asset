@@ -15,4 +15,6 @@ MonoBehaviour:
   upgradeName: Health +10
   description: 
   upgradeType: 0
-  value: 10
+  rarity: 0
+  value: 12
+  ability: {fileID: 0}

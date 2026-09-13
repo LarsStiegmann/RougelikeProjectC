@@ -15,4 +15,6 @@ MonoBehaviour:
   upgradeName: Range +1
   description: 
   upgradeType: 8
-  value: 1
+  rarity: 0
+  value: 0.5
+  ability: {fileID: 0}

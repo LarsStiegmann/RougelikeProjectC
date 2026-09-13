@@ -14,10 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyVariant
   displayName: Rock Golem
   meshChildName: Character_Rock_Golem
-  maxHealth: 120
-  damage: 28
-  xpReward: 60
+  maxHealth: 150
+  damage: 24
+  xpReward: 70
   coinReward: 8
   weight: 5
-  unlockAtMinutes: 3
+  unlockAtMinutes: 6.5
   modelScale: 1.2

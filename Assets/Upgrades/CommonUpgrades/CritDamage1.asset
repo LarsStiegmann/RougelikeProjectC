@@ -15,4 +15,6 @@ MonoBehaviour:
   upgradeName: Crit Damage +5%
   description: 
   upgradeType: 10
-  value: 0.05
+  rarity: 0
+  value: 0.15
+  ability: {fileID: 0}

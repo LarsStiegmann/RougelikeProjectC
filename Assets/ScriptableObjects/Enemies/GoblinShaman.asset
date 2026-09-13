@@ -14,10 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyVariant
   displayName: Goblin Shaman
   meshChildName: Character_Goblin_Shaman
-  maxHealth: 26
-  damage: 20
-  xpReward: 20
+  maxHealth: 30
+  damage: 18
+  xpReward: 24
   coinReward: 2
   weight: 10
-  unlockAtMinutes: 2.5
+  unlockAtMinutes: 4
   modelScale: 1

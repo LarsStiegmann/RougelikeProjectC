@@ -15,4 +15,6 @@ MonoBehaviour:
   upgradeName: Attack Speed +5%
   description: 
   upgradeType: 2
-  value: 5
+  rarity: 0
+  value: 6
+  ability: {fileID: 0}

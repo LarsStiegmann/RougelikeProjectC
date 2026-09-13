@@ -1,13 +1,6 @@
 using UnityEngine;
 
-/// <summary>
-/// Drives the movement of a static trap prop. One component covers the three
-/// patterns needed: a spinning saw that also slides along its rail, a pendulum
-/// blade, and spears that thrust in and out on a timer.
-///
-/// Everything is driven from the object's own starting transform, so nothing about
-/// the existing props has to be edited.
-/// </summary>
+
 public class TrapMotion : MonoBehaviour
 {
     public enum Mode { SpinAndSlide, Pendulum, Thrust }
@@ -94,7 +87,6 @@ public class TrapMotion : MonoBehaviour
 
         if (slideDistance > 0f && slideSpeed > 0f)
         {
-            // ping-pong along the rail
             float t = Mathf.Sin(timer * slideSpeed);
             transform.localPosition = startLocalPosition + slideAxis.normalized * (t * slideDistance);
         }
@@ -104,7 +96,6 @@ public class TrapMotion : MonoBehaviour
     {
         float angle = Mathf.Sin(timer * swingSpeed) * swingAngle;
 
-        // rotate about the housing rather than the blade's own centre
         transform.localRotation = startLocalRotation;
         transform.localPosition = startLocalPosition;
 

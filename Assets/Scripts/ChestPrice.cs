@@ -1,10 +1,6 @@
 using UnityEngine;
 
-/// <summary>
-/// Tracks what this chest costs to open. Each chest keeps its own price, and that
-/// price doubles every time it is looted, so the third open is a real decision
-/// rather than a formality.
-/// </summary>
+
 [RequireComponent(typeof(TreasureChest))]
 public class ChestPrice : MonoBehaviour
 {
@@ -17,32 +13,48 @@ public class ChestPrice : MonoBehaviour
     [Tooltip("Ceiling so a long run cannot produce an absurd number.")]
     [SerializeField] private int maxCost = 100000;
 
+    [Tooltip("Added to every chest's base price for each chest opened anywhere this run, so ability power is paced by total spend rather than by hopping between fresh chests.")]
+    [SerializeField] private int globalStepPerOpen = 10;
+
     private int timesPaid;
 
-    /// <summary>What it costs to open right now.</summary>
+    private static int globalOpens;
+
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+    private static void HookSceneLoads()
+    {
+        globalOpens = 0;
+        UnityEngine.SceneManagement.SceneManager.sceneLoaded -= OnSceneLoaded;
+        UnityEngine.SceneManagement.SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    private static void OnSceneLoaded(UnityEngine.SceneManagement.Scene scene, UnityEngine.SceneManagement.LoadSceneMode mode)
+    {
+        if (mode == UnityEngine.SceneManagement.LoadSceneMode.Single)
+        {
+            globalOpens = 0;
+        }
+    }
+
+    public static int GlobalOpens => globalOpens;
+
     public int CurrentCost
     {
         get
         {
-            float cost = baseCost * Mathf.Pow(costMultiplier, timesPaid);
+            float cost = (baseCost + globalStepPerOpen * globalOpens) * Mathf.Pow(costMultiplier, timesPaid);
             return Mathf.Clamp(Mathf.RoundToInt(cost), 0, maxCost);
         }
     }
 
-    /// <summary>How many times this chest has been paid for.</summary>
     public int TimesPaid => timesPaid;
 
-    /// <summary>True if the player can currently afford this chest.</summary>
     public bool CanAfford()
     {
         return CurrencyController.Instance != null
             && CurrencyController.Instance.CanAfford(CurrentCost);
     }
 
-    /// <summary>
-    /// Charges the player. Returns false and takes nothing if they cannot pay, which
-    /// is the caller's cue to leave the chest shut.
-    /// </summary>
     public bool TryPay()
     {
         CurrencyController wallet = CurrencyController.Instance;
@@ -57,6 +69,7 @@ public class ChestPrice : MonoBehaviour
         }
 
         timesPaid++;
+        globalOpens++;
         return true;
     }
 }

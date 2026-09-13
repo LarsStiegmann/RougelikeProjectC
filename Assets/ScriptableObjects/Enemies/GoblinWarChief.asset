@@ -14,10 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyVariant
   displayName: Goblin WarChief
   meshChildName: Character_Goblin_WarChief
-  maxHealth: 70
-  damage: 24
-  xpReward: 40
+  maxHealth: 90
+  damage: 20
+  xpReward: 48
   coinReward: 5
-  weight: 4
-  unlockAtMinutes: 4
+  weight: 5
+  unlockAtMinutes: 5.5
   modelScale: 1.15

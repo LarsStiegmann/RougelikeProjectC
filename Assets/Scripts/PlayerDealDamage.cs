@@ -17,6 +17,16 @@ public class PlayerDealDamage : MonoBehaviour
     [Tooltip("Total width of the damage arc in front of the character, in degrees.")]
     [SerializeField] private float attackArcAngle = 180f;
 
+    [Header("Crowd control")]
+    [Tooltip("Most enemies one swing can hit. Without a cap, a swing deleted every enemy in the arc and crowds could never reach the player.")]
+    [SerializeField] private int maxTargetsPerSwing = 4;
+
+    [Tooltip("Extra targets per metre of attack range above the base range, so Range upgrades widen the swing as well as lengthen it.")]
+    [SerializeField] private float extraTargetsPerRangeMetre = 1f;
+
+    [Tooltip("Range the base target count is defined at.")]
+    [SerializeField] private float baseRangeForTargets = 5f;
+
     [Tooltip("Height above the character's feet used as the centre of the hit check.")]
     [SerializeField] private float attackCheckHeight = 1f;
 
@@ -108,7 +118,6 @@ public class PlayerDealDamage : MonoBehaviour
 
         HashSet<EnemyAIController> alreadyHit = new HashSet<EnemyAIController>();
         float halfAngle = attackArcAngle * 0.5f;
-        int hitCount = 0;
 
         Vector3 facing = transform.forward;
         facing.y = 0f;
@@ -117,6 +126,10 @@ public class PlayerDealDamage : MonoBehaviour
             return 0;
         }
         facing.Normalize();
+
+        // Gather everything the swing could touch, then hit only the nearest few.
+        // A crowd is a threat precisely because the sword cannot answer all of it.
+        List<KeyValuePair<float, EnemyAIController>> inArc = new List<KeyValuePair<float, EnemyAIController>>();
 
         for (int i = 0; i < candidates.Length; i++)
         {
@@ -129,7 +142,6 @@ public class PlayerDealDamage : MonoBehaviour
             Vector3 toEnemy = enemy.transform.position - transform.position;
             toEnemy.y = 0f;
 
-            
             if (toEnemy.sqrMagnitude > 0.0001f)
             {
                 if (Vector3.Angle(facing, toEnemy.normalized) > halfAngle)
@@ -143,8 +155,23 @@ public class PlayerDealDamage : MonoBehaviour
                 continue;
             }
 
-            enemy.EnemyTakeDamage(PlayerState.Instance.currentDamage);
-            hitCount++;
+            inArc.Add(new KeyValuePair<float, EnemyAIController>(toEnemy.sqrMagnitude, enemy));
+        }
+
+        if (inArc.Count == 0)
+        {
+            return 0;
+        }
+
+        inArc.Sort((a, b) => a.Key.CompareTo(b.Key));
+
+        int extra = Mathf.FloorToInt(Mathf.Max(0f, range - baseRangeForTargets) * extraTargetsPerRangeMetre);
+        int cap = Mathf.Max(1, maxTargetsPerSwing + extra);
+        int hitCount = Mathf.Min(cap, inArc.Count);
+
+        for (int i = 0; i < hitCount; i++)
+        {
+            inArc[i].Value.EnemyTakeDamage(PlayerState.Instance.currentDamage);
         }
 
         return hitCount;

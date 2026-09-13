@@ -3,11 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
-/// <summary>
-/// Makes a chest prop openable. The lid child is rotated on its hinge when opened.
-/// Chests register themselves so ChestInteractor can find the nearest one without
-/// running physics queries every frame.
-/// </summary>
+
 public class TreasureChest : MonoBehaviour
 {
     public static readonly List<TreasureChest> ActiveChests = new List<TreasureChest>();
@@ -86,9 +82,6 @@ public class TreasureChest : MonoBehaviour
         return null;
     }
 
-    /// <summary>
-    /// Opens the chest. Safe to call more than once; only the first call does anything.
-    /// </summary>
     public void Open()
     {
         if (isOpened)
@@ -142,10 +135,7 @@ public class TreasureChest : MonoBehaviour
         openRoutine = null;
     }
 
-    /// <summary>
-    /// Closes the chest again so it can be opened another time. Safe to call when
-    /// already closed; only a chest that is currently open does anything.
-    /// </summary>
+
     public void Close()
     {
         if (!isOpened)
@@ -185,7 +175,6 @@ public class TreasureChest : MonoBehaviour
             elapsed += Time.deltaTime;
             float t = Mathf.Clamp01(elapsed / closeDuration);
 
-            // Ease in so the lid picks up speed and drops shut.
             t = t * t;
 
             lid.localRotation = Quaternion.Slerp(start, closedRotation, t);

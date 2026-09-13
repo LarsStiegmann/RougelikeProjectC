@@ -14,10 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyVariant
   displayName: Skeleton Soldier
   meshChildName: Character_Skeleton_Soldier_01
-  maxHealth: 32
-  damage: 15
-  xpReward: 16
+  maxHealth: 34
+  damage: 12
+  xpReward: 17
   coinReward: 2
   weight: 18
-  unlockAtMinutes: 1
+  unlockAtMinutes: 1.5
   modelScale: 1

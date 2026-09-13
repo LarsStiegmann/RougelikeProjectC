@@ -2,13 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-/// <summary>
-/// Shatters the character on death by breaking its actual mesh into chunks rather
-/// than hiding it and spawning stand-in debris. The character's pose is baked at
-/// the moment of death, the baked triangles are clustered into fragments, and each
-/// fragment becomes a physics body carrying the original material - so the pieces
-/// visibly are the character coming apart.
-/// </summary>
+
 public class PlayerShatterDeath : MonoBehaviour
 {
     [Header("Fragmentation")]
@@ -75,7 +69,6 @@ public class PlayerShatterDeath : MonoBehaviour
             return;
         }
 
-        // Body centre, used to push pieces outward.
         Bounds combined = parts[0].bounds;
         for (int i = 1; i < parts.Count; i++)
         {
@@ -83,8 +76,7 @@ public class PlayerShatterDeath : MonoBehaviour
         }
         Vector3 center = combined.center;
 
-        // When persisting, park everything under a root that survives scene reloads
-        // so the debris is still there after a retry.
+
         if (fragmentsPersist)
         {
             pileRoot = PersistentDebris.GetOrCreate().CreatePile();
@@ -104,7 +96,6 @@ public class PlayerShatterDeath : MonoBehaviour
             budget -= made;
         }
 
-        // hide the original character
         foreach (SkinnedMeshRenderer smr in parts)
         {
             smr.enabled = false;
@@ -117,10 +108,6 @@ public class PlayerShatterDeath : MonoBehaviour
         SpawnGlassSparkle(center, combined);
     }
 
-    /// <summary>
-    /// Bakes one skinned part in its current pose and splits its triangles into
-    /// spatial clusters, each becoming an independent physics fragment.
-    /// </summary>
     private int FragmentPart(SkinnedMeshRenderer smr, int fragmentCount, Vector3 center)
     {
         Mesh baked = new Mesh();
@@ -140,8 +127,7 @@ public class PlayerShatterDeath : MonoBehaviour
         int triCount = tris.Length / 3;
         fragmentCount = Mathf.Clamp(fragmentCount, 1, Mathf.Max(1, triCount));
 
-        // Seed points chosen from actual triangle centroids, then every triangle
-        // joins its nearest seed. Gives chunky, irregular pieces.
+
         Vector3[] seeds = new Vector3[fragmentCount];
         for (int i = 0; i < fragmentCount; i++)
         {
@@ -342,8 +328,6 @@ private IEnumerator HandleLifetime(GameObject go)
             yield break;
         }
 
-        // Persisting: keep the piece and hand the settle-and-freeze work to
-        // PersistentDebris, which outlives this player object across reloads.
         if (go == null)
         {
             yield break;

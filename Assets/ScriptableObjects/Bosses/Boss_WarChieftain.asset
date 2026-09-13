@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyVariant
   displayName: War Chieftain
   meshChildName: Character_Goblin_WarChief
-  maxHealth: 650
-  damage: 38
+  maxHealth: 440
+  damage: 24
   xpReward: 240
   coinReward: 45
   weight: 1

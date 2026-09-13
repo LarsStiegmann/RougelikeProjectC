@@ -15,4 +15,6 @@ MonoBehaviour:
   upgradeName: Damage +5%
   description: 
   upgradeType: 1
-  value: 5
+  rarity: 0
+  value: 4
+  ability: {fileID: 0}

@@ -1,11 +1,5 @@
 using UnityEngine;
 
-/// <summary>
-/// Keeps a light on the player so the character stays readable after dark.
-/// Intensity follows how dark the world actually is (read from the ambient sky
-/// colour the day-night cycle drives), so it glows at night and all but
-/// disappears in daylight - no coupling to the cycle script itself.
-/// </summary>
 [RequireComponent(typeof(Light))]
 public class PlayerNightLight : MonoBehaviour
 {

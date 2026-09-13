@@ -1,12 +1,11 @@
 using UnityEngine;
 using UnityEngine.Rendering;
 
-/// <summary>
-/// Simple full-scene day-night cycle for the arena. Drives the directional light
-/// (sun by day, moon by night), trilight ambient, fog, the procedural skybox and
-/// the torch/candle point lights. Everything is keyed off a normalised time of day:
-/// 0 = dawn, 0.25 = noon, 0.5 = dusk, 0.75 = midnight.
-/// </summary>
+    //_________________________________________________________________________________________________________
+    //Quelle: KI (Claude Opus 5)
+    //Prompt: Generate a day/night cycle for the world map
+    //Datum: 05.08.2026
+
 public class DayNightCycle : MonoBehaviour
 {
     [Header("Timing")]
@@ -59,18 +58,12 @@ public class DayNightCycle : MonoBehaviour
 
     public float TimeOfDay => timeOfDay;
 
-    /// <summary>
-    /// 0 in full daylight, 1 at deep night. Read from the same curve that drives
-    /// the torches, so anything that lights up after dark stays in step with them.
-    /// Static so per-enemy effects can read it without a scene lookup every frame.
-    /// </summary>
     public static float Darkness { get; private set; } = 1f;
 
     private void Start()
     {
         timeOfDay = startTime;
 
-        // Gather the arena point lights once; their serialized intensities are the night values.
         Transform lightsRoot = sun != null ? sun.transform.parent : null;
         if (lightsRoot != null)
         {
@@ -98,7 +91,7 @@ public class DayNightCycle : MonoBehaviour
 
         if (postVolume != null)
         {
-            var profile = postVolume.profile;   // runtime instance, does not touch the asset
+            var profile = postVolume.profile;
             profile.TryGet(out bloom);
             profile.TryGet(out colorAdjust);
         }
@@ -128,7 +121,6 @@ public class DayNightCycle : MonoBehaviour
         Apply();
     }
 
-    /// <summary>Jump straight to a given time of day (0..1). Handy for testing.</summary>
     public void SetTimeOfDay(float t)
     {
         timeOfDay = Mathf.Repeat(t, 1f);
@@ -157,15 +149,10 @@ public class DayNightCycle : MonoBehaviour
 
     private void Apply()
     {
-        // With skipDay the accumulated phase maps onto t in [0.45 .. 1.08]:
-        // late golden light, sunset, a long night, then dawn - midday never happens.
         float t = skipDay ? Mathf.Repeat(0.45f + timeOfDay * 0.63f, 1f) : timeOfDay;
         float elevation = Mathf.Sin(t * Mathf.PI * 2f) * 72f;
 
-        // The light used to flip from the sun angle to a fixed moon angle the
-        // instant elevation crossed the horizon, swinging every shadow in the
-        // scene through 130 degrees in one frame. Now it eases across a band
-        // either side of the horizon instead.
+
         float band = Mathf.Max(0.01f, handoverBand);
         float nightBlend = Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(band, -band, elevation));
         bool night = nightBlend > 0.5f;
@@ -177,9 +164,7 @@ public class DayNightCycle : MonoBehaviour
             sun.transform.rotation = Quaternion.Slerp(sunAngle, moonAngle, nightBlend);
             sun.color = sunColor.Evaluate(t);
 
-            // Fade the directional light down through the middle of the handover,
-            // so the angle change happens while it is casting least. 0 and 1 are
-            // the ends of the blend; 0.5 is the midpoint where the dip is deepest.
+ 
             float midpoint = 1f - Mathf.Abs(nightBlend * 2f - 1f);
             sun.intensity = sunIntensity.Evaluate(t) * (1f - handoverDip * midpoint);
         }
@@ -226,11 +211,7 @@ public class DayNightCycle : MonoBehaviour
         UpdateStars(nightBlend);
     }
 
-    /// <summary>
-    /// Stars used to pop on and off with SetActive at the exact horizon crossing.
-    /// They now ride the same blend as the sun-moon handover, fading in over the
-    /// whole dusk band.
-    /// </summary>
+
     private void UpdateStars(float nightBlend)
     {
         if (starField == null)
@@ -249,7 +230,7 @@ public class DayNightCycle : MonoBehaviour
             return;
         }
 
-        // Ease the fade so stars appear gently rather than ramping in linearly.
+
         float a = Mathf.SmoothStep(0f, 1f, nightBlend);
         starRenderer.GetPropertyBlock(starBlock);
         starBlock.SetColor(BaseColorId, new Color(1f, 1f, 1f, a));
@@ -257,7 +238,7 @@ public class DayNightCycle : MonoBehaviour
         starRenderer.SetPropertyBlock(starBlock);
     }
 
-    /// <summary>Rounds off the corner at every keyframe of every curve.</summary>
+
     private void SmoothAll()
     {
         AnimationCurve[] all =
@@ -279,4 +260,5 @@ public class DayNightCycle : MonoBehaviour
             }
         }
     }
+    //_________________________________________________________________________________________________________
 }

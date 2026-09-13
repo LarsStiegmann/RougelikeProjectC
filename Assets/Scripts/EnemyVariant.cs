@@ -1,9 +1,6 @@
 using UnityEngine;
 
-/// <summary>
-/// One kind of enemy. The Synty characters are a single rig carrying every mesh as a
-/// child, so a "type" is really just which mesh child to switch on plus a stat block.
-/// </summary>
+
 [CreateAssetMenu(fileName = "EnemyVariant", menuName = "Roguelike/Enemy Variant")]
 public class EnemyVariant : ScriptableObject
 {

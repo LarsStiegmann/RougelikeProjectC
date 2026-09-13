@@ -1,11 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-/// <summary>
-/// Fades the Game Over backdrop from fully transparent to solid black.
-/// Runs on unscaled time so it works regardless of any death-time slow motion,
-/// and lives on the panel itself so no controller scripts are involved.
-/// </summary>
 [RequireComponent(typeof(Image))]
 public class GameOverBackgroundFade : MonoBehaviour
 {
@@ -33,8 +28,8 @@ public class GameOverBackgroundFade : MonoBehaviour
             return;
         }
 
-        elapsed += Mathf.Min(Time.unscaledDeltaTime, 0.1f);   // hitch-proof
+        elapsed += Mathf.Min(Time.unscaledDeltaTime, 0.1f);
         float a = Mathf.Clamp01(elapsed / fadeDuration);
-        backdrop.color = new Color(0f, 0f, 0f, a * a);   // ease in
+        backdrop.color = new Color(0f, 0f, 0f, a * a);
     }
 }

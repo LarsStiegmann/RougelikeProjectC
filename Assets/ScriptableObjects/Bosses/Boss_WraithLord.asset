@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyVariant
   displayName: Wraith Lord
   meshChildName: Character_Tormented_Soul
-  maxHealth: 550
-  damage: 48
+  maxHealth: 400
+  damage: 28
   xpReward: 280
   coinReward: 55
   weight: 1

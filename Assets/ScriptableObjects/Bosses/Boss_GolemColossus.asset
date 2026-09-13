@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyVariant
   displayName: Golem Colossus
   meshChildName: Character_Rock_Golem
-  maxHealth: 900
-  damage: 45
+  maxHealth: 560
+  damage: 30
   xpReward: 300
   coinReward: 60
   weight: 1

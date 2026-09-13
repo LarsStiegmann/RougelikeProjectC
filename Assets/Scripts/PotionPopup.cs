@@ -1,14 +1,6 @@
 using System.Collections;
 using UnityEngine;
 
-/// <summary>
-/// Pops the won potion's Synty model out of the chest: it scales in, rises while
-/// spinning, hangs for a beat, then shrinks away.
-///
-/// Everything runs on unscaled time because the wheel pauses the game while this
-/// plays. Scaling is used instead of alpha fading so the Synty opaque materials
-/// are left untouched.
-/// </summary>
 public class PotionPopup : MonoBehaviour
 {
     [SerializeField] private float riseHeight = 1.5f;
@@ -23,9 +15,6 @@ public class PotionPopup : MonoBehaviour
 
     private static readonly Vector3 DefaultOffset = new Vector3(0f, 0.55f, 0f);
 
-    /// <summary>
-    /// Creates the popup for a won potion above the given anchor (the chest).
-    /// </summary>
     public static void Spawn(PotionDefinition potion, Transform anchor)
     {
         if (potion == null || potion.modelPrefab == null || anchor == null)
@@ -91,7 +80,6 @@ public class PotionPopup : MonoBehaviour
             t += Time.unscaledDeltaTime;
             total += Time.unscaledDeltaTime;
             float n = Mathf.Clamp01(t / growDuration);
-            // Overshoot slightly then settle, so it "pops".
             float s = Mathf.Sin(n * Mathf.PI * 0.5f) * 1.12f;
             model.localScale = fullScale * Mathf.Min(s, 1.12f);
             model.Rotate(Vector3.up, spinSpeed * Time.unscaledDeltaTime, Space.World);
@@ -101,7 +89,6 @@ public class PotionPopup : MonoBehaviour
 
         model.localScale = fullScale;
 
-        // Keep rising and spinning, then hang.
         float hangTimer = 0f;
         while (hangTimer < hangDuration)
         {
@@ -113,7 +100,6 @@ public class PotionPopup : MonoBehaviour
             yield return null;
         }
 
-        // Shrink away.
         t = 0f;
         float startIntensity = glow != null ? glow.intensity : 0f;
         while (t < shrinkDuration)

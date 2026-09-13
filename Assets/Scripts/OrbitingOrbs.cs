@@ -1,18 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-/// <summary>
-/// Persistent ring of arcane orbs circling the player. Always active once owned:
-/// levelling adds orbs, widens the ring and speeds the spin.
-///
-/// Replaces the earlier crystal-blade version. Solid weapon meshes visibly rammed
-/// through pillars and rocks as the ring swept past scenery; a small glowing orb
-/// with a trail reads as magic passing through the world instead of a prop stuck
-/// in it, and its tiny silhouette barely intersects anything.
-///
-/// Damage goes through EnemyAIController.EnemyTakeDamage, with a short per-enemy
-/// cooldown so an orb sweeping a crowd does not delete it instantly.
-/// </summary>
+
 public class OrbitingOrbs : MonoBehaviour
 {
     private AbilityDefinition definition;
@@ -29,19 +18,15 @@ public class OrbitingOrbs : MonoBehaviour
     private Vector3 ringCentre;
     private bool centreReady;
 
-    // How quickly the ring centre chases the player. High enough that the ring
-    // never visibly lags, low enough to swallow a single jittery frame of
-    // CharacterController sliding along a prop.
+
     private const float FollowSharpness = 25f;
 
-    // Past this gap the ring snaps instead of sweeping - covers spawns and teleports.
     private const float SnapDistance = 5f;
 
-    private const float PerEnemyCooldown = 0.55f;
+    private const float PerEnemyCooldown = 0.45f;
     private const float OrbHitRadius = 0.85f;
     private const float RingHeight = 1f;
 
-    // How far the orbs rise and fall as they circle.
     private const float BobHeight = 0.22f;
     private const float BobSpeed = 2.4f;
 
@@ -64,7 +49,6 @@ public class OrbitingOrbs : MonoBehaviour
 
         int wanted = Mathf.Max(1, def.CountAt(newLevel));
 
-        // Rebuild only when the orb count actually changes.
         if (orbs.Count != wanted)
         {
             foreach (Transform o in orbs)
@@ -112,7 +96,6 @@ public class OrbitingOrbs : MonoBehaviour
         cr.receiveShadows = false;
         ApplyColour(cr, colour * 1.1f);
 
-        // Billboarded halo so the orb reads as light rather than a plastic ball.
         GameObject halo = new GameObject("Halo");
         halo.transform.SetParent(root.transform, false);
         halo.transform.localScale = Vector3.one * 0.95f;
@@ -128,7 +111,6 @@ public class OrbitingOrbs : MonoBehaviour
         ApplyColour(hr, colour * 1.15f);
         halos.Add(hr);
 
-        // Comet trail - this is what sells the whirl.
         TrailRenderer trail = root.AddComponent<TrailRenderer>();
         trail.time = 0.32f;
         trail.startWidth = 0.17f;
@@ -145,7 +127,6 @@ public class OrbitingOrbs : MonoBehaviour
             new[] { new GradientAlphaKey(0.55f, 0f), new GradientAlphaKey(0f, 1f) });
         trail.colorGradient = g;
 
-        // Small light so the orbs actually throw colour on the ground at night.
         GameObject lightGo = new GameObject("OrbLight");
         lightGo.transform.SetParent(root.transform, false);
         Light l = lightGo.AddComponent<Light>();
@@ -214,11 +195,6 @@ public class OrbitingOrbs : MonoBehaviour
 
         Camera cam = Camera.main;
 
-        // The ring used to be placed in local space, so it inherited the player's
-        // rotation - a single sharp turn whipped every orb several metres sideways,
-        // which is exactly when the player turns most: dodging props and enemies.
-        // Placing them in world space around the player's position instead means
-        // facing has no effect on the ring at all.
         Vector3 target = transform.position;
 
         if (!centreReady || (target - ringCentre).sqrMagnitude > SnapDistance * SnapDistance)
@@ -240,14 +216,11 @@ public class OrbitingOrbs : MonoBehaviour
 
             float angle = spin + (360f / orbs.Count) * i;
 
-            // Each orb bobs on its own phase so the ring undulates instead of
-            // sitting on a flat disc.
             float bob = Mathf.Sin((Time.time * BobSpeed) + i * 1.7f) * BobHeight;
 
             Vector3 offset = Quaternion.Euler(0f, angle, 0f) * Vector3.forward * radius;
             orbs[i].position = ringCentre + offset + Vector3.up * (RingHeight + bob);
 
-            // Keep the halo facing the camera.
             if (cam != null && i < halos.Count && halos[i] != null)
             {
                 halos[i].transform.rotation = Quaternion.LookRotation(
@@ -320,10 +293,6 @@ public class OrbitingOrbs : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// The depth-ignoring orb shader, falling back to Sprites/Default if the
-    /// asset is ever missing from a build.
-    /// </summary>
     private static Shader GetOrbShader()
     {
         Shader s = Shader.Find("Roguelike/OrbGlow");
@@ -337,10 +306,7 @@ public class OrbitingOrbs : MonoBehaviour
             return coreMaterial;
         }
 
-        // Unlit and untextured, so the core is a flat blob of colour rather than
-        // a shaded ball that reads as a marble. OrbGlow draws with ZTest Always,
-        // so the ring sweeps through rocks and arches instead of being clipped by
-        // them - Sprites/Default has no ZTest property and could not be told to.
+  
         coreMaterial = new Material(GetOrbShader());
         coreMaterial.name = "OrbCore";
         return coreMaterial;

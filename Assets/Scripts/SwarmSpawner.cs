@@ -2,18 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
-/// <summary>
-/// Keeps a swarm of enemies around the player, Megabonk style. Rather than garrisoning
-/// rooms, it tops the population back up to a target count by spawning on a ring around
-/// the player, biased toward wherever the camera is looking so the player sees them
-/// arrive rather than being ambushed from behind.
-///
-/// Enemies that fall a long way behind are culled, which keeps the count bounded on a
-/// large map and stops a trail of stragglers building up across the dungeon.
-///
-/// Which enemies appear is decided by the RoomZone the player currently occupies, so
-/// the per-room theming survives the change of spawn model.
-/// </summary>
+
 public class SwarmSpawner : MonoBehaviour
 {
     [Header("Enemy source")]
@@ -24,8 +13,61 @@ public class SwarmSpawner : MonoBehaviour
     [SerializeField] private List<EnemyVariant> fallbackRoster = new List<EnemyVariant>();
 
     [Header("Population")]
-    [Tooltip("How many enemies to keep alive around the player.")]
+    [Tooltip("How many enemies to keep alive around the player at minute 0. See the curve below for growth.")]
     [SerializeField] private int targetAlive = 12;
+
+    [Header("Difficulty over time")]
+    [Tooltip("Multiplier on targetAlive by run minute. Lets the opening breathe and the late game overwhelm.")]
+    [SerializeField] private AnimationCurve densityByMinute = new AnimationCurve(
+        new Keyframe(0f, 0.4f), new Keyframe(3f, 1f), new Keyframe(8f, 1.6f), new Keyframe(15f, 2.4f), new Keyframe(25f, 3.2f));
+
+    [Tooltip("Absolute ceiling on alive enemies regardless of the curve. 160 measured at ~9ms CPU/frame; keep headroom.")]
+    [SerializeField] private int maxAliveHardCap = 140;
+
+    [Tooltip("Enemy max health is multiplied by 1 + this per minute.")]
+    [SerializeField] private float healthGrowthPerMinute = 0.10f;
+
+    [Tooltip("Enemy damage is multiplied by 1 + this per minute.")]
+    [SerializeField] private float damageGrowthPerMinute = 0.045f;
+
+    [Tooltip("XP reward is multiplied by 1 + this per minute, so levelling keeps pace with tougher enemies.")]
+    [SerializeField] private float xpGrowthPerMinute = 0.04f;
+
+    [Tooltip("Enemy move speed is multiplied by 1 + this per minute. The player runs at 6; once the horde passes that, kiting stops being free and the run ends.")]
+    [SerializeField] private float speedGrowthPerMinute = 0.025f;
+
+    [Tooltip("Hard cap on the speed multiplier so enemies never become absurd.")]
+    [SerializeField] private float maxSpeedMultiplier = 1.5f;
+
+    public float CurrentSpeedMultiplier => Mathf.Min(maxSpeedMultiplier, 1f + speedGrowthPerMinute * RunMinutes);
+
+    [Tooltip("Extra enemies per batch once the run passes this many minutes.")]
+    [SerializeField] private float bigBatchAfterMinutes = 7f;
+
+    private static float RunMinutes
+    {
+        get
+        {
+            return RunTimerController.Instance != null
+                ? RunTimerController.Instance.ElapsedTime / 60f
+                : Time.timeSinceLevelLoad / 60f;
+        }
+    }
+
+    public int CurrentTargetAlive
+    {
+        get
+        {
+            float mult = densityByMinute != null && densityByMinute.length > 0
+                ? Mathf.Max(0.1f, densityByMinute.Evaluate(RunMinutes))
+                : 1f;
+            return Mathf.Clamp(Mathf.RoundToInt(targetAlive * mult), 1, Mathf.Max(1, maxAliveHardCap));
+        }
+    }
+
+    public float CurrentHealthMultiplier => 1f + healthGrowthPerMinute * RunMinutes;
+
+    public float CurrentDamageMultiplier => 1f + damageGrowthPerMinute * RunMinutes;
 
     [Tooltip("How many may be spawned per batch, to avoid a whole wave appearing in one frame.")]
     [SerializeField] private int maxSpawnsPerBatch = 2;
@@ -65,16 +107,15 @@ public class SwarmSpawner : MonoBehaviour
     private float nextSpawnTime;
     private float nextCullTime;
 
-    /// <summary>How many swarm enemies are currently alive.</summary>
+
     public int AliveCount => alive.Count;
 
-    /// <summary>The room whose roster is currently being drawn from.</summary>
+
     public string CurrentRoom { get; private set; } = "-";
 
     private void Awake()
     {
-        // Enemies are assembled in here while inactive, so Configure lands before their
-        // Awake copies maxHealth into currentHealth.
+
         GameObject holder = new GameObject("~nursery");
         holder.transform.SetParent(transform, false);
         holder.SetActive(false);
@@ -106,14 +147,16 @@ public class SwarmSpawner : MonoBehaviour
             CullDistant(playerPos);
         }
 
-        if (Time.time < nextSpawnTime || alive.Count >= targetAlive)
+        int target = CurrentTargetAlive;
+        if (Time.time < nextSpawnTime || alive.Count >= target)
         {
             return;
         }
 
         nextSpawnTime = Time.time + spawnInterval;
 
-        int wanted = Mathf.Min(maxSpawnsPerBatch, targetAlive - alive.Count);
+        int batch = RunMinutes >= bigBatchAfterMinutes ? maxSpawnsPerBatch * 2 : maxSpawnsPerBatch;
+        int wanted = Mathf.Min(batch, target - alive.Count);
         for (int i = 0; i < wanted; i++)
         {
             SpawnOne(playerPos);
@@ -176,7 +219,6 @@ public class SwarmSpawner : MonoBehaviour
             }
         }
 
-        // Nothing unlocked yet: fall back to whichever unlocks earliest.
         if (total <= 0f)
         {
             EnemyVariant earliest = null;
@@ -214,11 +256,6 @@ public class SwarmSpawner : MonoBehaviour
         return null;
     }
 
-    /// <summary>
-    /// Picks a spot on the ring around the player. Most spawns land inside the camera's
-    /// view cone so the player watches them arrive; the remainder are scattered so the
-    /// swarm does not only ever come from straight ahead.
-    /// </summary>
     private bool TryFindSpawnPoint(Vector3 playerPos, out Vector3 result)
     {
         if (cam == null)
@@ -257,8 +294,6 @@ public class SwarmSpawner : MonoBehaviour
                 continue;
             }
 
-            // The sample can snap somewhere much closer; reject those so nothing
-            // materialises on top of the player.
             float actual = Vector3.Distance(hit.position, playerPos);
             if (actual < minSpawnDistance * 0.75f || actual > maxSpawnDistance * 1.4f)
             {
@@ -317,7 +352,11 @@ public class SwarmSpawner : MonoBehaviour
         EnemyAIController ai = enemy.GetComponent<EnemyAIController>();
         if (ai != null)
         {
-            ai.Configure(variant.maxHealth, variant.damage, variant.xpReward);
+            float minutes = RunMinutes;
+            ai.Configure(
+                variant.maxHealth * CurrentHealthMultiplier,
+                variant.damage * CurrentDamageMultiplier,
+                variant.xpReward * (1f + xpGrowthPerMinute * minutes));
             ai.ConfigureCoins(variant.coinReward);
         }
 
@@ -339,6 +378,10 @@ public class SwarmSpawner : MonoBehaviour
         {
             agent.enabled = true;
             agent.Warp(point);
+
+            NavMeshAgent authored = enemyPrefab.GetComponent<NavMeshAgent>();
+            float baseSpeed = authored != null ? authored.speed : agent.speed;
+            agent.speed = baseSpeed * CurrentSpeedMultiplier;
         }
 
         alive.Add(enemy);

@@ -1,15 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-/// <summary>
-/// Floating clock face shown above a chest while it is on cooldown. A radial slice
-/// empties as the timer runs down, so a full disc means "just looted" and an empty
-/// one means "ready".
-///
-/// The canvas and its sprites are built at runtime, so nothing needs authoring in
-/// the scene. It billboards to the camera and only fades in once the player is
-/// close enough to care.
-/// </summary>
 public class ChestCooldownClock : MonoBehaviour
 {
     [Header("Placement")]
@@ -29,8 +20,7 @@ public class ChestCooldownClock : MonoBehaviour
     [Header("Colour")]
     [SerializeField] private Color fillColor = new Color(0.88f, 0.15f, 0.15f, 1f);
     [SerializeField] private Color backingColor = new Color(0.04f, 0.04f, 0.06f, 0.8f);
-    // Kept below full white on purpose: the scene bloom has a 0.4 threshold at
-    // 2.5 intensity, so pure white halos badly.
+ 
     [SerializeField] private Color rimColor = new Color(0.7f, 0.7f, 0.7f, 1f);
 
     [Header("Pie cuts")]
@@ -62,7 +52,6 @@ public class ChestCooldownClock : MonoBehaviour
         SetShown(false, true);
     }
 
-    /// <summary>Starts showing the clock. Progress runs 1 (just looted) to 0 (ready).</summary>
     public void Activate()
     {
         active = true;
@@ -74,7 +63,6 @@ public class ChestCooldownClock : MonoBehaviour
         active = false;
     }
 
-    /// <summary>Sets how much of the cooldown remains, 1 = full wait, 0 = ready.</summary>
     public void SetProgress(float remaining01)
     {
         progress = Mathf.Clamp01(remaining01);
@@ -100,7 +88,6 @@ public class ChestCooldownClock : MonoBehaviour
 
         if (cam != null)
         {
-            // Face the camera, keeping the disc upright.
             canvas.transform.rotation = Quaternion.LookRotation(
                 canvas.transform.position - cam.transform.position, Vector3.up);
         }
@@ -159,24 +146,20 @@ public class ChestCooldownClock : MonoBehaviour
         group.interactable = false;
         group.blocksRaycasts = false;
 
-        // Dark backing disc, slightly larger so the fill reads against any wall.
         MakeImage("Backing", crt, discSprite, backingColor, 108f, Image.Type.Simple);
 
-        // The sweeping slice itself.
         fillImage = MakeImage("Fill", crt, discSprite, fillColor, 88f, Image.Type.Filled);
         fillImage.fillMethod = Image.FillMethod.Radial360;
         fillImage.fillOrigin = (int)Image.Origin360.Top;
         fillImage.fillClockwise = true;
         fillImage.fillAmount = 1f;
 
-        // Wedge dividers, drawn over the fill so the face reads as cut slices.
         if (segmentCount > 1)
         {
             spokesSprite = BuildSpokesSprite(segmentCount, segmentLineWidth);
             MakeImage("Cuts", crt, spokesSprite, segmentColor, 108f, Image.Type.Simple);
         }
 
-        // Rim so it reads as a clock face rather than a blob.
         MakeImage("Rim", crt, ringSprite, rimColor, 108f, Image.Type.Simple);
     }
 
@@ -199,16 +182,8 @@ public class ChestCooldownClock : MonoBehaviour
         return img;
     }
 
-    /// <summary>
-    /// Builds a transparent disc with `count` radial lines running from the centre to
-    /// the edge, so the clock face reads as a cut pie. The angular tolerance widens as
-    /// the radius shrinks, which keeps every line the same thickness in pixels rather
-    /// than letting them fan out towards the rim.
-    /// </summary>
     private static Sprite BuildSpokesSprite(int count, float lineWidth)
     {
-        // Double the disc's resolution: the cuts are thin details and would look
-        // like fat wedges at 64.
         const int res = 128;
         float centre = (res - 1) * 0.5f;
         float outer = centre - 1f;
@@ -232,11 +207,9 @@ public class ChestCooldownClock : MonoBehaviour
                     continue;
                 }
 
-                // Angle measured from the top, matching the fill's Radial360 origin.
                 float angle = Mathf.Atan2(dx, dy);
                 if (angle < 0f) angle += Mathf.PI * 2f;
 
-                // Distance to the nearest divider, in radians, converted to pixels.
                 float nearest = Mathf.Repeat(angle + step * 0.5f, step) - step * 0.5f;
                 float pixelsFromLine = Mathf.Abs(nearest) * d;
 

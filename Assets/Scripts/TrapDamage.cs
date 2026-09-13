@@ -1,14 +1,5 @@
 using UnityEngine;
 
-/// <summary>
-/// Damages the player while they are inside the trap's hurt volume.
-///
-/// Uses an overlap check each frame rather than trigger colliders, because the
-/// trap props carry non-convex MeshColliders that are not suited to being moved
-/// around or converted to triggers. Nothing about the existing trap objects or
-/// any existing script has to change - this component simply reads the volume and
-/// calls the public PlayerState.TakeDamage.
-/// </summary>
 public class TrapDamage : MonoBehaviour
 {
     public enum VolumeShape { Sphere, Box }
@@ -44,7 +35,7 @@ public class TrapDamage : MonoBehaviour
     private float lastHitTime = -999f;
     private readonly Collider[] hits = new Collider[8];
 
-    /// <summary>Lets a moving trap enable or disable its damage window.</summary>
+
     public void SetArmed(bool value)
     {
         armed = value;

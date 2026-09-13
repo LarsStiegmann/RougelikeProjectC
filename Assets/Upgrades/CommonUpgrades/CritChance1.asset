@@ -15,4 +15,6 @@ MonoBehaviour:
   upgradeName: Crit Chance +5%
   description: 
   upgradeType: 9
+  rarity: 0
   value: 0.05
+  ability: {fileID: 0}

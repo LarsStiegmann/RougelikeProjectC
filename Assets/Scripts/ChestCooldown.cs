@@ -1,19 +1,10 @@
 using UnityEngine;
 
-/// <summary>
-/// Makes a chest refill. The moment its potion has been awarded the lid shuts again
-/// and a clock appears above it counting down to when it can be looted next.
-///
-/// While cooling down the chest is pulled out of TreasureChest.ActiveChests rather
-/// than being disabled, so ChestInteractor will not offer it, but the lid-closing
-/// coroutine on the chest still runs to completion.
-///
-/// Each chest only refills a limited number of times; after the final use it stays
-/// open for the rest of the run, which keeps total stat growth bounded.
-///
-/// The timer uses scaled time on purpose, so it does not tick down while the potion
-/// wheel has the game paused.
-/// </summary>
+    //_________________________________________________________________________________________________________
+    //Quelle: KI (Claude Opus 5)
+    //Prompt: Generate a cooldown for the golden chests on the map by 120 secs after opening the lid.
+    //Datum: 25.08.2026
+
 [RequireComponent(typeof(TreasureChest))]
 public class ChestCooldown : MonoBehaviour
 {
@@ -49,16 +40,12 @@ public class ChestCooldown : MonoBehaviour
     private float closeTimer;
     private int usesConsumed;
 
-    /// <summary>How many opens this chest has spent.</summary>
     public int UsesConsumed => usesConsumed;
 
-    /// <summary>How many opens remain before the chest is spent for good.</summary>
     public int UsesRemaining => maxUses <= 0 ? int.MaxValue : Mathf.Max(0, maxUses - usesConsumed);
 
-    /// <summary>True while the chest is waiting to become lootable again.</summary>
     public bool IsCoolingDown => phase == Phase.CoolingDown;
 
-    /// <summary>Seconds until the chest can be looted again.</summary>
     public float RemainingSeconds => phase == Phase.CoolingDown ? Mathf.Max(0f, readyAtTime - Time.time) : 0f;
 
     private void Awake()
@@ -109,13 +96,10 @@ public class ChestCooldown : MonoBehaviour
 
         usesConsumed++;
 
-        // Stop offering it immediately, so it cannot be re-looted while the potion
-        // wheel is still up or the lid is mid-swing.
         TreasureChest.ActiveChests.Remove(chest);
 
         if (maxUses > 0 && usesConsumed >= maxUses)
         {
-            // Final use: leave it open and unlootable for the rest of the run.
             phase = Phase.Exhausted;
             return;
         }
@@ -125,7 +109,6 @@ public class ChestCooldown : MonoBehaviour
 
     private void TickAwaitingReward()
     {
-        // Wait for the potion wheel to finish so the lid does not slam shut behind it.
         if (PotionWheelController.Instance != null && PotionWheelController.Instance.IsSpinning)
         {
             return;
@@ -186,4 +169,5 @@ public class ChestCooldown : MonoBehaviour
 
         phase = Phase.Ready;
     }
+    //_______________________________________________________________________________________
 }
