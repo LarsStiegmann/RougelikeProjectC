@@ -1,6 +1,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+    //_________________________________________________________________________________________________________
+    //Quelle: KI (Claude Opus 5)
+    //Prompt: Generate a script for orbiting orbs as an ability around the player
+    //Datum: 01.09.2026
 
 public class OrbitingOrbs : MonoBehaviour
 {
@@ -378,3 +382,4 @@ public class OrbitingOrbs : MonoBehaviour
         return quadMesh;
     }
 }
+    //_________________________________________________________________________________________________________

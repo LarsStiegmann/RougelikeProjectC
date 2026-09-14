@@ -2,6 +2,11 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
+    //_________________________________________________________________________________________________________
+    //Quelle: KI (Claude Opus 5)
+    //Prompt: Generate a Player HUD for the game
+    //Datum: 02.08.2026
+
 public class PlayerHUDController : MonoBehaviour
 {
     [Header("UI Elements")]
@@ -104,3 +109,4 @@ public class PlayerHUDController : MonoBehaviour
         }
     }
 }
+    //_________________________________________________________________________________________________________

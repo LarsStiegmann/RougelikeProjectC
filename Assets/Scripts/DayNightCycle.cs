@@ -86,6 +86,12 @@ public class DayNightCycle : MonoBehaviour
 
         if (skyboxMaterial != null)
         {
+            // Drive a runtime copy, never the asset. Writing _Exposure and
+            // _AtmosphereThickness to the shared material every frame dirtied
+            // ArenaSky.mat on every Play session, which is what kept producing
+            // merge conflicts on two numbers nobody actually chose.
+            skyboxMaterial = new Material(skyboxMaterial);
+            skyboxMaterial.name = skyboxMaterial.name.Replace("(Clone)", "") + " (runtime)";
             RenderSettings.skybox = skyboxMaterial;
         }
 
@@ -119,6 +125,15 @@ public class DayNightCycle : MonoBehaviour
     {
         timeOfDay = Mathf.Repeat(timeOfDay + Time.deltaTime / dayLengthSeconds, 1f);
         Apply();
+    }
+
+    private void OnDestroy()
+    {
+        // The runtime copy is ours to free; the asset is untouched.
+        if (skyboxMaterial != null && skyboxMaterial.name.EndsWith("(runtime)"))
+        {
+            Destroy(skyboxMaterial);
+        }
     }
 
     public void SetTimeOfDay(float t)
